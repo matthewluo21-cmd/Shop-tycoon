@@ -23,7 +23,6 @@
   --wall:#FCE6B6; --floor:#EBD6AE; --floor-2:#DFC595; --soft:#EEF6FA; --wood:#A8703F; --wood-2:#8A5A30;
   color-scheme:light;
   box-sizing:border-box;
-  padding-top:env(safe-area-inset-top,0px);
   padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
@@ -65,7 +64,9 @@ button,input,select{font:inherit;color:inherit}
 .lvlbar div{height:100%;background:var(--gain)}
 
 /* ===== Shop stage ===== */
-.stage{position:relative;aspect-ratio:16/8.4;background:var(--wall);border:3px solid var(--ink);border-bottom:none;border-radius:22px 22px 0 0;overflow:hidden;--e:clamp(18px,3.1vw,34px)}
+.stage{position:relative;height:clamp(240px,min(56vw,100vh - 440px),620px);background:var(--wall);border:3px solid var(--ink);border-radius:22px;margin-bottom:12px;overflow:hidden;isolation:isolate;--e:clamp(18px,3.1vw,34px)}
+.stage[hidden]{display:none}
+.wrap.p-peek .stage{height:clamp(200px,min(40vw,34vh),340px)}
 .st-awning{position:absolute;left:0;right:0;top:0;height:11%;background:repeating-linear-gradient(90deg,var(--awn) 0 40px,var(--awning-2) 40px 80px);border-bottom:3px solid var(--ink);z-index:2}
 .st-sign{position:absolute;top:1.4%;left:50%;transform:translateX(-50%) rotate(-1.2deg);background:var(--ink);color:var(--mustard);z-index:3;
   font-family:'Fredoka',system-ui,sans-serif;font-weight:700;font-size:clamp(14px,2.5vw,27px);padding:0 18px 2px;border-radius:10px;white-space:nowrap;max-width:70%;overflow:hidden;text-overflow:ellipsis;box-shadow:0 4px 0 rgba(0,0,0,.18)}
@@ -77,15 +78,20 @@ button,input,select{font:inherit;color:inherit}
 .room{position:absolute;top:15%;height:21%;width:6.6%;background:var(--soft);border:2px solid var(--ink);border-bottom:none;border-radius:10px 10px 0 0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:calc(var(--e)*.75);line-height:1;z-index:1}
 .room small{font-size:clamp(7px,.95vw,11px);font-family:'Atkinson Hyperlegible',sans-serif;margin-top:3px;text-align:center;line-height:1.05;padding:0 2px}
-.shelf-unit{position:absolute;top:37.5%;height:16%;border:2px solid var(--ink);border-radius:6px;z-index:3;
-  background:repeating-linear-gradient(180deg,var(--wood) 0 calc(50% - 3px),var(--wood-2) calc(50% - 3px) 50%);display:flex;flex-direction:column;justify-content:space-around;align-items:center;padding:1px}
-.shelf-unit.big{height:20%}
-.shelf-row{font-size:calc(var(--e)*.42);line-height:1;letter-spacing:-1px;min-height:1em}
-.shelf-tag{position:absolute;bottom:-1.2em;left:50%;transform:translateX(-50%);background:var(--panel);border:1.5px solid var(--ink);border-radius:6px;font-size:clamp(9px,1.1vw,12px);font-weight:700;padding:0 4px;white-space:nowrap}
-.shelf-unit.empty{opacity:.55}
-.counter{position:absolute;width:13%;height:8%;background:var(--wood);border:2px solid var(--ink);border-radius:6px;z-index:40;display:flex;align-items:center;justify-content:flex-start;padding-left:6px;font-size:calc(var(--e)*.7)}
+.shelf-unit{position:absolute;top:36.5%;aspect-ratio:100/104;z-index:3}
+.shelf-unit svg{width:100%;height:100%;display:block;overflow:visible}
+.shelf-unit.empty .sh-items{opacity:.9}
+.shelf-tag{position:absolute;bottom:-1.3em;left:50%;transform:translateX(-50%);background:var(--panel);border:1.5px solid var(--ink);border-radius:6px;font-size:clamp(9px,1.1vw,12px);font-weight:700;padding:0 4px;white-space:nowrap;line-height:1.35}
+.shelf-flag{position:absolute;left:50%;top:-7%;transform:translateX(-50%) rotate(-6deg);font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(8px,1vw,12px);color:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:0 5px;white-space:nowrap;z-index:2}
+.shelf-flag.low{background:#B35A00}.shelf-flag.out{background:#55667D;top:38%;font-size:clamp(9px,1.3vw,15px)}.shelf-flag.sale{background:#C2372D;left:6%;top:12%;transform:rotate(-12deg)}
+.counter{position:absolute;width:13%;z-index:40;transform:translateY(-40%);line-height:0}
+.counter svg{width:100%;height:auto;display:block}
 .keeper{position:absolute;transform:translate(-50%,-100%);font-size:var(--e);z-index:39}
-.vending{position:absolute;width:4.5%;height:15%;background:#C2372D;border:2px solid var(--ink);border-radius:6px;display:flex;align-items:flex-start;justify-content:center;padding-top:3px;font-size:calc(var(--e)*.6);z-index:3}
+.obj.art{width:calc(var(--e) * var(--k,2));font-size:0;line-height:0}
+.obj.art svg{width:100%;height:auto;display:block}
+.garland{position:absolute;left:0;right:0;top:11.5%;display:flex;z-index:2;pointer-events:none}
+.gseg{flex:1;height:clamp(10px,1.8vw,18px);border-bottom:2px solid #55667D;border-radius:0 0 50% 50%/0 0 100% 100%;position:relative}
+.gseg i{position:absolute;left:50%;bottom:-8px;width:clamp(7px,1.1vw,11px);height:clamp(9px,1.4vw,14px);border-radius:50% 50% 50% 50%/60% 60% 40% 40%;border:1.5px solid var(--ink);transform:translateX(-50%);box-shadow:0 0 8px currentColor}
 .neon{position:absolute;font-family:'Fredoka',sans-serif;font-weight:700;font-size:clamp(11px,1.9vw,22px);color:#FF4FA3;border:2px solid #FF4FA3;border-radius:8px;padding:0 6px;transform:translate(-50%,-100%);
   text-shadow:0 0 6px #FF4FA3;box-shadow:0 0 8px #FF4FA3;animation:flicker 3s infinite}
 .carpet{position:absolute;left:0;width:15%;top:85%;height:7%;background:#C2372D;border-top:2px solid #F4B82E;border-bottom:2px solid #F4B82E}
@@ -119,7 +125,7 @@ button,input,select{font:inherit;color:inherit}
 @keyframes flicker{0%,92%,100%{opacity:1}94%{opacity:.4}96%{opacity:1}97%{opacity:.5}}
 
 /* Panels */
-.panel{background:var(--panel);border:3px solid var(--ink);border-radius:0 0 22px 22px;padding:18px}
+.panel{background:var(--panel);border:3px solid var(--ink);border-radius:22px;padding:18px}
 .panel.alone{border-radius:22px}
 .hint{color:var(--muted);font-size:15px}
 .lbl{display:block;font-size:13px;color:var(--muted)}
@@ -216,8 +222,35 @@ figcaption{font-weight:700;margin-bottom:4px}
 /* v5: tablet and touch layout */
 button,.btn,.swatch,.theme-btn,.choice,.stepbtn{touch-action:manipulation}
 .stage{-webkit-user-select:none;user-select:none}
-.menu-btn{display:none}
-.topnav{display:contents}
+.menu-btn{display:inline-block}
+.chipbtn{cursor:pointer;font-family:inherit;color:var(--ink)}
+.info-i{display:inline-flex;align-items:center;justify-content:center;width:17px;height:17px;border-radius:50%;background:var(--ink);color:var(--panel);font-size:11px;font-style:italic;font-weight:700;margin-left:2px;vertical-align:1px}
+.rep-meter{position:relative;height:16px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;background:linear-gradient(90deg,#F6C4BE 0 30%,#DDF3E6 30% 60%,#FCE9B8 60%)}
+.rep-fill{height:100%;background:var(--gain);opacity:.85}
+.rep-mark{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.rep-scale{position:relative;height:18px;font-size:12px;color:var(--muted)}
+.rep-scale span{position:absolute;transform:translateX(-50%)}
+.rep-scale span:first-child{transform:none}
+.rep-scale span:last-child{transform:translateX(-100%)}
+.rep-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.rep-grid ul{margin:6px 0 0;padding-left:20px}
+.rep-grid li{margin:3px 0}
+/* v7: pinned top bar, shop toggle, checklist */
+.topbar{position:sticky;top:0;z-index:100;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--bg);margin:0 -14px;padding:calc(8px + env(safe-area-inset-top,0px)) 14px 8px;border-bottom:2px solid var(--line)}
+.topbar .chip.cash{font-size:18px;font-weight:800;padding:3px 14px}
+.top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 8px}
+.top .progress{flex-basis:100%}
+.shop-toggle{margin:0 0 12px}
+.shop-toggle .btn{width:100%;font-size:18px}
+.checklist ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:6px}
+.checklist li{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--soft);border-radius:10px;padding:4px 10px}
+.checklist li.done{color:var(--gain)}
+.checklist .linkbtn{font-size:17px;color:inherit;text-align:left}
+.newpill{display:inline-block;background:var(--loss);color:#fff;border-radius:999px;font-size:11px;font-weight:800;padding:0 7px;margin-left:6px;vertical-align:2px}
+.tabdot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--loss);margin-left:5px}
+#ev-bonus,#ev-forecast,#ev-upgrades,#ev-checklist{scroll-margin-top:80px}
+.card .art-ico{display:block;margin:0 auto 4px;line-height:0}
+.card .art-ico svg{width:56px;height:56px}
 .menu-list{display:grid;gap:10px;margin:10px 0}
 .menu-list .btn{text-align:left;font-size:19px;padding:.7em 1em}
 .steps{display:flex;gap:6px;list-style:none;padding:0;margin:0 0 12px;flex-wrap:wrap}
@@ -225,39 +258,17 @@ button,.btn,.swatch,.theme-btn,.choice,.stepbtn{touch-action:manipulation}
 .steps li.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
 .steps li.done{color:var(--gain);border-color:var(--gain)}
 .steps .num{display:inline-block;min-width:1.4em}
-.stepbtn{background:none;border:none;font:inherit;color:inherit;cursor:pointer;width:100%;padding:0;text-decoration:underline}
-.actions.primary{position:sticky;bottom:0;z-index:30;background:var(--panel);margin:14px -18px -18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--line);border-radius:0 0 19px 19px;justify-content:flex-end}
+.actions.primary{margin-top:18px;padding-top:14px;border-top:2px solid var(--line);justify-content:flex-end}
 .actions.primary .btn{font-size:19px}
-@media (max-width:1100px),(pointer:coarse){
-  .topnav{display:none}
-  .menu-btn{display:inline-block}
-}
 @media (pointer:coarse){
   .btn{min-height:46px}
   .btn.small{min-height:42px;padding:.35em .85em;font-size:16px}
   input[type=number],input[type=text],select{min-height:44px;font-size:17px}
   .stepper input{width:66px}
-  .stage{aspect-ratio:auto;height:clamp(230px,40vh,430px);--e:clamp(18px,4.2vh,34px)}
+  .stage{--e:clamp(22px,3.8vw,38px)}
   .shelf-tag{font-size:12px}
   .chip{font-size:14px;padding:2px 10px}
   .progress{font-size:13px}
-}
-/* Tablet landscape (e.g. iPad sideways): shop on the left, controls on the right */
-@media (pointer:coarse) and (orientation:landscape) and (min-width:900px){
-  .wrap{max-width:none;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:12px;align-items:start;padding-top:8px}
-  .top{grid-column:1/-1;margin-bottom:6px}
-  .stage{grid-column:1;position:sticky;top:8px;height:auto;aspect-ratio:4/3.3;max-height:calc(100vh - 120px);border-bottom:3px solid var(--ink);border-radius:22px;--e:clamp(18px,2.6vw,32px)}
-  .panel{grid-column:2;border-radius:22px;min-width:0}
-  .panel.alone{grid-column:1/-1}
-  .row,.row.pricing,.row.store{grid-template-columns:1fr 1fr}
-  .row .name,.row .wide{grid-column:1/-1}
-  .evening{grid-template-columns:1fr}
-  .daystats{grid-template-columns:repeat(2,1fr)}
-  .actions.primary{border-radius:0 0 19px 19px}
-}
-/* Tablet portrait: shorter shop picture so the controls are visible */
-@media (pointer:coarse) and (orientation:portrait){
-  .stage{height:clamp(200px,30vh,340px)}
 }
 
 /* Modal */
@@ -293,7 +304,6 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
   .row .wide{grid-column:1/-1}
   .daystats{grid-template-columns:repeat(2,1fr)}
   .evening{grid-template-columns:1fr}
-  .stage{aspect-ratio:4/3.2}
 }
 @media (prefers-reduced-motion: reduce){
   *{transition:none !important;animation:none !important}
@@ -302,7 +312,9 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
 </head>
 <body>
 <div class="wrap">
+  <header class="topbar" id="topbar"></header>
   <div class="top" id="top"></div>
+  <div class="shop-toggle" id="shopToggle" hidden></div>
   <section class="stage" id="stage" hidden aria-label="Your shop floor. Tap a person to learn about them.">
     <div class="info-card" id="infoCard" hidden aria-live="polite"></div>
     <div id="stageStatic"></div>
@@ -316,6 +328,7 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
    SHOP TYCOON v2
    CONFIG — parents: change numbers here to tune the game.
    ============================================================ */
+const GAME_VERSION = '7.0 (iPad layout, new visuals)';
 const CONFIG = {
   startCash: 100,
   startRep: 50,               // reputation out of 100
@@ -339,6 +352,7 @@ const CONFIG = {
   loanFee: 10,
   loanRepayPct: 25,
   slots: 5,
+  glassLevel: 8,                 // from this level your shelves become glass cabinets
   tierCash: [3, 5, 8, 12, 18],   // base $ reward by difficulty tier 1–5 (grows with level)
   tierPoints: [1, 1, 2, 2, 3],   // maths points by difficulty tier 1–5
   rewardGrowth: 0.4,             // reward multiplier added per game level
@@ -1078,7 +1092,7 @@ function blankState(name, themeKey) {
     v: 2, shopName: name || 'My Shop', theme: themeKey, day: 1, level: 1,
     cash: CONFIG.startCash, rep: CONFIG.startRep, items: {}, acc: {}, rooms: {}, history: [], stats: {},
     totalCorrect: 0, streak: 0, bestStreak: 0, mentalCorrect: 0, badges: [], loan: 0, vipSale: false,
-    mathPoints: 0, tierStats: {}, skips: 0, staff: {}, custom: {}, bossWins: 0, repTrend: 0,
+    mathPoints: 0, tierStats: {}, skips: 0, staff: {}, custom: {}, bossWins: 0, repTrend: 0, seen: {},
     phase: 'morning', today: null, forecast: null, insured: false, calcTokens: CONFIG.calcTokensPerDay,
     created: Date.now(), updated: Date.now()
   };
@@ -1118,6 +1132,7 @@ function playSlot(n) {
   if (S.skips == null) S.skips = 0;
   if (!S.staff) S.staff = {};
   if (!S.custom) S.custom = {};
+  if (!S.seen) { S.seen = {}; markSeenAll(); }
   if (S.today && S.today.saleTier == null) { S.today.saleTier = rollTier(); S.today.bulkTier = rollTier(); S.today.bulkDeal = Q.bulkDeal(S.today.bulkTier); }
   if (S.phase === 'day' && S.today) { render(); endDay(); return; }
   if (!S.today) { startDay(); return; }
@@ -1143,7 +1158,7 @@ function startDay() {
   S.calcTokens = calcTokensMax();
   buyQty = {};
   const t = { event: 'normal', wholesale: {}, spent: 0, revenue: 0, tips: 0, income: 0, bonus: 0, payout: 0, insurance: 0, sold: {}, lost: 0,
-    customers: 0, prompts: 0, notes: [], sales: {}, changeDone: false, bonusAsked: false, lossDone: false, openStock: {}, types: {} };
+    customers: 0, prompts: 0, notes: [], checks: {}, sales: {}, changeDone: false, bonusAsked: false, lossDone: false, openStock: {}, types: {} };
 
   let ev = 'normal';
   if (feature('events')) {
@@ -1383,7 +1398,7 @@ function customerArrives(progress) {
 }
 
 /* ---------- Shop floor layout (all % of the stage) ---------- */
-const shelfX = i => { const n = Math.max(unlocked().length, 3); const span = 50, start = 17; return start + (i + 0.5) * span / n; };
+const shelfX = i => { const n = Math.max(unlocked().length, 3); const span = 52, start = 15; return start + (i + 0.5) * span / n; };
 const REG = [{ x: 85, y: 66 }, { x: 85, y: 84 }];
 const roomX = i => 3.5 + i * 7.3;
 
@@ -1401,7 +1416,7 @@ function walkShopper({ type, look, mood, item, shelfIdx, say, bought, pay }) {
   // Wander to something fun on the way
   const spots = [];
   if (hasAcc('fountain')) spots.push({ x: 44, y: 90 });
-  if (hasAcc('vending')) spots.push({ x: 73, y: 63 });
+  if (hasAcc('vending')) spots.push({ x: 76, y: 63 });
   if (hasAcc('statue')) spots.push({ x: 60, y: 92 });
   const cafeIdx = ROOMS.findIndex(r => r.id === 'cafe');
   if (hasRoom('cafe')) spots.push({ x: roomX(cafeIdx) + 3.3, y: 41, say: '☕' });
@@ -1539,7 +1554,7 @@ function showLevelUp(levels) {
 function buyAccessory(id) {
   const a = ACCESSORIES.find(x => x.id === id);
   if (!a || hasAcc(id) || S.level < a.level || S.cash < a.cost) return;
-  S.cash = round2(S.cash - a.cost); S.acc[id] = true;
+  S.cash = round2(S.cash - a.cost); S.acc[id] = true; S.seen['acc:' + id] = true;
   toast(`${a.emoji} ${a.name} added to your shop!`);
   checkBadges(); save(); render();
 }
@@ -1547,7 +1562,7 @@ function buyAccessory(id) {
 async function buyRoom(id) {
   const r = ROOMS.find(x => x.id === id);
   if (!r || hasRoom(id) || S.level < r.level || S.cash < r.cost) return;
-  S.cash = round2(S.cash - r.cost); S.rooms[id] = true;
+  S.cash = round2(S.cash - r.cost); S.rooms[id] = true; S.seen['room:' + id] = true;
   if (id === 'security') S.rep = clamp(S.rep + 5, 0, 100);
   save(); render();
   await ask(Q.room(rollTier(), r.name));
@@ -1918,7 +1933,7 @@ async function hireStaff(id) {
   const s = STAFF.find(x => x.id === id);
   if (!s || hasStaff(id) || S.level < s.level) return;
   await ask(wageQuestion(rollTier(), s, staffRate(s)));
-  S.staff[id] = true;
+  S.staff[id] = true; S.seen['staff:' + id] = true;
   toast(`${s.emoji} ${s.name} hired!`);
   checkBadges(); save(); render();
 }
@@ -1965,19 +1980,55 @@ function showCustomise() {
    ============================================================ */
 let lastPhase = null;
 function render() {
-  renderTop(); renderStage(); renderPanel();
   const ph = S ? S.phase : (screen || 'slots');
-  if (ph !== lastPhase) { lastPhase = ph; window.scrollTo({ top: 0, behavior: 'auto' }); }
+  const changed = ph !== lastPhase;
+  if (changed) { lastPhase = ph; shopPeek = !!(S && S.day === 1 && ph === 'morning'); }
+  const wrap = document.querySelector('.wrap');
+  if (wrap) wrap.className = 'wrap ' + (S && S.phase === 'day' ? 'p-day' : 'p-peek');
+  renderTop(); renderStage(); renderPanel();
+  if (changed) window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
 function stepsHTML(cur) {
   const steps = [['morning', 'Stock up'], ['pricing', 'Prices'], ['day', 'Open'], ['evening', 'Close']];
   const ci = steps.findIndex(x => x[0] === cur);
-  return `<ol class="steps" aria-label="Today's steps">${steps.map(([k, label], i) => {
-    const can = (cur === 'morning' && k === 'pricing') || (cur === 'pricing' && k === 'morning');
-    const inner = `<span class="num">${i + 1}</span> ${label}`;
-    return `<li class="${i === ci ? 'on' : i < ci ? 'done' : ''}">${can ? `<button class="stepbtn" data-act="${k === 'pricing' ? 'toPricing' : 'toMorning'}">${inner}</button>` : inner}</li>`;
-  }).join('')}</ol>`;
+  return `<ol class="steps" aria-label="Today's steps">${steps.map(([k, label], i) => `<li class="${i === ci ? 'on' : i < ci ? 'done' : ''}"><span class="num">${i + 1}</span> ${label}</li>`).join('')}</ol>`;
+}
+
+/* ---------- What reputation does ---------- */
+function repTooltip() {
+  return `Reputation ${Math.round(S.rep)}/100: brings about ${Math.round(S.rep / CONFIG.repDivisor)} extra shoppers a day.${S.rep < 30 ? ' Below 30, about 20% of shoppers stay away.' : ''} Tap for details.`;
+}
+function repInfoHTML() {
+  const r = Math.round(S.rep), extra = Math.round(S.rep / CONFIG.repDivisor);
+  const zone = r < 30 ? '<span class="bad">Danger zone: about 20% of shoppers are staying away.</span>'
+    : r > 60 ? '<span>Famous shop: lots of shoppers, but they expect more, so good reviews are harder to get.</span>'
+    : '<span class="good">Steady: keep shoppers happy to climb higher.</span>';
+  return `<h3 style="margin-top:0">⭐ Reputation: ${r} out of 100</h3>
+    <div class="rep-meter" aria-hidden="true"><div class="rep-fill" style="width:${r}%"></div><span class="rep-mark" style="left:30%"></span><span class="rep-mark" style="left:60%"></span></div>
+    <div class="rep-scale" aria-hidden="true"><span>0</span><span style="left:30%">30</span><span style="left:60%">60</span><span style="left:100%">100</span></div>
+    <p>${zone}</p>
+    <p><strong>What it does:</strong> reputation is how much people like your shop. Right now it brings about <strong>${extra} extra shoppers a day</strong>. Every 10 points is about 2 more shoppers. Below 30, about 20% of shoppers stay away. Above 60, shoppers get fussier, so your daily reviews are tougher to win.</p>
+    <div class="rep-grid">
+      <div><strong class="good">▲ Goes up when…</strong><ul>
+        <li>Shoppers are happy and you get 4–5 star reviews</li>
+        <li>You own shop music, a fountain or a rooftop garden, or hire a greeter (+1 a day each)</li>
+        <li>Good news: a newspaper story, a radio or YouTube shout-out, or a returned wallet</li>
+        <li>You beat a boss (inspection +8, celebrity order +6, price battle +4)</li>
+      </ul></div>
+      <div><strong class="bad">▼ Goes down when…</strong><ul>
+        <li>Items sell out and shoppers leave empty-handed</li>
+        <li>Prices are too high and shoppers walk out</li>
+        <li>You get 1–2 star reviews, or a grumpy online review (−6)</li>
+        <li>You fail the health inspection (−6)</li>
+      </ul></div>
+    </div>
+    <p class="hint">Every day, reputation also drifts a little back towards 50, so you have to keep earning it.</p>`;
+}
+function showRepInfo() {
+  const box = openModal(`${repInfoHTML()}<div class="actions"><button class="btn" id="rClose">Got it</button></div>`, 'Reputation');
+  box.querySelector('#rClose').addEventListener('click', closeModal);
+  box.querySelector('#rClose').focus();
 }
 
 function showMenu() {
@@ -1990,9 +2041,56 @@ function showMenu() {
   box.querySelector('#mClose').focus();
 }
 
+const ACC_ART = {"plant": "<ellipse cx=\"60\" cy=\"113\" rx=\"30\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse>\n<path d=\"M60 72 C40 62 28 42 34 22 C48 30 58 48 60 72z\" fill=\"#2FA36B\"></path><path d=\"M60 72 C80 62 92 42 86 22 C72 30 62 48 60 72z\" fill=\"#1F7A5A\"></path>\n<path d=\"M60 74 C56 52 58 32 60 14 C64 32 66 52 60 74z\" fill=\"#43B97A\"></path><path d=\"M60 76 C44 72 26 68 18 56 C34 52 50 60 60 76z\" fill=\"#1F7A5A\"></path><path d=\"M60 76 C76 72 94 68 102 56 C86 52 70 60 60 76z\" fill=\"#2FA36B\"></path>\n<path d=\"M38 78 h44 l-6 34 h-32z\" fill=\"#C1663A\" style=\"stroke:#1D2B44;stroke-width:2\"></path><rect x=\"34\" y=\"72\" width=\"52\" height=\"10\" rx=\"3\" fill=\"#D9774A\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>", "lights": "<path d=\"M4 24 Q22 48 40 24 Q58 48 76 24 Q94 48 116 24\" style=\"stroke:#1D2B44;stroke-width:2\" fill=\"none\"></path>\n<circle cx=\"22\" cy=\"48\" r=\"14\" fill=\"#FFE14D\" opacity=\"0.35\"></circle><rect x=\"19\" y=\"33\" width=\"6\" height=\"6\" fill=\"#55667D\"></rect><ellipse cx=\"22\" cy=\"47\" rx=\"7\" ry=\"9\" fill=\"#FFD45C\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse>\n<circle cx=\"58\" cy=\"48\" r=\"14\" fill=\"#F7A1C4\" opacity=\"0.4\"></circle><rect x=\"55\" y=\"33\" width=\"6\" height=\"6\" fill=\"#55667D\"></rect><ellipse cx=\"58\" cy=\"47\" rx=\"7\" ry=\"9\" fill=\"#F06FAF\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse>\n<circle cx=\"94\" cy=\"48\" r=\"14\" fill=\"#9FD3F5\" opacity=\"0.45\"></circle><rect x=\"91\" y=\"33\" width=\"6\" height=\"6\" fill=\"#55667D\"></rect><ellipse cx=\"94\" cy=\"47\" rx=\"7\" ry=\"9\" fill=\"#62B6E8\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse>\n<circle cx=\"40\" cy=\"38\" r=\"12\" fill=\"#BDF0D2\" opacity=\"0.5\"></circle><ellipse cx=\"40\" cy=\"36\" rx=\"6\" ry=\"8\" fill=\"#43B97A\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><circle cx=\"76\" cy=\"38\" r=\"12\" fill=\"#FFD9A8\" opacity=\"0.5\"></circle><ellipse cx=\"76\" cy=\"36\" rx=\"6\" ry=\"8\" fill=\"#F28C28\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse>\n<rect x=\"10\" y=\"80\" width=\"100\" height=\"26\" rx=\"6\" fill=\"#FCE6B6\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><circle cx=\"30\" cy=\"93\" r=\"5\" fill=\"#FFD45C\"></circle><circle cx=\"50\" cy=\"93\" r=\"5\" fill=\"#F06FAF\"></circle><circle cx=\"70\" cy=\"93\" r=\"5\" fill=\"#62B6E8\"></circle><circle cx=\"90\" cy=\"93\" r=\"5\" fill=\"#43B97A\"></circle>", "shelves": "<ellipse cx=\"60\" cy=\"114\" rx=\"34\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse>\n<rect x=\"28\" y=\"6\" width=\"64\" height=\"106\" rx=\"6\" fill=\"#A8703F\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<rect x=\"30\" y=\"38\" width=\"60\" height=\"6\" fill=\"#7A4E2A\"></rect><rect x=\"30\" y=\"72\" width=\"60\" height=\"6\" fill=\"#7A4E2A\"></rect><rect x=\"30\" y=\"104\" width=\"60\" height=\"6\" fill=\"#7A4E2A\"></rect>\n<rect x=\"34\" y=\"18\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#3A86D4\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"52\" y=\"18\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#E08A1E\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"70\" y=\"18\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#1FA38D\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<rect x=\"34\" y=\"52\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#E25C9F\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"52\" y=\"52\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#3A86D4\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"70\" y=\"52\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#E08A1E\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<rect x=\"34\" y=\"84\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#1FA38D\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"52\" y=\"84\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#E25C9F\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"70\" y=\"84\" width=\"16\" height=\"20\" rx=\"3\" fill=\"#3A86D4\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<circle cx=\"98\" cy=\"18\" r=\"14\" fill=\"#1A7549\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><path d=\"M98 25 v-13 M92 17 l6 -6 l6 6\" stroke=\"#FFFFFF\" style=\"stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round\"></path>", "balloons": "<path d=\"M60 108 L42 50 M60 108 L64 40 M60 108 L84 56\" stroke=\"#55667D\" style=\"stroke-width:1.5;fill:none\"></path>\n<ellipse cx=\"42\" cy=\"36\" rx=\"16\" ry=\"20\" fill=\"#E0457B\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><ellipse cx=\"64\" cy=\"26\" rx=\"16\" ry=\"20\" fill=\"#3A86D4\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><ellipse cx=\"84\" cy=\"44\" rx=\"15\" ry=\"19\" fill=\"#FFD45C\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse>\n<ellipse cx=\"36\" cy=\"28\" rx=\"4\" ry=\"6\" fill=\"#FFFFFF\" opacity=\"0.5\"></ellipse><ellipse cx=\"58\" cy=\"18\" rx=\"4\" ry=\"6\" fill=\"#FFFFFF\" opacity=\"0.5\"></ellipse><ellipse cx=\"78\" cy=\"36\" rx=\"4\" ry=\"6\" fill=\"#FFFFFF\" opacity=\"0.6\"></ellipse>\n<rect x=\"52\" y=\"104\" width=\"16\" height=\"12\" rx=\"3\" fill=\"#33475E\"></rect>", "register2": "<rect x=\"8\" y=\"62\" width=\"104\" height=\"48\" rx=\"6\" fill=\"#F2F5F8\" style=\"stroke:#55667D;stroke-width:2\"></rect><rect x=\"8\" y=\"94\" width=\"104\" height=\"8\" fill=\"#1F7A5A\"></rect><rect x=\"8\" y=\"58\" width=\"104\" height=\"8\" rx=\"4\" fill=\"#33475E\"></rect>\n<rect x=\"56\" y=\"22\" width=\"40\" height=\"28\" rx=\"4\" fill=\"#1D2B44\"></rect><rect x=\"59\" y=\"25\" width=\"34\" height=\"22\" rx=\"2\" fill=\"#62B6E8\"></rect><rect x=\"73\" y=\"50\" width=\"6\" height=\"10\" fill=\"#55667D\"></rect>\n<circle cx=\"28\" cy=\"34\" r=\"15\" fill=\"#2563A6\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><path d=\"M22 28 q6 -6 11 0 q2 5 -11 15 h12\" stroke=\"#FFFFFF\" style=\"stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round\"></path>", "speaker": "<ellipse cx=\"54\" cy=\"113\" rx=\"26\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse>\n<rect x=\"28\" y=\"22\" width=\"52\" height=\"88\" rx=\"8\" fill=\"#33475E\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><circle cx=\"54\" cy=\"44\" r=\"10\" fill=\"#55667D\"></circle><circle cx=\"54\" cy=\"44\" r=\"4\" fill=\"#1D2B44\"></circle>\n<circle cx=\"54\" cy=\"80\" r=\"19\" fill=\"#55667D\"></circle><circle cx=\"54\" cy=\"80\" r=\"8\" fill=\"#1D2B44\"></circle>\n<path d=\"M90 16 v24\" stroke=\"#1D2B44\" style=\"stroke-width:3\"></path><ellipse cx=\"86\" cy=\"40\" rx=\"6\" ry=\"4.5\" fill=\"#1D2B44\"></ellipse><path d=\"M90 16 l12 -4 v6 l-12 4\" fill=\"#1D2B44\"></path>\n<path d=\"M104 48 v20\" stroke=\"#E0457B\" style=\"stroke-width:3\"></path><ellipse cx=\"100\" cy=\"68\" rx=\"5.5\" ry=\"4\" fill=\"#E0457B\"></ellipse>", "vending": "<ellipse cx=\"60\" cy=\"114\" rx=\"34\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse>\n<rect x=\"28\" y=\"6\" width=\"64\" height=\"108\" rx=\"6\" fill=\"#C2372D\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"34\" y=\"14\" width=\"38\" height=\"64\" rx=\"3\" fill=\"#DCEEF8\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<rect x=\"38\" y=\"20\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#3A86D4\"></rect><rect x=\"49\" y=\"20\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#FFD45C\"></rect><rect x=\"60\" y=\"20\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#43B97A\"></rect>\n<rect x=\"38\" y=\"40\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#E08A1E\"></rect><rect x=\"49\" y=\"40\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#E25C9F\"></rect><rect x=\"60\" y=\"40\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#3A86D4\"></rect>\n<rect x=\"38\" y=\"60\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#43B97A\"></rect><rect x=\"49\" y=\"60\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#E08A1E\"></rect><rect x=\"60\" y=\"60\" width=\"8\" height=\"12\" rx=\"2\" fill=\"#FFD45C\"></rect>\n<rect x=\"76\" y=\"16\" width=\"10\" height=\"30\" rx=\"2\" fill=\"#1D2B44\"></rect><circle cx=\"81\" cy=\"22\" r=\"1.8\" fill=\"#FFFFFF\"></circle><circle cx=\"81\" cy=\"29\" r=\"1.8\" fill=\"#FFFFFF\"></circle><circle cx=\"81\" cy=\"36\" r=\"1.8\" fill=\"#FFFFFF\"></circle>\n<rect x=\"36\" y=\"88\" width=\"36\" height=\"14\" rx=\"3\" fill=\"#1D2B44\"></rect><rect x=\"78\" y=\"58\" width=\"6\" height=\"12\" rx=\"2\" fill=\"#F4B82E\"></rect>", "mascot": "<ellipse cx=\"60\" cy=\"114\" rx=\"28\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse>\n<rect x=\"44\" y=\"92\" width=\"13\" height=\"20\" rx=\"6\" fill=\"#7A4E2A\"></rect><rect x=\"63\" y=\"92\" width=\"13\" height=\"20\" rx=\"6\" fill=\"#7A4E2A\"></rect>\n<path d=\"M88 74 L104 40\" stroke=\"#8A5A30\" style=\"stroke-width:12;stroke-linecap:round\"></path><circle cx=\"105\" cy=\"38\" r=\"7\" fill=\"#8A5A30\"></circle>\n<rect x=\"18\" y=\"66\" width=\"14\" height=\"30\" rx=\"7\" fill=\"#8A5A30\"></rect>\n<ellipse cx=\"60\" cy=\"80\" rx=\"30\" ry=\"26\" fill=\"#8A5A30\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><ellipse cx=\"60\" cy=\"84\" rx=\"16\" ry=\"15\" fill=\"#E8C391\"></ellipse>\n<circle cx=\"38\" cy=\"18\" r=\"10\" fill=\"#8A5A30\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><circle cx=\"82\" cy=\"18\" r=\"10\" fill=\"#8A5A30\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><circle cx=\"38\" cy=\"18\" r=\"5\" fill=\"#E8C391\"></circle><circle cx=\"82\" cy=\"18\" r=\"5\" fill=\"#E8C391\"></circle>\n<circle cx=\"60\" cy=\"38\" r=\"26\" fill=\"#8A5A30\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><ellipse cx=\"60\" cy=\"47\" rx=\"12\" ry=\"9\" fill=\"#E8C391\"></ellipse><ellipse cx=\"60\" cy=\"43\" rx=\"5\" ry=\"3.5\" fill=\"#1D2B44\"></ellipse>\n<circle cx=\"50\" cy=\"32\" r=\"3.5\" fill=\"#1D2B44\"></circle><circle cx=\"70\" cy=\"32\" r=\"3.5\" fill=\"#1D2B44\"></circle><path d=\"M55 51 q5 5 10 0\" stroke=\"#1D2B44\" style=\"stroke-width:2;fill:none;stroke-linecap:round\"></path>\n<path d=\"M50 66 h20 l-3 8 h-14z\" fill=\"#E0457B\" style=\"stroke:#1D2B44;stroke-width:2\"></path>", "neon": "<path d=\"M30 10 L36 34 M90 10 L84 34\" stroke=\"#55667D\" style=\"stroke-width:2\"></path>\n<rect x=\"8\" y=\"34\" width=\"104\" height=\"54\" rx=\"12\" fill=\"#101418\" style=\"stroke:#FF4FA3;stroke-width:3\"></rect>\n<rect x=\"14\" y=\"40\" width=\"92\" height=\"42\" rx=\"8\" fill=\"none\" style=\"stroke:#FF4FA3;stroke-width:1;opacity:0.5\"></rect>\n<text x=\"60\" y=\"72\" text-anchor=\"middle\" style=\"font-family:Fredoka,sans-serif;font-weight:700;font-size:28px;fill:#FFB3DA;stroke:#FF4FA3;stroke-width:1.5\">OPEN</text>\n<circle cx=\"24\" cy=\"100\" r=\"3\" fill=\"#FF4FA3\" opacity=\"0.6\"></circle><circle cx=\"96\" cy=\"100\" r=\"3\" fill=\"#FF4FA3\" opacity=\"0.6\"></circle>", "tv": "<rect x=\"10\" y=\"16\" width=\"100\" height=\"66\" rx=\"6\" fill=\"#1D2B44\"></rect><rect x=\"16\" y=\"22\" width=\"88\" height=\"54\" rx=\"2\" fill=\"#62B6E8\"></rect>\n<circle cx=\"40\" cy=\"49\" r=\"14\" fill=\"#FFD45C\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><path d=\"M34 49 l4 4 l8 -9\" stroke=\"#1D2B44\" style=\"stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round\"></path>\n<rect x=\"60\" y=\"36\" width=\"36\" height=\"8\" rx=\"2\" fill=\"#FFFFFF\"></rect><rect x=\"60\" y=\"50\" width=\"26\" height=\"6\" rx=\"2\" fill=\"#FFFFFF\" opacity=\"0.7\"></rect><rect x=\"60\" y=\"60\" width=\"22\" height=\"9\" rx=\"3\" fill=\"#E0457B\"></rect>\n<rect x=\"54\" y=\"82\" width=\"12\" height=\"16\" fill=\"#55667D\"></rect><rect x=\"38\" y=\"98\" width=\"44\" height=\"7\" rx=\"3\" fill=\"#33475E\"></rect>", "fountain": "<ellipse cx=\"60\" cy=\"104\" rx=\"50\" ry=\"12\" fill=\"#A9C7E0\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><ellipse cx=\"60\" cy=\"100\" rx=\"42\" ry=\"8\" fill=\"#62B6E8\"></ellipse>\n<rect x=\"54\" y=\"56\" width=\"12\" height=\"44\" fill=\"#DCE3EA\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><ellipse cx=\"60\" cy=\"56\" rx=\"24\" ry=\"7\" fill=\"#DCE3EA\" style=\"stroke:#1D2B44;stroke-width:2\"></ellipse><ellipse cx=\"60\" cy=\"54\" rx=\"18\" ry=\"4\" fill=\"#62B6E8\"></ellipse>\n<path d=\"M60 50 C60 22 40 22 34 52 M60 50 C60 22 80 22 86 52 M60 50 C60 30 52 26 46 56 M60 50 C60 30 68 26 74 56\" stroke=\"#4FA3E0\" style=\"stroke-width:3;fill:none;stroke-linecap:round\"></path>\n<circle cx=\"60\" cy=\"16\" r=\"4\" fill=\"#4FA3E0\"></circle><circle cx=\"30\" cy=\"70\" r=\"2.5\" fill=\"#4FA3E0\"></circle><circle cx=\"92\" cy=\"72\" r=\"2.5\" fill=\"#4FA3E0\"></circle>", "statue": "<ellipse cx=\"60\" cy=\"114\" rx=\"32\" ry=\"5\" fill=\"#1D2B44\" opacity=\"0.12\"></ellipse><rect x=\"32\" y=\"84\" width=\"56\" height=\"28\" rx=\"4\" fill=\"#DCE3EA\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"40\" y=\"94\" width=\"40\" height=\"6\" rx=\"2\" fill=\"#A9B8CA\"></rect>\n<path d=\"M50 84 L54 56 Q60 50 66 56 L70 84z\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></path><circle cx=\"60\" cy=\"40\" r=\"11\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></circle>\n<path d=\"M66 58 L82 30\" stroke=\"#E7B416\" style=\"stroke-width:7;stroke-linecap:round\"></path><path d=\"M84 12 l3.5 7 l7.5 1 l-5.5 5.5 l1.3 7.5 l-6.8 -3.6 l-6.8 3.6 l1.3 -7.5 l-5.5 -5.5 l7.5 -1z\" fill=\"#F4B82E\" style=\"stroke:#1D2B44;stroke-width:2\"></path>\n<path d=\"M55 36 q2 -4 6 -3\" stroke=\"#FFFFFF\" style=\"stroke-width:2;fill:none;opacity:0.7\"></path>", "carpet": "<path d=\"M44 26 h32 l28 86 h-88z\" fill=\"#C2372D\" style=\"stroke:#1D2B44;stroke-width:2\"></path><path d=\"M48 26 L22 112 M72 26 L98 112\" stroke=\"#F4B82E\" style=\"stroke-width:3\"></path>\n<rect x=\"8\" y=\"58\" width=\"7\" height=\"52\" rx=\"2\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><circle cx=\"11.5\" cy=\"56\" r=\"6\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></circle><rect x=\"105\" y=\"58\" width=\"7\" height=\"52\" rx=\"2\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><circle cx=\"108.5\" cy=\"56\" r=\"6\" fill=\"#E7B416\" style=\"stroke:#1D2B44;stroke-width:2\"></circle>\n<path d=\"M14 62 Q28 84 40 66\" stroke=\"#8E1F2C\" style=\"stroke-width:5;fill:none;stroke-linecap:round\"></path><path d=\"M106 62 Q92 84 80 66\" stroke=\"#8E1F2C\" style=\"stroke-width:5;fill:none;stroke-linecap:round\"></path>\n<path d=\"M60 8 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z\" fill=\"#F4B82E\"></path>", "goldtill": "<defs><linearGradient id=\"g2\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F6D365\"></stop><stop offset=\"1\" stop-color=\"#B8860B\"></stop></linearGradient></defs>\n<rect x=\"14\" y=\"56\" width=\"92\" height=\"50\" rx=\"7\" fill=\"url(#g2)\" style=\"stroke:#1D2B44;stroke-width:2\"></rect><rect x=\"22\" y=\"64\" width=\"40\" height=\"14\" rx=\"2\" fill=\"#1D2B44\"></rect><rect x=\"25\" y=\"67\" width=\"26\" height=\"8\" rx=\"1\" fill=\"#F4B82E\"></rect>\n<rect x=\"70\" y=\"64\" width=\"9\" height=\"7\" rx=\"1\" fill=\"#FFF6D5\"></rect><rect x=\"83\" y=\"64\" width=\"9\" height=\"7\" rx=\"1\" fill=\"#FFF6D5\"></rect><rect x=\"70\" y=\"75\" width=\"9\" height=\"7\" rx=\"1\" fill=\"#FFF6D5\"></rect><rect x=\"83\" y=\"75\" width=\"9\" height=\"7\" rx=\"1\" fill=\"#FFF6D5\"></rect>\n<rect x=\"10\" y=\"98\" width=\"100\" height=\"12\" rx=\"3\" fill=\"#C9A23F\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n<path d=\"M34 56 l8 -24 l12 14 l6 -20 l6 20 l12 -14 l8 24z\" fill=\"#F4B82E\" style=\"stroke:#1D2B44;stroke-width:2\"></path><circle cx=\"42\" cy=\"30\" r=\"3.5\" fill=\"#E0457B\"></circle><circle cx=\"60\" cy=\"24\" r=\"3.5\" fill=\"#3A86D4\"></circle><circle cx=\"78\" cy=\"30\" r=\"3.5\" fill=\"#2FA36B\"></circle>\n<path d=\"M104 24 l2.5 6 l6 2.5 l-6 2.5 l-2.5 6 l-2.5 -6 l-6 -2.5 l6 -2.5z\" fill=\"#F4B82E\"></path>"};
+const REG_ART = {"classic": "<svg viewBox=\"0 0 220 120\" aria-hidden=\"true\">\n<rect x=\"2\" y=\"50\" width=\"216\" height=\"66\" rx=\"8\" fill=\"#A8703F\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"2\" y=\"44\" width=\"216\" height=\"12\" rx=\"4\" fill=\"#C8915A\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"20\" y=\"66\" width=\"80\" height=\"36\" rx=\"5\" fill=\"#8A5A30\"></rect>\n<rect x=\"116\" y=\"12\" width=\"74\" height=\"34\" rx=\"6\" fill=\"#55667D\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"124\" y=\"18\" width=\"32\" height=\"13\" rx=\"2\" fill=\"#9FE0B7\"></rect>\n<rect x=\"162\" y=\"18\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#DCE3EA\"></rect><rect x=\"172\" y=\"18\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#DCE3EA\"></rect><rect x=\"162\" y=\"26\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#DCE3EA\"></rect><rect x=\"172\" y=\"26\" width=\"7\" height=\"5\" rx=\"1\" fill=\"#F4B82E\"></rect>\n<rect x=\"112\" y=\"40\" width=\"82\" height=\"8\" rx=\"2\" fill=\"#33475E\"></rect>\n<path d=\"M140 12 v-8 h10 v8\" fill=\"#FFFFFF\" style=\"stroke:#1D2B44;stroke-width:1.5\"></path>\n<rect x=\"40\" y=\"26\" width=\"30\" height=\"20\" rx=\"3\" fill=\"#E9B949\" style=\"stroke:#1D2B44;stroke-width:2\"></rect>\n</svg>", "modern": "<svg viewBox=\"0 0 220 120\" aria-hidden=\"true\">\n<rect x=\"2\" y=\"50\" width=\"216\" height=\"66\" rx=\"12\" fill=\"#F2F5F8\" style=\"stroke:#55667D;stroke-width:2.5\"></rect>\n<rect x=\"2\" y=\"92\" width=\"216\" height=\"12\" fill=\"#1F7A5A\"></rect>\n<rect x=\"2\" y=\"44\" width=\"216\" height=\"10\" rx=\"5\" fill=\"#33475E\"></rect>\n<rect x=\"10\" y=\"46\" width=\"90\" height=\"6\" rx=\"3\" fill=\"#55667D\"></rect>\n<rect x=\"150\" y=\"34\" width=\"6\" height=\"14\" fill=\"#55667D\"></rect>\n<rect x=\"128\" y=\"4\" width=\"50\" height=\"34\" rx=\"5\" fill=\"#1D2B44\"></rect>\n<rect x=\"132\" y=\"8\" width=\"42\" height=\"26\" rx=\"2\" fill=\"#62B6E8\"></rect>\n<rect x=\"136\" y=\"12\" width=\"20\" height=\"4\" rx=\"1\" fill=\"#FFFFFF\"></rect><rect x=\"136\" y=\"20\" width=\"30\" height=\"3\" rx=\"1\" fill=\"#FFFFFF\" opacity=\"0.7\"></rect><rect x=\"136\" y=\"26\" width=\"14\" height=\"5\" rx=\"1\" fill=\"#2FA36B\"></rect>\n<rect x=\"188\" y=\"26\" width=\"18\" height=\"22\" rx=\"4\" fill=\"#33475E\"></rect><rect x=\"191\" y=\"30\" width=\"12\" height=\"7\" rx=\"1\" fill=\"#A9C7E0\"></rect><circle cx=\"197\" cy=\"42\" r=\"2.5\" fill=\"#4FC78E\"></circle>\n<rect x=\"30\" y=\"34\" width=\"24\" height=\"12\" rx=\"3\" fill=\"#E08A1E\" style=\"stroke:#1D2B44;stroke-width:1.5\"></rect><rect x=\"60\" y=\"30\" width=\"16\" height=\"16\" rx=\"3\" fill=\"#3A86D4\" style=\"stroke:#1D2B44;stroke-width:1.5\"></rect>\n</svg>", "gold": "<svg viewBox=\"0 0 220 120\" aria-hidden=\"true\">\n<defs><linearGradient id=\"tycGoldReg\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#F6D365\"></stop><stop offset=\"1\" stop-color=\"#B8860B\"></stop></linearGradient></defs>\n<rect x=\"2\" y=\"50\" width=\"216\" height=\"66\" rx=\"8\" fill=\"url(#tycGoldReg)\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"2\" y=\"44\" width=\"216\" height=\"12\" rx=\"4\" fill=\"#F6D365\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"20\" y=\"66\" width=\"80\" height=\"36\" rx=\"5\" fill=\"#C9A23F\" style=\"stroke:#8A6410;stroke-width:2\"></rect>\n<rect x=\"116\" y=\"18\" width=\"74\" height=\"28\" rx=\"6\" fill=\"url(#tycGoldReg)\" style=\"stroke:#1D2B44;stroke-width:2.5\"></rect>\n<rect x=\"124\" y=\"23\" width=\"32\" height=\"12\" rx=\"2\" fill=\"#1D2B44\"></rect><rect x=\"127\" y=\"26\" width=\"20\" height=\"5\" rx=\"1\" fill=\"#F4B82E\"></rect>\n<path d=\"M132 18 l6 -14 l9 9 l6 -11 l6 11 l9 -9 l6 14z\" fill=\"#F4B82E\" style=\"stroke:#1D2B44;stroke-width:2\"></path>\n<circle cx=\"138\" cy=\"4\" r=\"3\" fill=\"#E0457B\"></circle><circle cx=\"153\" cy=\"2\" r=\"3\" fill=\"#3A86D4\"></circle><circle cx=\"168\" cy=\"4\" r=\"3\" fill=\"#2FA36B\"></circle>\n<path d=\"M24 18 l2.5 6 l6 2.5 l-6 2.5 l-2.5 6 l-2.5 -6 l-6 -2.5 l6 -2.5z\" fill=\"#F4B82E\"></path><path d=\"M206 60 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z\" fill=\"#FFFFFF\"></path>\n</svg>"};
+
+const accSVG = id => `<svg viewBox="0 0 120 120" aria-hidden="true" focusable="false">${ACC_ART[id] || ''}</svg>`;
+const shelfStyle = () => S.level >= CONFIG.glassLevel ? 'glass' : hasAcc('shelves') ? 'metal' : 'wood';
+const SHELF_PAL = ['#3A86D4', '#E08A1E', '#1FA38D', '#E25C9F', '#7B5BD6', '#C2372D'];
+function shelfSVG(style, idx, filled) {
+  const ink = INK_C, col = SHELF_PAL[idx % SHELF_PAL.length], ball = idx % 2 === 1;
+  let f = '';
+  if (style === 'wood') f = `<rect x="8" y="10" width="84" height="90" rx="3" fill="#A8703F" stroke="${ink}" stroke-width="2.5"/><rect x="3" y="2" width="94" height="13" rx="4" fill="#8A5A30" stroke="${ink}" stroke-width="2.5"/><rect x="9" y="56" width="82" height="6" fill="#7A4E2A"/><rect x="9" y="94" width="82" height="6" fill="#7A4E2A"/>`;
+  else if (style === 'metal') f = `<rect x="11" y="10" width="78" height="90" fill="#DCE3EA" stroke="#55667D" stroke-width="2"/><rect x="6" y="6" width="8" height="96" rx="3" fill="#8C99A6"/><rect x="86" y="6" width="8" height="96" rx="3" fill="#8C99A6"/><rect x="12" y="56" width="76" height="5" fill="#8C99A6"/><rect x="12" y="61" width="76" height="4" fill="#fff"/><rect x="12" y="94" width="76" height="5" fill="#8C99A6"/><rect x="12" y="99" width="76" height="3" fill="#fff"/>`;
+  else f = `<rect x="6" y="8" width="88" height="92" rx="9" fill="rgba(169,211,234,0.35)" stroke="#6FA8CC" stroke-width="4"/><rect x="14" y="12" width="72" height="5" rx="2.5" fill="#FFF3B0"/><rect x="10" y="56" width="80" height="4" rx="2" fill="#BFE3F2"/><rect x="10" y="94" width="80" height="4" rx="2" fill="#BFE3F2"/><rect x="2" y="98" width="96" height="9" rx="3" fill="#8A5A30" stroke="${ink}" stroke-width="2"/>`;
+  let it = '';
+  for (let i = 0; i < filled; i++) {
+    const row = i < 4 ? 94 : 56, c = i % 4, x = 12 + c * 20;
+    it += ball ? `<circle cx="${x + 8}" cy="${row - 8}" r="8" fill="${col}" stroke="${ink}" stroke-width="1.8"/><circle cx="${x + 5.5}" cy="${row - 11}" r="2" fill="#fff" opacity=".55"/>`
+               : `<rect x="${x}" y="${row - 18}" width="16" height="18" rx="3" fill="${col}" stroke="${ink}" stroke-width="1.8"/><rect x="${x}" y="${row - 11}" width="16" height="3" fill="#fff" opacity=".5"/>`;
+  }
+  const gloss = style === 'glass' ? `<path d="M70 18 L82 18 L58 96 L46 96z" fill="#fff" opacity=".18"/>` : '';
+  return `<svg viewBox="0 0 100 108" aria-hidden="true" focusable="false">${f}<g class="sh-items">${it}</g>${gloss}</svg>`;
+}
+const markSeenAll = () => {
+  ACCESSORIES.forEach(a => { if (S.level >= a.level) S.seen['acc:' + a.id] = true; });
+  ROOMS.forEach(r => { if (S.level >= r.level) S.seen['room:' + r.id] = true; });
+  STAFF.forEach(x => { if (S.level >= x.level) S.seen['staff:' + x.id] = true; });
+};
+function newUpgrades() {
+  const out = [];
+  ACCESSORIES.forEach(a => { if (S.level >= a.level && !hasAcc(a.id) && !S.seen['acc:' + a.id]) out.push({ kind: 'acc', id: a.id, name: a.name, emoji: a.emoji }); });
+  ROOMS.forEach(r => { if (S.level >= r.level && !hasRoom(r.id) && !S.seen['room:' + r.id]) out.push({ kind: 'room', id: r.id, name: r.name, emoji: r.emoji }); });
+  STAFF.forEach(x => { if (S.level >= x.level && !hasStaff(x.id) && !S.seen['staff:' + x.id]) out.push({ kind: 'staff', id: x.id, name: x.name, emoji: x.emoji }); });
+  return out;
+}
+function eveningTodo() {
+  const t = S.today, c = t.checks || (t.checks = {}), todo = [];
+  todo.push({ id: 'bonus', label: 'Bonus question', done: !!t.bonusAsked || !!c.bonus, anchor: 'ev-bonus' });
+  if (S.forecast) todo.push({ id: 'forecast', label: "Tomorrow's forecast and insurance", done: !!c.forecast, anchor: 'ev-forecast' });
+  const nu = newUpgrades();
+  if (nu.length) todo.push({ id: 'upgrades', label: `New upgrades to look at (${nu.map(x => x.emoji).join(' ')})`, done: !!c.upgrades, anchor: 'ev-upgrades' });
+  return todo;
+}
+let shopPeek = false;
+function toggleHTML() {
+  if (!S || S.phase === 'day') return '';
+  return `<button class="btn secondary" data-act="toggleshop" aria-expanded="${shopPeek}">${shopPeek ? 'Hide shop' : '🏪 Show shop'}</button>`;
+}
+
 function renderTop() {
-  const el = $('#top');
-  if (!S) { el.innerHTML = ''; return; }
+  const bar = $('#topbar'), el = $('#top');
+  if (!S) { bar.innerHTML = ''; el.innerHTML = ''; return; }
   const filled = Math.round(S.rep / 20);
   const stars = '★'.repeat(filled) + '☆'.repeat(5 - filled);
   const next = CONFIG.levels[S.level], prev = CONFIG.levels[S.level - 1];
@@ -2002,30 +2100,26 @@ function renderTop() {
     pct = clamp((tp - prev.profit) / (next.profit - prev.profit) * 100, 0, 100);
     prog = `Level ${S.level + 1}: earn ${money(next.profit)} total profit${next.points ? ` and ${next.points} maths points` : ''}. So far: ${money(tp)}${next.points ? ` and ${S.mathPoints || 0} points` : ''}.`;
   }
-  el.innerHTML = `
+  bar.innerHTML = `
+    <span class="chip cash">Cash ${money(S.cash)}</span>
     <span class="chip">Day ${S.day}</span>
     <span class="chip">Level ${S.level}</span>
-    <span class="chip cash">Cash ${money(S.cash)}</span>
-    <span class="chip" title="Reputation ${Math.round(S.rep)} out of 100">Reputation ${Math.round(S.rep)} ${stars}${S.repTrend > 0 ? ' <span class="good">▲</span>' : S.repTrend < 0 ? ' <span class="bad">▼</span>' : ''}</span>
+    <button class="chip chipbtn" data-act="repinfo" title="${repTooltip()}" aria-label="Reputation ${Math.round(S.rep)} out of 100. Tap to learn what it does.">Reputation ${Math.round(S.rep)} ${stars}${S.repTrend > 0 ? ' <span class="good">▲</span>' : S.repTrend < 0 ? ' <span class="bad">▼</span>' : ''} <span class="info-i" aria-hidden="true">i</span></button>
+    <span class="chip" title="Maths points">🎓 ${S.mathPoints || 0} pts</span>
+    <span class="spacer"></span>
+    <button class="btn small secondary menu-btn" data-act="menu" aria-label="Menu">☰ Menu</button>`;
+  el.innerHTML = `
     <span class="chip" title="Calculator uses left today">🧮 ${S.calcTokens} left</span>
     ${S.loan > 0 ? `<span class="chip debt">Loan owed ${money(S.loan)}</span>` : ''}
-    <span class="spacer"></span>
-    <span class="chip" title="Maths points">🎓 ${S.mathPoints || 0} pts</span>
-    <span class="topnav">
-      <button class="btn small secondary" data-act="slots" ${S.phase === 'day' ? 'disabled title="Available when the shop closes"' : ''}>My shops</button>
-      <button class="btn small secondary" data-act="customise" ${S.phase === 'day' ? 'disabled' : ''}>Customise</button>
-      <button class="linkbtn" data-act="guide">Shopper guide</button>
-      <button class="linkbtn" data-act="badges">Badges (${S.badges.length})</button>
-      <button class="linkbtn" data-act="parent">Parent view</button>
-    </span>
-    <button class="btn small secondary menu-btn" data-act="menu" aria-label="Menu">☰ Menu</button>
     <div class="progress">${prog}<div class="lvlbar" aria-hidden="true"><div style="width:${pct}%"></div></div></div>`;
 }
 
 function renderStage() {
-  const st = $('#stage');
-  if (!S) { st.hidden = true; $('#panel').classList.add('alone'); return; }
-  st.hidden = false; $('#panel').classList.remove('alone');
+  const st = $('#stage'), tg = $('#shopToggle');
+  if (!S) { st.hidden = true; if (tg) tg.hidden = true; $('#panel').classList.add('alone'); return; }
+  $('#panel').classList.remove('alone');
+  st.hidden = !(S.phase === 'day' || shopPeek);
+  if (tg) { tg.hidden = S.phase === 'day'; tg.innerHTML = toggleHTML(); }
   const cu = S.custom || {};
   st.style.setProperty('--awn', cu.awning || theme().color);
   if (cu.wall) st.style.setProperty('--wall', cu.wall); else st.style.removeProperty('--wall');
@@ -2034,23 +2128,24 @@ function renderStage() {
   // Rooms on the back wall
   ROOMS.forEach((r, i) => { if (hasRoom(r.id)) h += `<div class="room" style="left:${roomX(i)}%" title="${r.name}"><span aria-hidden="true">${r.emoji}</span><small>${r.name}</small></div>`; });
   // Wall accessories
-  if (hasAcc('lights')) for (let x = 6; x < 100; x += 11) h += `<div class="obj sm" style="left:${x}%;top:17%">💡</div>`;
-  if (hasAcc('tv')) h += `<div class="obj" style="left:66%;top:33%">📺</div>`;
+  const art = (id, left, top, k, extra) => `<div class="obj art ${extra && extra.cls || ''}" style="left:${left}%;top:${top}%;--k:${k};${extra && extra.z ? 'z-index:' + extra.z + ';' : ''}" aria-hidden="true">${accSVG(id)}</div>`;
+  if (hasAcc('lights')) { const cols = ['#FFD45C', '#F06FAF', '#62B6E8', '#43B97A', '#F28C28']; h += `<div class="garland" aria-hidden="true">${Array.from({ length: 10 }, (_, i) => `<div class="gseg"><i style="background:${cols[i % 5]};color:${cols[i % 5]}"></i></div>`).join('')}</div>`; }
+  if (hasAcc('tv')) h += art('tv', 66, 35.5, 2.3);
   if (hasAcc('neon')) h += `<div class="neon" style="left:79%;top:31%">OPEN</div>`;
-  if (hasAcc('speaker')) h += `<div class="obj sm" style="left:92%;top:30%">🔊</div>`;
+  if (hasAcc('speaker')) h += art('speaker', 92, 35.5, 1.5);
   // Floor accessories
   if (hasAcc('carpet')) h += `<div class="carpet"></div>`;
-  if (hasAcc('plant')) h += `<div class="obj" style="left:5%;top:56%">🪴</div><div class="obj" style="left:95%;top:56%">🪴</div>`;
-  if (hasAcc('balloons')) h += `<div class="obj" style="left:9%;top:52%">🎈</div><div class="obj sm" style="left:12%;top:47%">🎈</div>`;
-  if (hasAcc('vending')) h += `<div class="vending" style="left:70.5%;top:40%" aria-hidden="true">🥤</div>`;
-  if (hasAcc('mascot')) h += `<div class="obj mascot" style="left:11%;top:80%;z-index:85">🐻</div>`;
-  if (hasAcc('fountain')) h += `<div class="obj" style="left:44%;top:94%;z-index:50">⛲</div>`;
-  if (hasAcc('statue')) h += `<div class="obj" style="left:60%;top:96%;z-index:50">🗿</div>`;
+  if (hasAcc('plant')) h += art('plant', 4.5, 58, 1.7) + art('plant', 96, 58, 1.7);
+  if (hasAcc('balloons')) h += art('balloons', 10, 56, 1.9);
+  if (hasAcc('vending')) h += art('vending', 78.5, 56, 2.2);
+  if (hasAcc('mascot')) h += art('mascot', 11, 82, 2.1, { cls: 'mascot', z: 85 });
+  if (hasAcc('fountain')) h += art('fountain', 44, 95, 3.0, { z: 50 });
+  if (hasAcc('statue')) h += art('statue', 60, 96, 2.2, { z: 50 });
   // Registers and shopkeepers
   const regs = hasAcc('register2') ? 2 : 1;
   for (let k = 0; k < regs; k++) {
-    { const isC = k === 1 && hasStaff('cashier'), lk = isC ? STAFF_LOOK.cashier : keeperLook(); h += `<div class="keeper person" ${staffInfoAttr(isC ? 'cashier' : 'keeper', lk)} style="left:${REG[k].x + 3}%;top:${REG[k].y + 1}%">${personSVG(lk)}</div>`; }
-    h += `<div class="counter" style="left:${REG[k].x - 4}%;top:${REG[k].y}%" aria-label="Register">${hasAcc('goldtill') ? '👑' : '🧾'}</div>`;
+    { const isC = k === 1 && hasStaff('cashier'), lk = isC ? STAFF_LOOK.cashier : keeperLook(); h += `<div class="keeper person" ${staffInfoAttr(isC ? 'cashier' : 'keeper', lk)} style="left:${REG[k].x - 0.5}%;top:${REG[k].y + 1}%">${personSVG(lk)}</div>`; }
+    h += `<div class="counter" style="left:${REG[k].x - 4}%;top:${REG[k].y}%" aria-label="${k === 0 && hasAcc('goldtill') ? 'Golden register' : k === 1 ? 'Modern checkout' : 'Register'}">${REG_ART[k === 1 ? 'modern' : (hasAcc('goldtill') ? 'gold' : 'classic')]}</div>`;
   }
   if (hasStaff('cashier') && !hasAcc('register2')) h += `<div class="keeper person" ${staffInfoAttr('cashier', STAFF_LOOK.cashier)} style="left:${REG[0].x - 7}%;top:${REG[0].y + 12}%;z-index:60">${personSVG(STAFF_LOOK.cashier)}</div>`;
   if (hasStaff('clerk')) h += `<div class="obj patrol person" ${staffInfoAttr('clerk', STAFF_LOOK.clerk)} style="top:76%;z-index:70">${personSVG(STAFF_LOOK.clerk)}</div>`;
@@ -2064,13 +2159,14 @@ function renderStage() {
 
 function renderShelves() {
   const box = $('#shelves'); if (!box || !S) return;
-  const items = unlocked(), n = Math.max(items.length, 3), w = 50 / n * 0.78, max = shelfMax();
+  const items = unlocked(), n = Math.max(items.length, 3), w = Math.min(10.5, 52 / n * 0.86), max = shelfMax(), style = shelfStyle(), t = S.today;
   box.innerHTML = items.map((d, i) => {
-    const st = S.items[d.id].stock, icons = st ? Math.max(1, Math.ceil(st / max * 6)) : 0;
-    const top = Math.min(3, icons), bottom = Math.max(0, icons - 3);
-    return `<div class="shelf-unit ${hasAcc('shelves') ? 'big' : ''} ${st ? '' : 'empty'}" style="left:${shelfX(i) - w / 2}%;width:${w}%" title="${esc(d.name)}: ${st} on the shelf">
-      <div class="shelf-row">${d.emoji.repeat(top)}</div><div class="shelf-row">${d.emoji.repeat(bottom)}</div>
-      <span class="shelf-tag">${st}</span></div>`;
+    const st = S.items[d.id].stock, filled = st ? clamp(Math.ceil(st / max * 8), 1, 8) : 0;
+    const sale = t && t.sales && t.sales[d.id] != null, low = st > 0 && st / max < 0.2, price = (t && t.sales && t.sales[d.id] != null) ? t.sales[d.id] : S.items[d.id].price;
+    return `<div class="shelf-unit ${st ? '' : 'empty'}" style="left:${shelfX(i) - w / 2}%;width:${w}%" title="${esc(d.name)}: ${st} on the shelf">
+      ${shelfSVG(style, i, filled)}
+      ${st === 0 ? '<span class="shelf-flag out">SOLD OUT</span>' : low ? '<span class="shelf-flag low">Low!</span>' : ''}${sale && st ? '<span class="shelf-flag sale">SALE</span>' : ''}
+      <span class="shelf-tag">${d.emoji} ${st} · ${money(price).replace('.00', '')}</span></div>`;
   }).join('');
 }
 
@@ -2099,7 +2195,7 @@ function slotsHTML() {
     }
   }
   return `<div class="start-hero"><h1>Shop Tycoon</h1><p>Run your own shops. Buy stock, set prices, decorate, add rooms and climb 12 levels. Solve maths challenges for bonus cash.</p></div>
-    <h2>My shops</h2><p class="hint">You can run up to ${CONFIG.slots} different shops. Each one saves on its own.</p>
+    <h2>My shops</h2><p class="hint">You can run up to ${CONFIG.slots} different shops. Each one saves on its own. <span class="ver">Game version ${GAME_VERSION}</span></p>
     <div class="slots">${cards}</div>`;
 }
 
@@ -2266,16 +2362,20 @@ function eveningHTML() {
     <div class="r-note">Reputation: ${Math.round(t.repStart != null ? t.repStart : S.rep)} → ${Math.round(S.rep)}. The higher your reputation, the fussier shoppers get, and it slowly fades unless they stay happy.</div>` : ''}
   </div>`;
 
-  const bonus = t.bonusAsked ? '<p class="hint">Bonus question done for today.</p>'
-    : `<div class="box"><h3>Bonus question</h3><p>Choose how hard. Harder questions pay more and earn more maths points.</p><div class="actions">${bonusButtons()}</div></div>`;
+  const bonus = `<div id="ev-bonus">${t.bonusAsked ? '<p class="good">✔ Bonus question done for today.</p>'
+    : (t.checks && t.checks.bonus) ? '<p>✔ No bonus question today.</p>'
+    : `<div class="box"><h3>Bonus question</h3><p>Choose how hard. Harder questions pay more and earn more maths points.</p><div class="actions">${bonusButtons()}<button class="btn ghost" data-act="skipbonus">Not today</button></div></div>`}</div>`;
 
   let forecast = '';
   if (S.forecast) {
     const f = S.forecast, E = EVENTS[f.event];
     const shield = E.loss === 'thief' && hasRoom('security') ? ' Your security office will stop them anyway.' : '';
-    forecast = `<div class="box"><h3>Tomorrow's forecast ${E.emoji}</h3><p>There is a <strong>${f.chance} in 10</strong> chance of ${E.fore}.${shield}</p>
+    const fc = t.checks && t.checks.forecast;
+    forecast = `<div class="box" id="ev-forecast"><h3>Tomorrow's forecast ${E.emoji}${fc ? ' ✔' : ''}</h3><p>There is a <strong>${f.chance} in 10</strong> chance of ${E.fore}.${shield}</p>
       <p class="hint">Insurance costs ${money(insCost())}. ${E.loss ? 'It stops any stock on the shelves from being lost.' : `If it happens, insurance pays you ${money(CONFIG.insurancePayout)}.`}${E.loss && hasRoom('storage') ? ' Stock in storage is always safe.' : ''}</p>
-      ${S.insured ? `<p class="good">You're insured for tomorrow.</p><button class="btn small secondary" data-act="insure">Cancel insurance</button>` : `<button class="btn small secondary" data-act="insure">Buy insurance for ${money(insCost())}</button>`}</div>`;
+      ${!fc ? `<p><strong>Decide before you finish:</strong></p><div class="actions"><button class="btn small" data-act="insure">Buy insurance for ${money(insCost())}</button><button class="btn small secondary" data-act="noinsure">No insurance</button></div>`
+        : S.insured ? `<p class="good">You're insured for tomorrow.</p><button class="btn small secondary" data-act="noinsure">Cancel insurance</button>`
+        : `<p>You chose no insurance.</p><button class="btn small secondary" data-act="insure">Buy insurance for ${money(insCost())}</button>`}</div>`;
   }
 
   const loanPay = S.loan > 0 ? `<div class="box"><p>You owe the bank ${money(S.loan)}.</p><button class="btn small secondary" data-act="payloan" ${S.cash >= S.loan ? '' : 'disabled'}>Pay it all back now</button></div>` : '';
@@ -2283,8 +2383,8 @@ function eveningHTML() {
   const list = shopTab === 'acc' ? ACCESSORIES : ROOMS;
   const owns = shopTab === 'acc' ? hasAcc : hasRoom;
   const cards = shopTab === 'staff' ? staffCardsHTML() : list.map(x => {
-    const owned = owns(x.id), locked = S.level < x.level;
-    return `<div class="card ${owned ? 'owned' : ''} ${locked ? 'locked' : ''}"><strong><span class="em" aria-hidden="true">${x.emoji}</span> ${x.name}</strong><p class="hint">${x.desc}</p>
+    const owned = owns(x.id), locked = S.level < x.level, isNew = !owned && !locked && !S.seen[(shopTab === 'acc' ? 'acc:' : 'room:') + x.id];
+    return `<div class="card ${owned ? 'owned' : ''} ${locked ? 'locked' : ''}">${shopTab === 'acc' ? `<span class="art-ico">${accSVG(x.id)}</span>` : ''}<strong>${shopTab === 'acc' ? '' : `<span class="em" aria-hidden="true">${x.emoji}</span> `}${x.name}${isNew ? '<span class="newpill">NEW</span>' : ''}</strong><p class="hint">${x.desc}</p>
       ${owned ? '<span class="good">In your shop</span>' : locked ? `<span class="hint">Unlocks at level ${x.level}</span>`
         : `<button class="btn small" data-act="${shopTab === 'acc' ? 'buyacc' : 'buyroom'}" data-id="${x.id}" ${S.cash >= x.cost ? '' : 'disabled'}>Buy for ${money(x.cost)}</button>`}</div>`;
   }).join('');
@@ -2300,14 +2400,20 @@ function eveningHTML() {
       </div>
     </div>
     ${bonus}${comingUpHTML()}${forecast}${loanPay}
-    <h2 style="margin-top:20px">Shop upgrades</h2>
+    <h2 style="margin-top:20px" id="ev-upgrades">Shop upgrades</h2>
     <div class="tabs" role="group" aria-label="Upgrade type">
-      <button class="btn small secondary" data-act="tab" data-v="acc" aria-pressed="${shopTab === 'acc'}">Accessories</button>
-      <button class="btn small secondary" data-act="tab" data-v="room" aria-pressed="${shopTab === 'room'}">Rooms</button>
-      <button class="btn small secondary" data-act="tab" data-v="staff" aria-pressed="${shopTab === 'staff'}">Staff</button>
+      <button class="btn small secondary" data-act="tab" data-v="acc" aria-pressed="${shopTab === 'acc'}">Accessories${newUpgrades().some(x => x.kind === 'acc') ? '<span class="tabdot" aria-label="new"></span>' : ''}</button>
+      <button class="btn small secondary" data-act="tab" data-v="room" aria-pressed="${shopTab === 'room'}">Rooms${newUpgrades().some(x => x.kind === 'room') ? '<span class="tabdot" aria-label="new"></span>' : ''}</button>
+      <button class="btn small secondary" data-act="tab" data-v="staff" aria-pressed="${shopTab === 'staff'}">Staff${newUpgrades().some(x => x.kind === 'staff') ? '<span class="tabdot" aria-label="new"></span>' : ''}</button>
     </div>
     <div class="cards">${cards}</div>
-    <div class="actions primary"><button class="btn" data-act="next">Start day ${S.day + 1}</button></div>`;
+    ${checklistHTML()}`;
+}
+
+function checklistHTML() {
+  const todo = eveningTodo(), left = todo.filter(x => !x.done);
+  return `<div class="box checklist" id="ev-checklist"><h3>Before you finish the day</h3><ul>${todo.map(x => `<li class="${x.done ? 'done' : ''}"><button class="linkbtn" data-act="goto" data-to="${x.anchor}">${x.done ? '✔' : '☐'} ${x.label}</button>${x.id === 'upgrades' && !x.done ? '<button class="btn small" data-act="seeup">I\'ve looked</button>' : ''}</li>`).join('')}</ul></div>
+    <div class="actions primary">${left.length ? `<span class="hint">Finish the checklist first (${left.length} left)</span>` : ''}<button class="btn" data-act="next" ${left.length ? 'disabled' : ''}>Start day ${S.day + 1}</button></div>`;
 }
 
 function comingUpHTML() {
@@ -2322,7 +2428,8 @@ function staffCardsHTML() {
   const total = wagesToday();
   return `<p class="hint" style="grid-column:1/-1">Staff work ${CONFIG.staffHours} hours a day. Wages are paid every evening${total ? `: currently ${money(total)} a day` : ''}. Pay rates rise a little as your shop levels up.</p>` + STAFF.map(s => {
     const hired = hasStaff(s.id), locked = S.level < s.level;
-    return `<div class="card ${hired ? 'owned' : ''} ${locked ? 'locked' : ''}"><strong><span class="em" aria-hidden="true">${s.emoji}</span> ${s.name}</strong><p class="hint">${s.desc}</p>
+    const isNew = !hired && !locked && !S.seen['staff:' + s.id];
+    return `<div class="card ${hired ? 'owned' : ''} ${locked ? 'locked' : ''}"><span class="art-ico">${personSVG(STAFF_LOOK[s.id], 48)}</span><strong>${s.name}${isNew ? '<span class="newpill">NEW</span>' : ''}</strong><p class="hint">${s.desc}</p>
       <p class="hint">${money(staffRate(s))} an hour × ${CONFIG.staffHours} hours = ${money(staffDaily(s))} a day</p>
       ${hired ? `<span class="good">Working for you</span> <button class="btn small ghost" data-act="fire" data-id="${s.id}">Let go</button>` : locked ? `<span class="hint">Unlocks at level ${s.level}</span>` : `<button class="btn small" data-act="hire" data-id="${s.id}">Hire</button>`}</div>`;
   }).join('');
@@ -2411,6 +2518,7 @@ function showParent() {
     <h3 style="margin-top:12px">Results by topic</h3>
     <p class="hint">"Right" includes answers that were right on the second try. Accuracy counts answered questions only.</p>
     <div style="overflow-x:auto"><table class="stats"><thead><tr><th>Topic</th><th>Right</th><th>Wrong</th><th>Skipped</th><th>Used calculator</th><th>Accuracy</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="hint">Game version ${GAME_VERSION}</p>
     <p>Days played: ${S.day}. Level ${S.level}. Maths points: ${S.mathPoints || 0}. Total skips: ${S.skips || 0}. Total profit: ${money(totalProfit())}. Best streak: ${S.bestStreak || 0}. Answers without a calculator: ${S.mentalCorrect}.</p>
     <div class="actions"><button class="btn" id="pClose">Close</button><button class="btn ghost" id="pReset">Delete this shop</button></div>`, 'Parent view');
   box.querySelector('#setChallenge').addEventListener('change', e => { SETTINGS.challenge = Number(e.target.value); saveSettings(); box.querySelector('#lvlText').textContent = levelText().replace(/<[^>]+>/g, ''); });
@@ -2439,6 +2547,7 @@ function showShopperGuide() {
     <div style="overflow-x:auto"><table class="stats"><thead><tr><th></th><th>Who</th><th>What they do</th><th>How to attract them</th></tr></thead><tbody>${rows}</tbody></table></div>
     <h3 style="margin-top:14px">What their faces mean</h3>
     <p>${Object.keys(MOOD_LABEL).map(m => `${moodSVG(m, 24)} ${MOOD_LABEL[m]}`).join('&nbsp;&nbsp; ')}</p>
+    <div class="box">${repInfoHTML()}</div>
     <p class="hint">In the shop, a coloured ring under each shopper shows their type. Tap anyone to see who they are and what they think.</p>
     <p class="hint">Tip: if most faces are 😍, you could charge more. If you see lots of 😬, your price is too high for that crowd.</p>
     <div class="actions"><button class="btn" id="gClose">Got it</button></div>`, 'Shopper guide');
@@ -2490,18 +2599,28 @@ const ACTIONS = {
     if (ups.length) showLevelUp(ups);
   },
   insure: () => {
-    if (!S.insured && S.cash < insCost()) { toast('Not enough cash for insurance.'); return; }
-    S.insured = !S.insured; save(); render();
+    if (S.cash < insCost()) { toast('Not enough cash for insurance.'); return; }
+    S.insured = true; S.today.checks.forecast = true; save(); render();
   },
+  noinsure: () => { S.insured = false; S.today.checks.forecast = true; save(); render(); },
+  skipbonus: () => { S.today.checks.bonus = true; save(); render(); },
+  seeup: () => { markSeenAll(); S.today.checks.upgrades = true; save(); render(); },
+  goto: b => { const el = document.getElementById(b.dataset.to); if (el) el.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); },
+  toggleshop: () => { shopPeek = !shopPeek; renderStage(); },
   tab: b => { shopTab = b.dataset.v; renderPanel(); },
   buyacc: b => buyAccessory(b.dataset.id),
   buyroom: b => buyRoom(b.dataset.id),
-  next: () => nextDay(),
+  next: () => {
+    const left = eveningTodo().filter(x => !x.done);
+    if (left.length) { toast(`Finish the checklist first: ${left.map(x => x.label).join(', ')}.`); const el = $('#ev-checklist'); if (el) el.scrollIntoView({ block: 'center' }); return; }
+    nextDay();
+  },
   boss: () => runBoss(),
   hire: b => hireStaff(b.dataset.id),
   fire: b => fireStaff(b.dataset.id),
   customise: () => showCustomise(),
   menu: () => showMenu(),
+  repinfo: () => showRepInfo(),
   guide: () => showShopperGuide(),
   badges: () => showBadges(),
   parent: () => showParent()
@@ -2570,7 +2689,7 @@ document.addEventListener('keydown', e => {
 <script>
 /* Offline support: only works when the game is on a real https website (not when opened as a file). */
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
-  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(() => {}); });
+  window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(r => r.update()).catch(() => {}); });
 }
 </script>
 </body>
