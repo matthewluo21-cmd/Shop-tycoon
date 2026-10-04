@@ -1,7 +1,7 @@
 /* Shop Tycoon offline support: keeps a copy of the game on the device.
    Online: always tries the internet first, so updates load automatically.
    Offline (e.g. airplane mode): uses the saved copy. */
-const CACHE = 'shop-tycoon-v4';
+const CACHE = 'shop-tycoon-v6';
 const FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

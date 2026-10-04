@@ -90,8 +90,23 @@ button,input,select{font:inherit;color:inherit}
   text-shadow:0 0 6px #FF4FA3;box-shadow:0 0 8px #FF4FA3;animation:flicker 3s infinite}
 .carpet{position:absolute;left:0;width:15%;top:85%;height:7%;background:#C2372D;border-top:2px solid #F4B82E;border-bottom:2px solid #F4B82E}
 .mascot{animation:wave 1.4s ease-in-out infinite}
-.shopper{position:absolute;transform:translate(-50%,-100%);font-size:var(--e);line-height:1;pointer-events:none}
-.shopper .who{display:inline-block}
+.shopper{position:absolute;transform:translate(-50%,-100%);font-size:var(--e);line-height:1;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.shopper .who{display:block;position:relative;z-index:1}
+.shopper .who svg,.person svg{width:calc(var(--e) * 1.45);height:auto;display:block}
+.event[hidden]{display:none}
+.shopper .ring{position:absolute;left:12%;right:12%;bottom:-3px;height:9px;border-radius:50%;opacity:.85;z-index:0}
+.shopper .bub svg.mood,.mood{vertical-align:middle}
+.person{display:block;line-height:0}
+.keeper.person svg{width:calc(var(--e) * 1.35)}
+.mini-person{display:inline-block;vertical-align:middle;line-height:0;margin-right:2px}
+.info-card{position:absolute;left:10px;top:13%;z-index:150;width:min(300px,62%);background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:16px;padding:10px 12px;box-shadow:0 6px 0 rgba(0,0,0,.15);font-size:14px;line-height:1.35}
+.info-card p{margin:6px 0 0}
+.info-top{display:flex;gap:10px;align-items:center}
+.info-pic{background:var(--soft);border-radius:12px;padding:4px 6px 0;line-height:0}
+.info-chip{display:inline-block;color:#fff;border-radius:999px;padding:1px 9px;font-size:12px;font-weight:700;margin-top:3px}
+.info-mood{display:flex;align-items:center;gap:8px;background:var(--soft);border-radius:10px;padding:4px 8px}
+.info-x{position:absolute;right:6px;top:4px;background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:var(--muted);min-width:36px;min-height:36px}
+[data-info]{cursor:pointer}
 .shopper.walking .who{animation:walk .32s ease-in-out infinite alternate}
 .shopper .bub{position:absolute;bottom:105%;left:50%;transform:translateX(-50%) translateY(4px);background:var(--panel);color:var(--ink);border:2px solid var(--ink);border-radius:10px;padding:0 6px;
   font-size:clamp(10px,1.2vw,13px);white-space:nowrap;opacity:0;transition:opacity .2s,transform .2s;font-family:'Atkinson Hyperlegible',sans-serif}
@@ -198,6 +213,53 @@ figcaption{font-weight:700;margin-bottom:4px}
 .swatch{min-width:64px;min-height:44px;border:2px solid var(--line);border-radius:10px;background:var(--panel);cursor:pointer;padding:4px 10px;font-weight:700}
 .swatch[aria-pressed="true"]{border:3px solid var(--ink);box-shadow:0 0 0 2px var(--mustard)}
 
+/* v5: tablet and touch layout */
+button,.btn,.swatch,.theme-btn,.choice,.stepbtn{touch-action:manipulation}
+.stage{-webkit-user-select:none;user-select:none}
+.menu-btn{display:none}
+.topnav{display:contents}
+.menu-list{display:grid;gap:10px;margin:10px 0}
+.menu-list .btn{text-align:left;font-size:19px;padding:.7em 1em}
+.steps{display:flex;gap:6px;list-style:none;padding:0;margin:0 0 12px;flex-wrap:wrap}
+.steps li{flex:1;min-width:84px;text-align:center;background:var(--soft);border:2px solid var(--line);border-radius:999px;padding:4px 8px;font-weight:700;font-size:14px;color:var(--muted)}
+.steps li.on{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.steps li.done{color:var(--gain);border-color:var(--gain)}
+.steps .num{display:inline-block;min-width:1.4em}
+.stepbtn{background:none;border:none;font:inherit;color:inherit;cursor:pointer;width:100%;padding:0;text-decoration:underline}
+.actions.primary{position:sticky;bottom:0;z-index:30;background:var(--panel);margin:14px -18px -18px;padding:12px 18px calc(12px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--line);border-radius:0 0 19px 19px;justify-content:flex-end}
+.actions.primary .btn{font-size:19px}
+@media (max-width:1100px),(pointer:coarse){
+  .topnav{display:none}
+  .menu-btn{display:inline-block}
+}
+@media (pointer:coarse){
+  .btn{min-height:46px}
+  .btn.small{min-height:42px;padding:.35em .85em;font-size:16px}
+  input[type=number],input[type=text],select{min-height:44px;font-size:17px}
+  .stepper input{width:66px}
+  .stage{aspect-ratio:auto;height:clamp(230px,40vh,430px);--e:clamp(18px,4.2vh,34px)}
+  .shelf-tag{font-size:12px}
+  .chip{font-size:14px;padding:2px 10px}
+  .progress{font-size:13px}
+}
+/* Tablet landscape (e.g. iPad sideways): shop on the left, controls on the right */
+@media (pointer:coarse) and (orientation:landscape) and (min-width:900px){
+  .wrap{max-width:none;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:12px;align-items:start;padding-top:8px}
+  .top{grid-column:1/-1;margin-bottom:6px}
+  .stage{grid-column:1;position:sticky;top:8px;height:auto;aspect-ratio:4/3.3;max-height:calc(100vh - 120px);border-bottom:3px solid var(--ink);border-radius:22px;--e:clamp(18px,2.6vw,32px)}
+  .panel{grid-column:2;border-radius:22px;min-width:0}
+  .panel.alone{grid-column:1/-1}
+  .row,.row.pricing,.row.store{grid-template-columns:1fr 1fr}
+  .row .name,.row .wide{grid-column:1/-1}
+  .evening{grid-template-columns:1fr}
+  .daystats{grid-template-columns:repeat(2,1fr)}
+  .actions.primary{border-radius:0 0 19px 19px}
+}
+/* Tablet portrait: shorter shop picture so the controls are visible */
+@media (pointer:coarse) and (orientation:portrait){
+  .stage{height:clamp(200px,30vh,340px)}
+}
+
 /* Modal */
 .modal-back{position:fixed;inset:0;background:rgba(10,18,30,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:200}
 .modal{background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:20px;max-width:560px;width:100%;padding:20px;max-height:92%;overflow:auto}
@@ -241,7 +303,8 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
 <body>
 <div class="wrap">
   <div class="top" id="top"></div>
-  <section class="stage" id="stage" hidden aria-label="Your shop floor">
+  <section class="stage" id="stage" hidden aria-label="Your shop floor. Tap a person to learn about them.">
+    <div class="info-card" id="infoCard" hidden aria-live="polite"></div>
     <div id="stageStatic"></div>
   </section>
   <main class="panel" id="panel"></main>
@@ -1279,7 +1342,7 @@ function customerArrives(progress) {
   t.customers++;
   let face, text, bought = 0;
   if (it.stock <= 0) {
-    t.lost++; t.mood.soldout = (t.mood.soldout || 0) + 1; t.soldOutItem = id; face = '😞'; text = `No ${d.emoji} left`;
+    t.lost++; t.mood.soldout = (t.mood.soldout || 0) + 1; t.soldOutItem = id; face = 'soldout'; text = `No ${d.emoji} left`;
   } else {
     const ratio = price / (d.fair * type.tol * tolMult);
     let p = buyChance(ratio);
@@ -1298,16 +1361,16 @@ function customerArrives(progress) {
       if (typeKey === 'vip') S.vipSale = true;
       if (it.stock === 0) t.soldOutMoment = true;
       const md = ratio < 0.85 ? 'loved' : ratio < 1.1 ? 'happy' : 'okay'; t.mood[md] = (t.mood[md] || 0) + 1;
-      face = ratio < 0.85 ? '😍' : ratio < 1.1 ? '😀' : '🤔';
+      face = ratio < 0.85 ? 'bargain' : ratio < 1.1 ? 'happy' : 'okay';
       if (it.stock === 0 && hasStaff('clerk') && (it.store || 0) > 0) { const k = Math.min(it.store, shelfMax()); it.store -= k; it.stock += k; toast(`👷 Your stock clerk refilled ${d.name} from storage (${k}).`); }
       text = `${bought > 1 ? '2 × ' : ''}${d.emoji}`;
     } else {
       const md = ratio > 1.15 ? 'walked' : 'browsed'; t.mood[md] = (t.mood[md] || 0) + 1;
-      face = ratio > 1.15 ? '😬' : '🤷'; text = ratio > 1.15 ? 'Too pricey' : 'Just looking';
+      face = ratio > 1.15 ? 'walked' : 'browse'; text = ratio > 1.15 ? 'Too pricey' : 'Just looking';
     }
   }
   const shelfIdx = unlocked().findIndex(x => x.id === id);
-  walkShopper({ person: pick(type.faces), shelfIdx, say: `${face} ${text}`, bought: bought > 0, pay: bought ? '+' + money(price * bought) : '' });
+  walkShopper({ type: typeKey, look: makeLook(typeKey), mood: face, item: d.name, shelfIdx, say: `${moodSVG(face, 18)} ${esc(text)}`, bought: bought > 0, pay: bought ? '+' + money(price * bought) : '' });
   renderDayStats(); renderShelves(); renderTop();
 
   if (bought && feature('change') && !t.changeDone && progress > 0.25 && Math.random() < 0.35 && t.prompts < CONFIG.maxPromptsPerDay) {
@@ -1324,11 +1387,14 @@ const shelfX = i => { const n = Math.max(unlocked().length, 3); const span = 50,
 const REG = [{ x: 85, y: 66 }, { x: 85, y: 84 }];
 const roomX = i => 3.5 + i * 7.3;
 
-function walkShopper({ person, shelfIdx, say, bought, pay }) {
+function walkShopper({ type, look, mood, item, shelfIdx, say, bought, pay }) {
   const stage = $('#stage'); if (!stage || stage.hidden) return;
   const el = document.createElement('div');
   el.className = 'shopper';
-  el.innerHTML = `<span class="bub"></span><span class="who" aria-hidden="true">${person}</span>`;
+  const key = ++infoSeq; INFO.set(key, { kind: 'shopper', type, look, mood, item });
+  el.dataset.info = key;
+  el.innerHTML = `<span class="bub"></span><span class="ring" style="background:${TYPE_COLOR[type] || TYPE_COLOR.adult}"></span><span class="who">${personSVG(look)}</span>`;
+  const _rm = el.remove.bind(el); el.remove = () => { INFO.delete(key); _rm(); };
   const bub = el.querySelector('.bub');
   const pts = [{ x: -3, y: 90 }, { x: 7, y: rand(80, 88) }];
   pts.push({ x: shelfX(Math.max(0, shelfIdx)) + rand(-1.5, 1.5), y: rand(66, 70), pause: 1000, say });
@@ -1349,7 +1415,7 @@ function walkShopper({ person, shelfIdx, say, bought, pay }) {
   stage.appendChild(el);
   if (REDUCE) {
     el.style.left = pts[2].x + '%'; el.style.top = pts[2].y + '%';
-    bub.textContent = say; el.classList.add('talk');
+    bub.innerHTML = say; el.classList.add('talk');
     if (bought) coinPop(0, pay);
     setTimeout(() => el.remove(), 1400);
     return;
@@ -1367,7 +1433,7 @@ function walkShopper({ person, shelfIdx, say, bought, pay }) {
     el.style.zIndex = String(10 + Math.round(p.y));
     setTimeout(() => {
       el.classList.remove('walking');
-      if (p.say) { bub.textContent = p.say; el.classList.add('talk'); }
+      if (p.say) { bub.innerHTML = p.say.length < 4 ? esc(p.say) : p.say; el.classList.add('talk'); }
       if (p.pay) coinPop(p.reg, p.pay);
       setTimeout(() => { el.classList.remove('talk'); go(); }, (p.pause || 0) / speed);
     }, ms);
@@ -1489,6 +1555,150 @@ async function buyRoom(id) {
   toast(`${r.emoji} ${r.name} is open!`);
   checkBadges(); save(); render();
 }
+
+/* ============================================================
+   DRAWN CHARACTERS (Option A: rounded flat)
+   Every person is an SVG built from simple shapes, so they look the same on every device.
+   ============================================================ */
+const INK_C = '#1D2B44';
+const TYPE_COLOR = { adult: '#2563A6', family: '#B35A00', kid: '#B03C7A', tourist: '#137A6A', vip: '#8A6410', staff: '#1F7A5A' };
+const TYPE_CHIP = { adult: 'Buys 1 at a fair price', family: 'Often buys 2', kid: 'Likes cheaper items', tourist: 'Pays about 15% more', vip: 'Pays about 35% more, buys 2' };
+const SKINS = ['#F5D0B5', '#F1C7A1', '#E8B48A', '#E0AC69', '#D9A066', '#C68642', '#A86B3C', '#8D5524'];
+const HAIRS = ['#1D1D1D', '#2B1B12', '#5A3825', '#6B4423', '#8A5A30', '#B5651D', '#C46A2B', '#9AA5B1'];
+const LOOKS = {
+  adult:   { shirts: ['#3A86D4', '#7A8CA3', '#2E5E8A', '#5E9BD6', '#4F6D8F'], pants: ['#33475E', '#4A3B2A', '#2B3A55'], extra: o => { o.tote = Math.random() < 0.6; o.hairLong = Math.random() < 0.4; } },
+  family:  { shirts: ['#E08A1E', '#F2A541', '#D9761A'], pants: ['#5E4B8B', '#33475E'], extra: o => { o.child = true; o.hairLong = Math.random() < 0.5; o.cShirt = pick(['#FFD45C', '#7FD1AE', '#F7A1C4']); } },
+  kid:     { shirts: ['#E25C9F', '#F06FAF', '#D94F8F'], pants: ['#3A86D4', '#2E5E8A'], extra: o => { o.kid = true; o.balloon = Math.random() < 0.6; o.bun = Math.random() < 0.5; } },
+  tourist: { shirts: ['#1FA38D', '#25B39B', '#179483'], pants: ['#C9B48A', '#B9A57B'], extra: o => { o.sunhat = true; o.camera = true; o.dots = true; } },
+  vip:     { shirts: ['#6B3FA0', '#8A4FC4', '#5B2F8F'], pants: ['#1D2B44'], extra: o => { o.shades = true; o.chain = true; o.sparkle = true; } }
+};
+function makeLook(type) {
+  const L = LOOKS[type] || LOOKS.adult;
+  const o = { skin: pick(SKINS), hair: pick(HAIRS), shirt: pick(L.shirts), pants: pick(L.pants) };
+  L.extra(o);
+  return o;
+}
+/* A fixed example of each shopper type, for guides and labels */
+const TYPE_SAMPLE = {
+  adult:   { skin: '#F1C7A1', hair: '#5A3825', shirt: '#3A86D4', pants: '#33475E', tote: true },
+  family:  { skin: '#D9A066', hair: '#2B1B12', shirt: '#E08A1E', pants: '#5E4B8B', hairLong: true, child: true, cShirt: '#FFD45C' },
+  kid:     { skin: '#F5D0B5', hair: '#C46A2B', shirt: '#E25C9F', pants: '#3A86D4', kid: true, balloon: true, bun: true },
+  tourist: { skin: '#E8B48A', hair: '#8A5A30', shirt: '#1FA38D', pants: '#C9B48A', sunhat: true, camera: true, dots: true },
+  vip:     { skin: '#8D5524', hair: '#1D1D1D', shirt: '#6B3FA0', pants: '#1D2B44', shades: true, chain: true, sparkle: true }
+};
+const STAFF_LOOK = {
+  cashier: { skin: '#C68642', hair: '#1D1D1D', shirt: '#FFFFFF', pants: '#33475E', apron: true, cap: true, bun: true, badge: true },
+  clerk:   { skin: '#E0AC69', hair: '#6B4423', shirt: '#5B6B7F', pants: '#33475E', vest: true, box: true, cap: true, capC: '#F28C28' },
+  greeter: { skin: '#F5D0B5', hair: '#B5651D', shirt: '#2FA36B', pants: '#33475E', hairLong: true, wave: true, badge: true },
+  expert:  { skin: '#A86B3C', hair: '#2B1B12', shirt: '#2E5E8A', pants: '#33475E', lanyard: true, tablet: true },
+  manager: { skin: '#F1C7A1', hair: '#9AA5B1', shirt: '#FFFFFF', pants: '#1D2B44', jacket: true, tie: true, clip: true }
+};
+const KEEPER_LOOKS = [
+  { name: 'Classic',    skin: '#F1C7A1', hair: '#3B2A1A', shirt: '#FFFFFF', pants: '#33475E', apron: true, badge: true },
+  { name: 'Ponytail',   skin: '#D9A066', hair: '#2B1B12', shirt: '#FFFFFF', pants: '#33475E', apron: true, badge: true, hairLong: true },
+  { name: 'Bun',        skin: '#8D5524', hair: '#1D1D1D', shirt: '#FFFFFF', pants: '#33475E', apron: true, badge: true, bun: true },
+  { name: 'Cap',        skin: '#E0AC69', hair: '#6B4423', shirt: '#FFFFFF', pants: '#33475E', apron: true, badge: true, cap: true },
+  { name: 'Chef',       skin: '#F5D0B5', hair: '#C46A2B', shirt: '#FFFFFF', pants: '#33475E', apron: true, chefHat: true },
+  { name: 'Cool',       skin: '#A86B3C', hair: '#1D1D1D', shirt: '#FFFFFF', pants: '#33475E', apron: true, shades: true },
+  { name: 'Superhero',  skin: '#F1C7A1', hair: '#2B1B12', shirt: '#C2372D', pants: '#2E5E8A', cape: true, mask: true },
+  { name: 'Wizard',     skin: '#E8B48A', hair: '#9AA5B1', shirt: '#5B3FA8', pants: '#5B3FA8', wizard: true, beard: true }
+];
+const keeperLook = () => {
+  const v = (S && S.custom && S.custom.keeper) || 'k0';
+  const i = /^k\d$/.test(v) ? Number(v.slice(1)) : 0;
+  return KEEPER_LOOKS[i] || KEEPER_LOOKS[0];
+};
+
+function personSVG(o, w) {
+  const size = w ? `width="${w}" height="${Math.round(w * 4 / 3)}"` : '';
+  const tf = o.kid ? 'translate(14 36) scale(0.76)' : '';
+  const capC = o.capC || '#1F7A5A', apronC = o.apronC || '#1F7A5A', sh = o.shirt, sk = o.skin, hr = o.hair;
+  const line = `stroke:${INK_C};stroke-opacity:0.14;stroke-width:1.5`;
+  const armL = `<rect x="24" y="74" width="14" height="40" rx="7" fill="${sh}" style="${line}"/><circle cx="31" cy="114" r="6" fill="${sk}"/>`;
+  const armR = o.wave
+    ? `<rect x="83" y="40" width="14" height="42" rx="7" fill="${sh}" transform="rotate(14 90 80)" style="${line}"/><circle cx="99" cy="38" r="7" fill="${sk}"/>`
+    : o.box ? '' : `<rect x="82" y="74" width="14" height="40" rx="7" fill="${sh}" style="${line}"/><circle cx="89" cy="114" r="6" fill="${sk}"/>`;
+  let s = `<svg viewBox="0 0 120 160" ${size} aria-hidden="true" focusable="false"><g transform="${tf}">`;
+  s += `<ellipse cx="60" cy="153" rx="30" ry="6" fill="${INK_C}" opacity="0.12"/>`;
+  if (o.cape) s += `<path d="M36 72 L22 146 H98 L84 72z" fill="#C2372D" opacity="0.9"/>`;
+  if (o.balloon) s += `<path d="M88 106 L100 34" stroke="#55667D" style="stroke-width:1.5;fill:none"/><ellipse cx="102" cy="22" rx="13" ry="16" fill="#E0457B"/><ellipse cx="97" cy="16" rx="3" ry="5" fill="#fff" opacity="0.5"/>`;
+  if (o.wizard) s += `<path d="M30 148 L40 70 H80 L90 148z" fill="${sh}"/>`;
+  s += `<rect x="45" y="110" width="12" height="38" rx="6" fill="${o.pants}"/><rect x="63" y="110" width="12" height="38" rx="6" fill="${o.pants}"/>`;
+  s += `<rect x="40" y="142" width="19" height="9" rx="4.5" fill="${o.shoes || INK_C}"/><rect x="61" y="142" width="19" height="9" rx="4.5" fill="${o.shoes || INK_C}"/>`;
+  if (o.tote) s += `<path d="M19 102 q8 -13 16 0" stroke="#8A5A30" style="stroke-width:3;fill:none"/><rect x="15" y="100" width="24" height="25" rx="4" fill="#E9B949"/>`;
+  s += armL + armR;
+  s += `<rect x="34" y="68" width="52" height="54" rx="20" fill="${sh}" style="${line}"/>`;
+  if (o.dots) s += `<circle cx="44" cy="84" r="3.2" fill="#fff" opacity="0.75"/><circle cx="75" cy="99" r="3.2" fill="#fff" opacity="0.75"/><circle cx="57" cy="111" r="3.2" fill="#fff" opacity="0.75"/><circle cx="69" cy="80" r="2.6" fill="#FFD45C"/><circle cx="46" cy="104" r="2.6" fill="#FFD45C"/>`;
+  if (o.jacket) s += `<path d="M34 90 q0 -22 20 -22 l6 24 l-6 30 h-6 q-14 0 -14 -14z" fill="${INK_C}"/><path d="M86 90 q0 -22 -20 -22 l-6 24 l6 30 h6 q14 0 14 -14z" fill="${INK_C}"/>`;
+  if (o.apron) s += `<path d="M42 80 h36 v36 q0 6 -6 6 h-24 q-6 0 -6 -6z" fill="${apronC}"/><path d="M44 80 L51 69 M76 80 L69 69" stroke="${apronC}" style="stroke-width:3"/><rect x="52" y="98" width="16" height="9" rx="2" fill="#fff" opacity="0.25"/>`;
+  if (o.vest) s += `<path d="M35 76 h17 v46 h-12 q-5 0 -5 -6z" fill="#F28C28"/><path d="M85 76 h-17 v46 h12 q5 0 5 -6z" fill="#F28C28"/><rect x="35" y="99" width="17" height="5" fill="#FFE14D"/><rect x="68" y="99" width="17" height="5" fill="#FFE14D"/>`;
+  if (o.tie) s += `<path d="M57 70 h6 l2 6 l-2 26 l-3 5 l-3 -5 l-2 -26z" fill="#C2372D"/>`;
+  if (o.lanyard) s += `<path d="M48 70 L60 92 L72 70" stroke="#F4B82E" style="stroke-width:3;fill:none"/><rect x="53" y="90" width="14" height="11" rx="2" fill="#fff" style="stroke:${INK_C};stroke-width:1.5"/>`;
+  if (o.badge) s += `<rect x="64" y="84" width="15" height="9" rx="2" fill="#fff" style="stroke:${INK_C};stroke-width:1.5"/><rect x="67" y="87" width="9" height="2" fill="${INK_C}"/>`;
+  if (o.cape) s += `<path d="M52 80 l8 -6 l8 6 l-3 12 h-10z" fill="#F4B82E"/>`;
+  if (o.chain) s += `<path d="M46 72 q14 16 28 0" stroke="#E7B416" style="stroke-width:3;fill:none"/><path d="M60 82 l2.5 5 l5.5 0.8 l-4 3.9 l1 5.5 l-5 -2.6 l-5 2.6 l1 -5.5 l-4 -3.9 l5.5 -0.8z" fill="#E7B416"/>`;
+  if (o.camera) s += `<path d="M45 72 L50 88 M75 72 L70 88" stroke="${INK_C}" style="stroke-width:2"/><rect x="46" y="86" width="28" height="18" rx="4" fill="#33475E"/><circle cx="60" cy="95" r="6" fill="#A9C7E0" style="stroke:${INK_C};stroke-width:2"/>`;
+  if (o.box) s += `<rect x="34" y="86" width="52" height="34" rx="3" fill="#C68A4E" style="stroke:#8A5A30;stroke-width:2"/><rect x="56" y="86" width="8" height="34" fill="#E8C391"/><circle cx="33" cy="100" r="6" fill="${sk}"/><circle cx="87" cy="100" r="6" fill="${sk}"/>`;
+  if (o.clip) s += `<rect x="80" y="86" width="22" height="28" rx="3" fill="#8A5A30"/><rect x="83" y="91" width="16" height="20" rx="1" fill="#fff"/><rect x="86" y="95" width="10" height="2" fill="#55667D"/><rect x="86" y="100" width="10" height="2" fill="#55667D"/><rect x="87" y="84" width="8" height="5" rx="1.5" fill="#A9B8CA"/>`;
+  if (o.tablet) s += `<rect x="78" y="90" width="26" height="18" rx="3" fill="${INK_C}"/><rect x="81" y="93" width="20" height="12" rx="1" fill="#62B6E8"/>`;
+  if (o.child) s += `<g transform="translate(76 84) scale(0.46)"><rect x="45" y="110" width="12" height="38" rx="6" fill="#3A86D4"/><rect x="63" y="110" width="12" height="38" rx="6" fill="#3A86D4"/><rect x="34" y="68" width="52" height="54" rx="20" fill="${o.cShirt || '#FFD45C'}"/><circle cx="60" cy="44" r="26" fill="${sk}"/><path d="M34 44 a26 26 0 0 1 52 0 q-9 -12 -26 -9 q-17 -3 -26 9z" fill="${hr}"/><circle cx="50" cy="47" r="3.6" fill="${INK_C}"/><circle cx="70" cy="47" r="3.6" fill="${INK_C}"/><path d="M51 57 q9 8 18 0" stroke="${INK_C}" style="stroke-width:3;fill:none;stroke-linecap:round"/></g>`;
+  // head
+  s += `<circle cx="60" cy="44" r="26" fill="${sk}"/>`;
+  if (o.hairLong) s += `<rect x="32" y="36" width="11" height="34" rx="5.5" fill="${hr}"/><rect x="77" y="36" width="11" height="34" rx="5.5" fill="${hr}"/>`;
+  s += `<path d="M34 44 a26 26 0 0 1 52 0 q-9 -12 -26 -9 q-17 -3 -26 9z" fill="${hr}"/>`;
+  if (o.bun) s += `<circle cx="60" cy="15" r="9" fill="${hr}"/>`;
+  if (o.beard) s += `<path d="M38 52 q22 34 44 0 q-6 8 -22 8 q-16 0 -22 -8z" fill="${hr}"/>`;
+  if (!o.shades) s += `<circle cx="50" cy="47" r="3.2" fill="${INK_C}"/><circle cx="70" cy="47" r="3.2" fill="${INK_C}"/><circle cx="51" cy="46" r="1" fill="#fff"/><circle cx="71" cy="46" r="1" fill="#fff"/>`;
+  if (o.mask) s += `<path d="M38 42 q22 -8 44 0 v8 q-22 -6 -44 0z" fill="#1D2B44"/><circle cx="50" cy="46" r="2.6" fill="#fff"/><circle cx="70" cy="46" r="2.6" fill="#fff"/>`;
+  if (!o.beard) s += `<circle cx="44" cy="55" r="4" fill="#F28B82" opacity="0.45"/><circle cx="76" cy="55" r="4" fill="#F28B82" opacity="0.45"/><path d="M52 57 q8 7 16 0" stroke="${INK_C}" style="stroke-width:2.5;fill:none;stroke-linecap:round"/>`;
+  if (o.shades) s += `<rect x="41" y="40" width="16" height="10" rx="4" fill="${INK_C}"/><rect x="63" y="40" width="16" height="10" rx="4" fill="${INK_C}"/><rect x="56" y="43" width="8" height="2.5" fill="${INK_C}"/><rect x="44" y="42" width="5" height="2" rx="1" fill="#fff" opacity="0.6"/>`;
+  if (o.cap) s += `<path d="M35 36 a25 22 0 0 1 50 0z" fill="${capC}"/><rect x="60" y="32" width="32" height="6" rx="3" fill="${capC}"/>`;
+  if (o.chefHat) s += `<rect x="40" y="18" width="40" height="16" rx="3" fill="#fff" style="stroke:${INK_C};stroke-opacity:0.2;stroke-width:1.5"/><circle cx="46" cy="14" r="10" fill="#fff"/><circle cx="60" cy="9" r="12" fill="#fff"/><circle cx="74" cy="14" r="10" fill="#fff"/>`;
+  if (o.wizard) s += `<path d="M30 30 L60 -14 L90 30z" fill="${sh}"/><ellipse cx="60" cy="30" rx="34" ry="6" fill="${sh}"/><path d="M58 8 l2 4 l4 1 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 l4 -1z" fill="#F4B82E"/>`;
+  if (o.sunhat) s += `<path d="M38 28 a22 18 0 0 1 44 0z" fill="#F2D27A"/><ellipse cx="60" cy="28" rx="40" ry="7" fill="#F2D27A" style="stroke:#C9A23F;stroke-width:1.5"/><rect x="39" y="21" width="42" height="5" fill="#1FA38D"/>`;
+  if (o.sparkle) s += `<path d="M16 30 l3 7 l7 3 l-7 3 l-3 7 l-3 -7 l-7 -3 l7 -3z" fill="#E7B416"/><path d="M104 56 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2 l5 -2z" fill="#E7B416"/>`;
+  return s + '</g></svg>';
+}
+
+/* Drawn mood faces (replace emoji faces) */
+function moodSVG(id, size) {
+  const z = size || 20, st = `stroke:${INK_C};stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round`;
+  const dots = `<circle cx="17" cy="20" r="2.6" fill="${INK_C}"/><circle cx="31" cy="20" r="2.6" fill="${INK_C}"/>`;
+  let f = '';
+  if (id === 'bargain') f = `<path d="M12 18 c0 -3.5 4.5 -4.5 5.5 -1.2 c1 -3.3 5.5 -2.3 5.5 1.2 c0 3.5 -5.5 6.5 -5.5 6.5 s-5.5 -3 -5.5 -6.5z" fill="#E0457B"/><path d="M25 18 c0 -3.5 4.5 -4.5 5.5 -1.2 c1 -3.3 5.5 -2.3 5.5 1.2 c0 3.5 -5.5 6.5 -5.5 6.5 s-5.5 -3 -5.5 -6.5z" fill="#E0457B"/><path d="M14 28 q10 12 20 0z" fill="#8E2F23"/>`;
+  else if (id === 'happy') f = dots + `<path d="M16 29 q8 7 16 0" style="${st}"/>`;
+  else if (id === 'okay') f = dots + `<path d="M17 31 h14" style="${st}"/><path d="M38 9 q5 7 0 9 q-5 -2 0 -9z" fill="#4FA3E0"/>`;
+  else if (id === 'walked') f = `<path d="M13 17 l7 3 l-7 3 M35 17 l-7 3 l7 3" style="${st}"/><rect x="14" y="27" width="20" height="8" rx="2" fill="#fff" style="stroke:${INK_C};stroke-width:2"/><path d="M14 31 h20 M19 27 v8 M24 27 v8 M29 27 v8" style="stroke:${INK_C};stroke-width:1.2"/><circle cx="39" cy="10" r="7" fill="#C2372D"/><path d="M41 7.5 q-1 -1.4 -2.4 -1.2 q-2 0.3 -1.6 2 q0.3 1 2 1.4 q1.8 0.5 1.6 2 q-0.3 1.6 -2.4 1.3 q-1.4 -0.2 -2 -1.3 M39 5 v10" style="stroke:#fff;stroke-width:1.3;fill:none;stroke-linecap:round"/>`;
+  else if (id === 'browse') f = `<circle cx="20" cy="20" r="2.6" fill="${INK_C}"/><circle cx="34" cy="20" r="2.6" fill="${INK_C}"/><circle cx="27" cy="31" r="3" fill="${INK_C}"/>`;
+  else f = dots + `<path d="M16 34 q8 -7 16 0" style="${st}"/><path d="M14 24 q4 6 0 8 q-4 -2 0 -8z" fill="#4FA3E0"/>`;
+  return `<svg class="mood" viewBox="0 0 48 48" width="${z}" height="${z}" aria-hidden="true" focusable="false"><circle cx="24" cy="24" r="20" fill="#FFD45C" style="stroke:${INK_C};stroke-width:2"/>${f}</svg>`;
+}
+const MOOD_LABEL = { bargain: 'Bargain!', happy: 'Happy with the price', okay: 'A bit pricey, but bought it', walked: 'Too expensive, walked away', browse: 'Just looking', soldout: 'It was sold out' };
+const miniPerson = (type, w) => `<span class="mini-person">${personSVG(TYPE_SAMPLE[type] || TYPE_SAMPLE.adult, w || 22)}</span>`;
+
+/* Tap-for-info card on the shop floor */
+const INFO = new Map(); let infoSeq = 0, infoTimer = null;
+function moodLine(mood, item) {
+  const n = esc(item || 'it');
+  return { bargain: `Thinks ${n} is a bargain!`, happy: `Happy with the price of ${n}.`, okay: `Bought ${n}, but thought it was a bit pricey.`,
+    walked: `Walked away: ${n} was too expensive.`, browse: `Just looking at ${n}.`, soldout: `Wanted ${n}, but it was sold out.` }[mood] || '';
+}
+function showInfo(info) {
+  const card = $('#infoCard'); if (!card) return;
+  const isStaff = info.kind === 'staff';
+  const s = isStaff ? STAFF.find(x => x.id === info.id) : null;
+  const name = isStaff ? (s ? s.name : 'Shopkeeper') : SHOPPERS[info.type].name;
+  const chip = isStaff ? (info.id === 'keeper' ? 'That\'s you!' : 'Shop team') : TYPE_CHIP[info.type];
+  const color = isStaff ? TYPE_COLOR.staff : TYPE_COLOR[info.type];
+  const desc = isStaff ? (s ? s.desc : 'Runs the shop. Change your look in Customise.') : SHOPPERS[info.type].desc;
+  card.innerHTML = `<button class="info-x" aria-label="Close">×</button>
+    <div class="info-top"><div class="info-pic">${personSVG(info.look, 54)}</div><div><strong>${esc(name)}</strong><br><span class="info-chip" style="background:${color}">${chip}</span></div></div>
+    <p>${desc}</p>${!isStaff && info.mood ? `<p class="info-mood">${moodSVG(info.mood, 26)} <span>${moodLine(info.mood, info.item)}</span></p>` : ''}`;
+  card.hidden = false;
+  card.querySelector('.info-x').addEventListener('click', e => { e.stopPropagation(); card.hidden = true; });
+  clearTimeout(infoTimer); infoTimer = setTimeout(() => { card.hidden = true; }, 7000);
+}
+function staffInfoAttr(id, look) { const k = 's-' + id; INFO.set(k, { kind: 'staff', id, look }); return `data-info="${k}"`; }
 
 /* ============================================================
    STAFF, SEASONS, EVENTS, SURPRISES, BOSS DAYS, CUSTOMISING
@@ -1726,15 +1936,15 @@ const CUSTOM = {
   floor:  [['', 'Checks'], ['wood', 'Wood'], ['tiles', 'Tiles'], ['carpet', 'Carpet'], ['marble', 'Marble']],
   awning: [['', 'Shop colour'], ['#C2372D', 'Red'], ['#1F7A5A', 'Green'], ['#2E78C7', 'Blue'], ['#5B3FA8', 'Purple'], ['#D45D9A', 'Pink'], ['#E08A1E', 'Orange'], ['#1D2B44', 'Navy']],
   sign:   [['', 'Classic'], ['gold', 'Gold'], ['neon', 'Neon'], ['wood', 'Wood']],
-  keeper: [['🧑‍💼', 'Shopkeeper'], ['👩‍💼', 'Shopkeeper'], ['👨‍💼', 'Shopkeeper'], ['🧑‍🍳', 'Chef'], ['🦸', 'Superhero'], ['🧙', 'Wizard'], ['🤖', 'Robot'], ['🐼', 'Panda']]
+  keeper: [['k0', 'Classic'], ['k1', 'Ponytail'], ['k2', 'Bun'], ['k3', 'Cap'], ['k4', 'Chef'], ['k5', 'Cool'], ['k6', 'Superhero'], ['k7', 'Wizard']]
 };
 const CUSTOM_LABELS = { wall: 'Wall colour', floor: 'Floor', awning: 'Awning colour', sign: 'Sign style', keeper: 'Your shopkeeper' };
 function showCustomise() {
   if (!S.custom) S.custom = {};
   const sec = key => `<h3 style="margin-top:12px">${CUSTOM_LABELS[key]}</h3><div class="swatches">${CUSTOM[key].map(([v, label]) => {
-    const cur = (S.custom[key] || '') === v;
+    const cur = (S.custom[key] || (key === 'keeper' ? 'k0' : '')) === v;
     const style = (key === 'wall' || key === 'awning') && v ? ` style="background:${v};color:${v === '#3C4A5C' || key === 'awning' ? '#fff' : '#1D2B44'}"` : '';
-    const text = key === 'keeper' ? `<span style="font-size:26px">${v}</span>` : label;
+    const text = key === 'keeper' ? `<span class="person" style="display:inline-block">${personSVG(KEEPER_LOOKS[Number(v.slice(1))], 40)}</span><br><small>${label}</small>` : label;
     return `<button class="swatch" data-ck="${key}" data-cv="${v}" aria-pressed="${cur}" aria-label="${label}"${style}>${text}</button>`;
   }).join('')}</div>`;
   const box = openModal(`<h2>Customise your shop</h2><p class="hint">Changes show straight away and are free.</p>${['wall', 'floor', 'awning', 'sign', 'keeper'].map(sec).join('')}
@@ -1753,7 +1963,32 @@ function showCustomise() {
 /* ============================================================
    Rendering
    ============================================================ */
-function render() { renderTop(); renderStage(); renderPanel(); }
+let lastPhase = null;
+function render() {
+  renderTop(); renderStage(); renderPanel();
+  const ph = S ? S.phase : (screen || 'slots');
+  if (ph !== lastPhase) { lastPhase = ph; window.scrollTo({ top: 0, behavior: 'auto' }); }
+}
+
+function stepsHTML(cur) {
+  const steps = [['morning', 'Stock up'], ['pricing', 'Prices'], ['day', 'Open'], ['evening', 'Close']];
+  const ci = steps.findIndex(x => x[0] === cur);
+  return `<ol class="steps" aria-label="Today's steps">${steps.map(([k, label], i) => {
+    const can = (cur === 'morning' && k === 'pricing') || (cur === 'pricing' && k === 'morning');
+    const inner = `<span class="num">${i + 1}</span> ${label}`;
+    return `<li class="${i === ci ? 'on' : i < ci ? 'done' : ''}">${can ? `<button class="stepbtn" data-act="${k === 'pricing' ? 'toPricing' : 'toMorning'}">${inner}</button>` : inner}</li>`;
+  }).join('')}</ol>`;
+}
+
+function showMenu() {
+  const day = S.phase === 'day';
+  const items = [['slots', '🏬 My shops', day], ['customise', '🎨 Customise shop', day], ['guide', '🧑‍🤝‍🧑 Shopper guide', false], ['badges', `🏅 Badges (${S.badges.length})`, false], ['parent', '👪 Parent view', false]];
+  const box = openModal(`<h2>Menu</h2><div class="menu-list">${items.map(([k, label, dis]) => `<button class="btn secondary" data-m="${k}" ${dis ? 'disabled' : ''}>${label}${dis ? ' <small>(after the shop closes)</small>' : ''}</button>`).join('')}</div>
+    <div class="actions"><button class="btn" id="mClose">Close</button></div>`, 'Menu');
+  box.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { closeModal(); ACTIONS[b.dataset.m](b); }));
+  box.querySelector('#mClose').addEventListener('click', closeModal);
+  box.querySelector('#mClose').focus();
+}
 
 function renderTop() {
   const el = $('#top');
@@ -1775,12 +2010,15 @@ function renderTop() {
     <span class="chip" title="Calculator uses left today">🧮 ${S.calcTokens} left</span>
     ${S.loan > 0 ? `<span class="chip debt">Loan owed ${money(S.loan)}</span>` : ''}
     <span class="spacer"></span>
-    <button class="btn small secondary" data-act="slots" ${S.phase === 'day' ? 'disabled title="Available when the shop closes"' : ''}>My shops</button>
-    <button class="btn small secondary" data-act="customise" ${S.phase === 'day' ? 'disabled' : ''}>Customise</button>
     <span class="chip" title="Maths points">🎓 ${S.mathPoints || 0} pts</span>
-    <button class="linkbtn" data-act="guide">Shopper guide</button>
-    <button class="linkbtn" data-act="badges">Badges (${S.badges.length})</button>
-    <button class="linkbtn" data-act="parent">Parent view</button>
+    <span class="topnav">
+      <button class="btn small secondary" data-act="slots" ${S.phase === 'day' ? 'disabled title="Available when the shop closes"' : ''}>My shops</button>
+      <button class="btn small secondary" data-act="customise" ${S.phase === 'day' ? 'disabled' : ''}>Customise</button>
+      <button class="linkbtn" data-act="guide">Shopper guide</button>
+      <button class="linkbtn" data-act="badges">Badges (${S.badges.length})</button>
+      <button class="linkbtn" data-act="parent">Parent view</button>
+    </span>
+    <button class="btn small secondary menu-btn" data-act="menu" aria-label="Menu">☰ Menu</button>
     <div class="progress">${prog}<div class="lvlbar" aria-hidden="true"><div style="width:${pct}%"></div></div></div>`;
 }
 
@@ -1811,14 +2049,14 @@ function renderStage() {
   // Registers and shopkeepers
   const regs = hasAcc('register2') ? 2 : 1;
   for (let k = 0; k < regs; k++) {
-    h += `<div class="keeper" style="left:${REG[k].x + 3}%;top:${REG[k].y}%">${k === 1 && hasStaff('cashier') ? '👩‍💼' : (cu.keeper || '🧑‍💼')}</div>`;
+    { const isC = k === 1 && hasStaff('cashier'), lk = isC ? STAFF_LOOK.cashier : keeperLook(); h += `<div class="keeper person" ${staffInfoAttr(isC ? 'cashier' : 'keeper', lk)} style="left:${REG[k].x + 3}%;top:${REG[k].y + 1}%">${personSVG(lk)}</div>`; }
     h += `<div class="counter" style="left:${REG[k].x - 4}%;top:${REG[k].y}%" aria-label="Register">${hasAcc('goldtill') ? '👑' : '🧾'}</div>`;
   }
-  if (hasStaff('cashier') && !hasAcc('register2')) h += `<div class="keeper" style="left:${REG[0].x - 6}%;top:${REG[0].y + 10}%">👩‍💼</div>`;
-  if (hasStaff('clerk')) h += `<div class="obj patrol" style="top:74%;z-index:70">👷</div>`;
-  if (hasStaff('greeter')) h += `<div class="obj mascot" style="left:17%;top:76%;z-index:84">🙋</div>`;
-  if (hasStaff('expert')) h += `<div class="obj" style="left:47%;top:79%;z-index:79">🧑‍🏫</div>`;
-  if (hasStaff('manager')) { const oi = ROOMS.findIndex(r => r.id === 'office'); h += hasRoom('office') ? `<div class="obj" style="left:${roomX(oi) + 3.3}%;top:35%;z-index:5">🕴️</div>` : `<div class="obj" style="left:75%;top:56%;z-index:56">🕴️</div>`; }
+  if (hasStaff('cashier') && !hasAcc('register2')) h += `<div class="keeper person" ${staffInfoAttr('cashier', STAFF_LOOK.cashier)} style="left:${REG[0].x - 7}%;top:${REG[0].y + 12}%;z-index:60">${personSVG(STAFF_LOOK.cashier)}</div>`;
+  if (hasStaff('clerk')) h += `<div class="obj patrol person" ${staffInfoAttr('clerk', STAFF_LOOK.clerk)} style="top:76%;z-index:70">${personSVG(STAFF_LOOK.clerk)}</div>`;
+  if (hasStaff('greeter')) h += `<div class="obj person" ${staffInfoAttr('greeter', STAFF_LOOK.greeter)} style="left:17%;top:78%;z-index:84">${personSVG(STAFF_LOOK.greeter)}</div>`;
+  if (hasStaff('expert')) h += `<div class="obj person" ${staffInfoAttr('expert', STAFF_LOOK.expert)} style="left:47%;top:81%;z-index:79">${personSVG(STAFF_LOOK.expert)}</div>`;
+  if (hasStaff('manager')) { const oi = ROOMS.findIndex(r => r.id === 'office'); const ml = `${staffInfoAttr('manager', STAFF_LOOK.manager)}`; h += hasRoom('office') ? `<div class="obj person" ${ml} style="left:${roomX(oi) + 3.3}%;top:36%;z-index:5">${personSVG(STAFF_LOOK.manager)}</div>` : `<div class="obj person" ${ml} style="left:75%;top:57%;z-index:56">${personSVG(STAFF_LOOK.manager)}</div>`; }
   h += `<div id="shelves"></div>`;
   $('#stageStatic').innerHTML = h;
   renderShelves();
@@ -1921,6 +2159,7 @@ function morningHTML() {
       <input type="number" min="1" max="${shelfMax()}" value="${r.order}" data-rule="${d.id}" data-f="order" aria-label="Amount to add for ${esc(d.name)}" style="width:70px"> more.</p>`; }).join('')}</div>` : '';
 
   return `
+    ${stepsHTML('morning')}
     <h2>Morning: stock up</h2>
     <p class="hint">${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].emoji} ${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].name}, day ${dayOfYear(S.day)} of ${YEAR_DAYS} in the shop year.</p>
     ${t.holiday ? `<div class="event holiday"><span class="big" aria-hidden="true">${t.holiday.emoji}</span><div><h3>${t.holiday.name}</h3><p>${t.holiday.text}</p></div></div>` : ''}
@@ -1929,7 +2168,7 @@ function morningHTML() {
     ${feature('bulk') ? `<p class="hint">Today's bulk deal: buy ${CONFIG.bulkThreshold} or more of one item at once and get ${bulkText()}.</p>` : ''}
     <div class="rows">${rows}</div>
     ${storeBox}${loanBox}${rules}
-    <div class="actions"><button class="btn" data-act="toPricing">Next: set prices</button></div>`;
+    <div class="actions primary"><button class="btn" data-act="toPricing">Next: set prices</button></div>`;
 }
 
 function bossCardHTML() {
@@ -1960,11 +2199,12 @@ function pricingHTML() {
   }).join('');
   const types = ['adult'].concat(ACCESSORIES.filter(a => a.brings && hasAcc(a.id)).map(a => a.brings));
   return `
+    ${stepsHTML('pricing')}
     <h2>Set your prices</h2>
-    <p class="hint">Markup is how much extra you charge on top of what you paid, as a percentage. Too high and shoppers walk away. Too low and you barely make money. Watch their faces: 😍 bargain, 😀 happy, 🤔 pricey but bought it, 😬 too expensive.</p>
-    <div class="box"><p><strong>Today's shoppers:</strong> ${types.map(k => `${SHOPPERS[k].faces[0]} ${SHOPPERS[k].name}`).join(', ')}. <button class="btn small secondary" data-act="guide">Who are they?</button></p></div>
+    <p class="hint">Markup is how much extra you charge on top of what you paid, as a percentage. Too high and shoppers walk away. Too low and you barely make money. Watch their faces: ${moodSVG('bargain')} bargain, ${moodSVG('happy')} happy, ${moodSVG('okay')} pricey but bought it, ${moodSVG('walked')} too expensive. Tap any shopper in the shop to see what they think.</p>
+    <div class="box"><p><strong>Today's shoppers:</strong> ${types.map(k => `${miniPerson(k)}${SHOPPERS[k].name}`).join(', ')}. <button class="btn small secondary" data-act="guide">Who are they?</button></p></div>
     <div class="rows">${rows}</div>
-    <div class="actions"><button class="btn secondary" data-act="toMorning">Back to supplier</button><button class="btn" data-act="open">Open the shop</button></div>`;
+    <div class="actions primary"><button class="btn secondary" data-act="toMorning">Back to supplier</button><button class="btn" data-act="open">Open the shop</button></div>`;
 }
 
 function markupText(price, cost) {
@@ -1974,6 +2214,7 @@ function markupText(price, cost) {
 
 function dayHTML() {
   return `
+    ${stepsHTML('day')}
     <h2>The shop is open</h2>
     <div class="event" id="dayEvent" ${S.today.surprise ? '' : 'hidden'}>${S.today.surprise || ''}</div>
     <div class="bar" aria-hidden="true"><div id="dayBar"></div></div>
@@ -2020,7 +2261,7 @@ function eveningHTML() {
     ${t.repay ? `<div class="r-line"><span>Loan repayment</span><span>${money(-t.repay)}</span></div>` : ''}
     <div class="r-line" style="margin-top:8px"><span>Cash in the till</span><span>${money(S.cash)}</span></div>
     ${t.lost ? `<div class="r-note">${t.lost} shopper${t.lost > 1 ? 's' : ''} left because something was sold out.</div>` : ''}
-    <div class="r-note">Visitors: ${Object.entries(t.types).map(([k, v]) => `${SHOPPERS[k].faces[0]} ${v}`).join('  ')}</div>
+    <div class="r-note">Visitors: ${Object.entries(t.types).map(([k, v]) => `${miniPerson(k, 16)}${v}`).join('  ')}</div>
     ${t.review ? `<div class="r-note" style="margin-top:10px"><strong>Today's reviews: ${'★'.repeat(t.review.stars)}${'☆'.repeat(5 - t.review.stars)}</strong><br>${t.review.lines.join('<br>')}</div>
     <div class="r-note">Reputation: ${Math.round(t.repStart != null ? t.repStart : S.rep)} → ${Math.round(S.rep)}. The higher your reputation, the fussier shoppers get, and it slowly fades unless they stay happy.</div>` : ''}
   </div>`;
@@ -2049,6 +2290,7 @@ function eveningHTML() {
   }).join('');
 
   return `
+    ${stepsHTML('evening')}
     <h2>Closing time</h2>
     <div class="evening">
       <div>${receipt}</div>
@@ -2065,7 +2307,7 @@ function eveningHTML() {
       <button class="btn small secondary" data-act="tab" data-v="staff" aria-pressed="${shopTab === 'staff'}">Staff</button>
     </div>
     <div class="cards">${cards}</div>
-    <div class="actions"><button class="btn" data-act="next">Start day ${S.day + 1}</button></div>`;
+    <div class="actions primary"><button class="btn" data-act="next">Start day ${S.day + 1}</button></div>`;
 }
 
 function comingUpHTML() {
@@ -2190,13 +2432,14 @@ function showShopperGuide() {
     const acc = ACCESSORIES.find(a => a.brings === k);
     const how = acc ? `${acc.emoji} ${acc.name} (from level ${acc.level})` : 'Always visit';
     const now = k === 'adult' || (acc && hasAcc(acc.id));
-    return `<tr><td style="font-size:26px">${s.faces[0]}</td><td><strong>${s.name}</strong><br><span class="${now ? 'good' : 'hint'}">${now ? 'Visiting your shop' : 'Not visiting yet'}</span></td><td>${s.desc}</td><td>${how}</td></tr>`;
+    return `<tr><td>${miniPerson(k, 44)}</td><td><strong>${s.name}</strong><br><span class="${now ? 'good' : 'hint'}">${now ? 'Visiting your shop' : 'Not visiting yet'}</span></td><td>${s.desc}</td><td>${how}</td></tr>`;
   }).join('');
   const box = openModal(`<h2>Shopper guide</h2>
     <p>Every item has a hidden fair price. Each type of shopper compares your price with it in a different way.</p>
     <div style="overflow-x:auto"><table class="stats"><thead><tr><th></th><th>Who</th><th>What they do</th><th>How to attract them</th></tr></thead><tbody>${rows}</tbody></table></div>
     <h3 style="margin-top:14px">What their faces mean</h3>
-    <p>😍 Bargain! 😀 Happy with the price. 🤔 A bit pricey, but bought it. 😬 Too expensive, walked away. 🤷 Just looking. 😞 It was sold out.</p>
+    <p>${Object.keys(MOOD_LABEL).map(m => `${moodSVG(m, 24)} ${MOOD_LABEL[m]}`).join('&nbsp;&nbsp; ')}</p>
+    <p class="hint">In the shop, a coloured ring under each shopper shows their type. Tap anyone to see who they are and what they think.</p>
     <p class="hint">Tip: if most faces are 😍, you could charge more. If you see lots of 😬, your price is too high for that crowd.</p>
     <div class="actions"><button class="btn" id="gClose">Got it</button></div>`, 'Shopper guide');
   box.querySelector('#gClose').addEventListener('click', closeModal);
@@ -2258,6 +2501,7 @@ const ACTIONS = {
   hire: b => hireStaff(b.dataset.id),
   fire: b => fireStaff(b.dataset.id),
   customise: () => showCustomise(),
+  menu: () => showMenu(),
   guide: () => showShopperGuide(),
   badges: () => showBadges(),
   parent: () => showParent()
@@ -2304,6 +2548,13 @@ document.addEventListener('change', e => {
   if (e.target.dataset.qty) { const id = e.target.dataset.qty; e.target.value = buyQty[id] || 0; }
   if (e.target.dataset.price) { const id = e.target.dataset.price; const p = S.items[id].price; e.target.value = feature('cents') ? p.toFixed(2) : p; }
   if (e.target.dataset.dest) buyDest[e.target.dataset.dest] = e.target.value;
+});
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('#stage [data-info]');
+  if (!el || modalOpen()) return;
+  const k = el.dataset.info, info = INFO.get(/^\d+$/.test(k) ? Number(k) : k);
+  if (info) showInfo(info);
 });
 
 document.addEventListener('keydown', e => {
