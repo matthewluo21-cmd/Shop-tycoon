@@ -199,7 +199,7 @@ figcaption{font-weight:700;margin-bottom:4px}
 .theme-btn{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:12px 8px;cursor:pointer;text-align:center}
 .theme-btn .em{font-size:38px;display:block}
 .theme-btn[aria-pressed="true"]{border-color:var(--ink);background:var(--soft)}
-.start-field{display:grid;gap:4px;max-width:420px;margin:0 auto}
+.start-field{display:grid;gap:4px;max-width:420px;margin:0}
 .start-field input{font-size:20px}
 
 /* v4 additions */
@@ -271,6 +271,30 @@ button,.btn,.swatch,.theme-btn,.choice,.stepbtn{touch-action:manipulation}
   .progress{font-size:13px}
 }
 
+/* v8: modes, lucky cards, dice, share, compete */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:8px 0}
+.mode-btn{background:var(--panel);border:3px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;text-align:left;font-size:16px;line-height:1.35}
+.mode-btn[aria-pressed="true"]{border-color:var(--ink);background:var(--soft)}
+.mode-btn[disabled]{opacity:.6;cursor:not-allowed}
+.theme-btn[disabled]{opacity:.55;cursor:not-allowed}
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0}
+.flipcard{min-height:110px;border:3px solid var(--ink);border-radius:16px;background:repeating-linear-gradient(45deg,#2563A6 0 10px,#1D4E8A 10px 20px);cursor:pointer;font-size:42px;box-shadow:0 4px 0 var(--ink);color:#fff}
+.flipcard:active{transform:translateY(2px)}
+.flipcard .qmark{font-family:'Fredoka',sans-serif;font-weight:700;font-size:60px;line-height:1;text-shadow:0 3px 0 rgba(0,0,0,.3)}
+.rcard{border:3px solid var(--ink);border-radius:16px;padding:10px;font-size:15px;line-height:1.3;background:var(--panel)}
+.rcard.win{background:#DDF3E6;border-color:var(--gain);color:#14502F}
+.rcard.lose{background:#FBE0DD;border-color:var(--loss);color:#7A1F18}
+.rcard.missed{opacity:.75;background:var(--soft)}
+.dice{font-family:'Fredoka',sans-serif;font-weight:700;font-size:72px;text-align:center;border:4px solid var(--ink);border-radius:20px;padding:6px 0;margin:10px 0;background:var(--soft)}
+.dice.win{background:#DDF3E6;color:#14502F}.dice.lose{background:#FBE0DD;color:#7A1F18}
+.modal.wide{max-width:780px}
+.share-prev{text-align:center;margin:8px 0}
+.share-img{max-width:100%;max-height:52vh;border:3px solid var(--ink);border-radius:14px}
+.codebox{width:100%;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;border:2px solid var(--line);border-radius:10px;padding:8px;background:var(--soft);color:var(--ink);word-break:break-all}
+table.stats tr.you td{background:#FFF3C4;font-weight:700}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) table.stats tr.you td{background:#4A4020}}
+.rcard strong{display:inline-block;margin-bottom:2px}
+
 /* Modal */
 .modal-back{position:fixed;inset:0;background:rgba(10,18,30,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:200}
 .modal{background:var(--panel);color:var(--ink);border:3px solid var(--ink);border-radius:20px;max-width:560px;width:100%;padding:20px;max-height:92%;overflow:auto}
@@ -295,8 +319,9 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
 .badge{border:2px solid var(--line);border-radius:14px;padding:10px;text-align:center}
 .badge .em{font-size:32px;display:block}
 .badge.locked{opacity:.4}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--panel);
-  padding:10px 18px;border-radius:12px;font-weight:700;z-index:300;max-width:90%}
+.toast{background:var(--ink);color:var(--panel);padding:10px 18px;border-radius:12px;font-weight:700;max-width:100%;box-shadow:0 4px 0 rgba(0,0,0,.2);pointer-events:auto}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:300;display:flex;flex-direction:column-reverse;gap:8px;align-items:center;width:max-content;max-width:90%;pointer-events:none}
+.topbar:empty{display:none}
 
 @media (max-width:760px){
   .row,.row.pricing,.row.store{grid-template-columns:1fr 1fr}
@@ -328,7 +353,7 @@ table.stats th,table.stats td{border-bottom:1px solid var(--line);padding:6px 4p
    SHOP TYCOON v2
    CONFIG — parents: change numbers here to tune the game.
    ============================================================ */
-const GAME_VERSION = '7.0 (iPad layout, new visuals)';
+const GAME_VERSION = '8.0 (adult mode, sharing)';
 const CONFIG = {
   startCash: 100,
   startRep: 50,               // reputation out of 100
@@ -353,6 +378,8 @@ const CONFIG = {
   loanRepayPct: 25,
   slots: 5,
   glassLevel: 8,                 // from this level your shelves become glass cabinets
+  chanceLossCap: 0.25,           // adult mode: a bad chance never costs more than this share of your cash
+  challengeDays: 14,             // length of a 'Challenge a friend' game
   tierCash: [3, 5, 8, 12, 18],   // base $ reward by difficulty tier 1–5 (grows with level)
   tierPoints: [1, 1, 2, 2, 3],   // maths points by difficulty tier 1–5
   rewardGrowth: 0.4,             // reward multiplier added per game level
@@ -504,7 +531,7 @@ const EVENTS = {
   thief:        { emoji: '🦹', name: 'Shoplifter',     text: 'A shoplifter sneaked into the shop.', mult: 1, bad: true, loss: 'thief', fore: 'a shoplifter' }
 };
 
-const TOPICS = { money: 'Money and change', pct: 'Percentages', frac: 'Fractions', int: 'Negative numbers', chance: 'Chance', data: 'Data', meas: 'Measurement', gst: 'GST', ratio: 'Rates and ratios', alg: 'Algebra', dec: 'Decimals', num: 'Order of operations and powers', time: 'Time' };
+const TOPICS = { money: 'Money and change', pct: 'Percentages', frac: 'Fractions', int: 'Negative numbers', chance: 'Chance', data: 'Data', meas: 'Measurement', gst: 'GST', ratio: 'Rates and ratios', alg: 'Algebra', dec: 'Decimals', num: 'Order of operations and powers', time: 'Time', geo: 'Coordinates' };
 
 const BADGES = [
   { id: 'firstProfit', emoji: '💰', name: 'First profit',             test: () => S.history.some(h => h.profit > 0) },
@@ -531,8 +558,16 @@ const BADGES = [
   { id: 'lvl9',        emoji: '💫', name: 'Reached level 9',          test: () => S.level >= 9 },
   { id: 'lvl12',       emoji: '🏆', name: 'Reached level 12',         test: () => S.level >= 12 },
   { id: 'allAcc',      emoji: '🎁', name: 'Every accessory',          test: () => ACCESSORIES.every(a => S.acc[a.id]) },
-  { id: 'allRooms',    emoji: '🏰', name: 'Every room',               test: () => ROOMS.every(r => S.rooms[r.id]) }
+  { id: 'allRooms',    emoji: '🏰', name: 'Every room',               test: () => ROOMS.every(r => S.rooms[r.id]) },
+  { id: 'luck5',       emoji: '🍀', mode: 'adult', name: 'Won 5 chances in a row',      test: () => (S.luck && S.luck.best >= 5) },
+  { id: 'gamble10',    emoji: '🎴', mode: 'adult', name: 'Took the gamble 10 times',    test: () => (S.luck && S.luck.gambles >= 10) },
+  { id: 'safe10',      emoji: '🛡️', mode: 'adult', name: 'Played it safe 10 times',     test: () => (S.luck && S.luck.safe >= 10) },
+  { id: 'jackpot',     emoji: '💎', mode: 'adult', name: 'Won $150 in one go',          test: () => (S.luck && S.luck.big >= 150) },
+  { id: 'challenger',  emoji: '🏁', name: 'Finished a 14-day challenge', test: () => !!(S.challenge && S.challenge.done) },
+  { id: 'rivalBeat',   emoji: '🥊', name: 'Beat a rival',                 test: () => !!S.rivalBeaten },
+  { id: 'showOff',     emoji: '📤', name: 'Shared your shop',             test: () => !!S.shared }
 ];
+['streak5', 'mental10', 'pts25', 'tier5'].forEach(id => { BADGES.find(b => b.id === id).mode = 'maths'; });
 
 /* ============================================================
    Helpers
@@ -575,10 +610,13 @@ const buyChance = r => clamp(0.95 - (r - 0.7) * 1.2, 0.02, 0.95);
 const calcTokensMax = () => CONFIG.calcTokensPerDay + (hasRoom('office') ? 2 : 0) + (S.staff && S.staff.manager ? 1 : 0);
 
 function toast(msg) {
+  let box = document.getElementById('toasts');
+  if (!box) { box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
+  while (box.children.length >= 4) box.children[0].remove();
   const t = document.createElement('div');
   t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2600);
+  box.appendChild(t);
+  setTimeout(() => t.remove(), 2800);
 }
 
 function parseAnswer(v) {
@@ -631,7 +669,7 @@ function confirmBox(title, text, okLabel) {
 
 /* ---------- Maths settings (shared by every shop on this device) ---------- */
 function loadSettings() {
-  const def = { challenge: 0, kumon: 'off', wrongPenalty: false };
+  const def = { challenge: 0, kumon: 'off', wrongPenalty: false, sharing: false };
   try { return Object.assign(def, JSON.parse(localStorage.getItem('shopTycoon_settings') || '{}')); } catch (e) { return def; }
 }
 function saveSettings() { try { localStorage.setItem('shopTycoon_settings', JSON.stringify(SETTINGS)); } catch (e) {} }
@@ -792,77 +830,172 @@ const qty = (k, d) => `${k} × ${esc(d.name)}`;
 const sup = n => ['⁰', '¹', '²', '³', '⁴', '⁵', '⁶'][n];
 const shuffle = a => a.map(x => [Math.random(), x]).sort((p, q) => p[0] - q[0]).map(x => x[1]);
 
+/* ---------- Anti-repeat helpers: nothing repeats within its last 3 appearances ---------- */
+function pushHist(key, id, keep) {
+  const R = S.recent || (S.recent = {}), a = R[key] || (R[key] = []);
+  a.push(id); while (a.length > (keep || 3)) a.shift();
+}
+function recentHas(key, id) { return !!(S && S.recent && S.recent[key] && S.recent[key].includes(id)); }
+/* Try question kinds in a fresh-first random order until one works. */
+function tryKinds(key, ids, K, force) {
+  let order;
+  if (force) order = [force];
+  else {
+    const fresh = ids.filter(k => !recentHas(key, k)), rest = ids.filter(k => !fresh.includes(k));
+    order = shuffle(fresh).concat(shuffle(rest));
+  }
+  for (const k of order) {
+    const out = K[k] && K[k]();
+    if (out) { if (!force) pushHist(key, k); out.kind = k; return out; }
+  }
+  return null;
+}
+
 const Q = {
   saleOptions(tier) { return [[10, 50], [20, 25], [15, 30, 35], [[20, 10], [25, 10]], [[25, 10], [30, 15], [20, 15]]][tier - 1]; },
-  sale(tier, d, price, opt) {
-    const base = { topic: 'pct', tier };
+
+  /* ----- Starting a sale ----- */
+  sale(tier, d, price, opt, force) {
+    const base = { topic: 'pct', tier }, nm = esc(d.name);
+    const wh = S.today && S.today.wholesale && S.today.wholesale[d.id];
     if (Array.isArray(opt)) {
       const [a, b] = opt, k = (1 - a / 100) * (1 - b / 100);
-      const p1 = round2(price * (1 - a / 100)), p2 = round2(p1 * (1 - b / 100));
-      if (tier >= 5) {
-        const overall = round2(100 - k * 100);
-        return { sale: p2, q: { ...base, title: 'Double discount', tol: 0.05, display: numStr(overall) + '%',
-          q: `Your ${esc(d.name)} is ${a}% off, then an extra ${b}% off the new price. What is the <strong>total</strong> percentage off? (Careful: it isn't ${a + b}%.)`,
+      const p1 = round2(price * (1 - a / 100)), p2 = round2(p1 * (1 - b / 100)), overall = round2(100 - k * 100);
+      const K = {
+        price: () => ({ ...base, title: 'Double discount', money: true,
+          q: `Your ${nm} costs ${money(price)}. Take ${a}% off, then another ${b}% off the new price. What is the final sale price?`,
+          answer: p2, hint: `Two steps. First find ${100 - a}% of ${money(price)}.`,
+          solution: `${100 - a}% of ${money(price)} = ${money(p1)}. Then ${100 - b}% of ${money(p1)} = ${money(p2)}.` }),
+        save: () => ({ ...base, title: 'Double discount', money: true,
+          q: `Your ${nm} costs ${money(price)}. After ${a}% off and then ${b}% off the new price, how much money comes off in total?`,
+          answer: round2(price - p2), hint: 'Work out the final price first, then subtract it from the original.',
+          solution: `Final price ${money(p2)}. ${money(price)} − ${money(p2)} = ${money(price - p2)}.` }),
+        overall: tier >= 4 ? () => ({ ...base, title: 'Double discount', tol: 0.05, display: numStr(overall) + '%',
+          q: `Your ${nm} is ${a}% off, then an extra ${b}% off the new price. What is the <strong>total</strong> percentage off? (Careful: it isn't ${a + b}%.)`,
           answer: overall, hint: `Work out how much of the price is left: ${1 - a / 100} × ${1 - b / 100}.`,
-          solution: `${1 - a / 100} × ${1 - b / 100} = ${numStr(k)}, so ${numStr(k * 100)}% of the price is left. Total discount = 100% − ${numStr(k * 100)}% = ${numStr(overall)}%.` } };
-      }
-      return { sale: p2, q: { ...base, title: 'Double discount', money: true,
-        q: `Your ${esc(d.name)} costs ${money(price)}. Take ${a}% off, then another ${b}% off the new price. What is the final sale price?`,
-        answer: p2, hint: `Two steps. First find ${100 - a}% of ${money(price)}.`,
-        solution: `${100 - a}% of ${money(price)} = ${money(p1)}. Then ${100 - b}% of ${money(p1)} = ${money(p2)}.` } };
+          solution: `${1 - a / 100} × ${1 - b / 100} = ${numStr(k)}, so ${numStr(k * 100)}% of the price is left. Total discount = 100% − ${numStr(k * 100)}% = ${numStr(overall)}%.` }) : null
+      };
+      const q = tryKinds('q:sale', Object.keys(K).filter(x => K[x]), K, force);
+      return { sale: p2, q };
     }
     const off = round2(price * opt / 100), sale = round2(price - off);
     const hints = { 10: '10% means divide by 10.', 50: '50% is half.', 20: 'Find 10%, then double it.', 25: '25% is a quarter, so divide by 4.', 15: 'Find 10%. Half of that is 5%. Add them together.', 30: 'Find 10%, then multiply by 3.', 35: 'Find 10% × 3, then add 5%.' };
-    return { sale, q: { ...base, title: 'Sale time', money: true,
-      q: `Your ${esc(d.name)} normally costs ${money(price)}. Today it is ${opt}% off. What is the sale price?`,
-      answer: sale, hint: hints[opt] || '', solution: `${opt}% of ${money(price)} is ${money(off)}. Then ${money(price)} − ${money(off)} = ${money(sale)}.` } };
+    const h = hints[opt] || '';
+    const K = {
+      price: () => ({ ...base, title: 'Sale time', money: true,
+        q: `Your ${nm} normally costs ${money(price)}. Today it is ${opt}% off. What is the sale price?`,
+        answer: sale, hint: h, solution: `${opt}% of ${money(price)} is ${money(off)}. Then ${money(price)} − ${money(off)} = ${money(sale)}.` }),
+      amount: tier <= 4 ? () => ({ ...base, title: 'Sale time', money: true,
+        q: `Your ${nm} normally costs ${money(price)}. Today it is ${opt}% off. How much money comes off the price?`,
+        answer: off, hint: h, solution: `${opt}% of ${money(price)} = ${money(off)}.` }) : null,
+      three: (tier >= 2 && tier <= 4) ? () => ({ ...base, title: 'Sale time', money: true,
+        q: `${nm} are ${opt}% off ${money(price)} today. A shopper buys 3. How much do they pay in total?`,
+        answer: round2(sale * 3), hint: 'Find the sale price of one first, then multiply by 3.',
+        solution: `Sale price = ${money(sale)}. 3 × ${money(sale)} = ${money(sale * 3)}.` }) : null,
+      profit: (tier >= 3 && wh) ? () => { const pr = round2(sale - wh);
+        return { ...base, topic: 'money', title: 'Is the sale worth it?', money: true, display: dollars(pr),
+          q: `Your ${nm} cost you ${money(wh)} each. With ${opt}% off ${money(price)}, how much profit do you make on each one? (A loss is a negative number.)`,
+          answer: pr, hint: 'Sale price first, then subtract what it cost you.',
+          solution: `Sale price ${money(sale)} − cost ${money(wh)} = ${dollars(pr)}.` }; } : null,
+      pctback: tier >= 3 ? () => ({ ...base, title: 'Read the sale sign', tol: 0.6, display: opt + '%',
+        q: `A sign says ${nm}: was ${money(price)}, now ${money(sale)}. What percentage off is that?`,
+        answer: opt, hint: `Find how much was taken off, then divide by the original price and × 100.`,
+        solution: `${money(price)} − ${money(sale)} = ${money(off)}. ${money(off)} ÷ ${money(price)} × 100 ≈ ${opt}%.` }) : null,
+      orig: tier >= 4 ? () => ({ ...base, title: 'Work backwards', money: true, tol: 0.02,
+        q: `After ${opt}% off, a ${nm} costs ${money(sale)}. What was the original price?`,
+        answer: price, hint: `You pay ${100 - opt}% of the original, so divide ${money(sale)} by ${(100 - opt) / 100}.`,
+        solution: `${money(sale)} ÷ ${(100 - opt) / 100} = ${money(price)}.` }) : null
+    };
+    const q = tryKinds('q:sale', Object.keys(K).filter(x => K[x]), K, force);
+    return { sale, q };
   },
 
+  /* ----- Buying in bulk ----- */
   bulkDeal(tier) { return [[10], [pick([20, 25])], [15], [12.5], [15, 5]][tier - 1]; },
-  bulk(tier, n, unit, deal) {
-    const total = round2(unit * n), base = { topic: 'pct', tier, title: 'Bulk deal', money: true };
-    if (deal.length === 2) {
-      const [a, b] = deal, p1 = round2(total * (1 - a / 100)), pay = round2(p1 * (1 - b / 100));
-      return { pay, q: { ...base, q: `${n} × ${money(unit)} = ${money(total)}. Bulk deal: ${a}% off, then a ${b}% loyalty discount on the new total. How much do you pay?`,
-        answer: pay, hint: `Two steps: ${100 - a}% of ${money(total)}, then ${100 - b}% of that.`, solution: `${100 - a}% of ${money(total)} = ${money(p1)}. ${100 - b}% of ${money(p1)} = ${money(pay)}.` } };
-    }
-    const pct = deal[0], off = round2(total * pct / 100), pay = round2(total - off);
+  bulk(tier, n, unit, deal, force) {
+    const total = round2(unit * n), base = { topic: 'pct', tier, title: 'Bulk deal', money: true }, dbl = deal.length === 2;
+    let pct = deal[0], off, pay;
+    if (dbl) { const [a, b] = deal, p1 = round2(total * (1 - a / 100)); pay = round2(p1 * (1 - b / 100)); off = round2(total - pay); }
+    else { off = round2(total * pct / 100); pay = round2(total - off); }
+    const descr = dbl ? `${deal[0]}% off, then a further ${deal[1]}% off the new total` : `${pct}% off`;
     const hints = { 10: 'Divide by 10 to find 10%.', 20: 'Find 10%, then double it.', 25: '25% is a quarter.', 15: '10% plus half of 10%.', 12.5: '12.5% is one-eighth, so divide by 8.' };
-    return { pay, q: { ...base, q: `${n} × ${money(unit)} = ${money(total)}. You get ${pct}% off for buying in bulk. How much do you pay?`,
-      answer: pay, hint: hints[pct], solution: `${pct}% of ${money(total)} is ${money(off)}. Then ${money(total)} − ${money(off)} = ${money(pay)}.` } };
+    let payFinal = pay;
+    const K = {
+      pay: () => dbl
+        ? ({ ...base, q: `${n} × ${money(unit)} = ${money(total)}. Bulk deal: ${deal[0]}% off, then a ${deal[1]}% loyalty discount on the new total. How much do you pay?`,
+            answer: pay, hint: `Two steps: ${100 - deal[0]}% of ${money(total)}, then ${100 - deal[1]}% of that.`,
+            solution: `${100 - deal[0]}% of ${money(total)} = ${money(round2(total * (1 - deal[0] / 100)))}. ${100 - deal[1]}% of that = ${money(pay)}.` })
+        : ({ ...base, q: `${n} × ${money(unit)} = ${money(total)}. You get ${pct}% off for buying in bulk. How much do you pay?`,
+            answer: pay, hint: hints[pct], solution: `${pct}% of ${money(total)} is ${money(off)}. Then ${money(total)} − ${money(off)} = ${money(pay)}.` }),
+      save: tier <= 4 ? () => ({ ...base, q: `${n} × ${money(unit)} = ${money(total)}. The deal is ${descr}. How much do you <strong>save</strong>?`,
+        answer: off, hint: dbl ? 'Find what you pay, then subtract it from the total.' : hints[pct], solution: `${descr} of ${money(total)} saves ${money(off)}.` }) : null,
+      unit: tier >= 2 ? () => ({ ...base, tol: 0.01, q: `${n} × ${money(unit)} = ${money(total)}. After the deal (${descr}), what is the price per item, to the nearest cent?`,
+        answer: round2(pay / n), hint: `Work out what you pay in total, then divide by ${n}.`, solution: `You pay ${money(pay)}. ${money(pay)} ÷ ${n} ≈ ${money(pay / n)} each.` }) : null,
+      afford: (tier >= 2 && tier <= 4) ? () => ({ ...base, topic: 'money', q: `${n} × ${money(unit)} = ${money(total)}. The deal saves you ${money(off)}. How many extra items could the savings buy at the normal price of ${money(unit)} each? (Whole items only.)`,
+        answer: Math.floor(off / unit + 1e-9), hint: `Divide the savings by ${money(unit)} and round down.`, solution: `${money(off)} ÷ ${money(unit)} = ${numStr(off / unit)}, so ${Math.floor(off / unit + 1e-9)} whole items.` }) : null,
+      pctback: (!dbl && tier >= 3) ? () => ({ ...base, tol: 0.6, display: pct + '%', q: `A supplier charges ${money(pay)} for ${n} items that would normally cost ${money(total)}. What percentage discount is that?`,
+        answer: pct, hint: `Discount = (${money(total)} − ${money(pay)}) ÷ ${money(total)} × 100.`, solution: `${money(off)} ÷ ${money(total)} × 100 ≈ ${pct}%.` }) : null,
+      compare: (!dbl && tier >= 2 && tier <= 4) ? () => {
+        let alt = round2(off * pick([0.8, 0.9, 1.15, 1.3])); if (alt === off) alt = round2(off + 1);
+        const best = Math.max(off, alt), idx = off >= alt ? 0 : 1; payFinal = round2(total - best);
+        const choices = [`Offer A: ${pct}% off`, `Offer B: ${money(alt)} off`];
+        return { ...base, title: 'Pick the better offer', choices, correctIndex: idx, display: choices[idx],
+          q: `Your supplier lets you take the better of two offers on ${money(total)} of stock. Which is better?`,
+          hint: `Work out how much Offer A takes off, then compare with ${money(alt)}.`,
+          solution: `Offer A takes off ${pct}% of ${money(total)} = ${money(off)}. Offer B takes off ${money(alt)}. ${idx === 0 ? 'A' : 'B'} saves more, so you pay ${money(payFinal)}.` }; } : null
+    };
+    const q = tryKinds('q:bulk', Object.keys(K).filter(x => K[x]), K, force);
+    return { pay: payFinal, q };
   },
 
-  change(tier, d, price) {
-    const notes = [5, 10, 20, 50, 100, 200], base = { topic: 'money', tier, title: 'Give the right change', money: true };
-    const noteFor = v => notes.find(x => x > v + 0.001);
-    if (tier === 1) {
-      const p = Math.max(1, Math.round(price)), note = noteFor(p); if (!note) return null;
-      return { ...base, q: `A shopper buys ${qty(1, d)} for $${p} and pays with a $${note} note. How much change do they get?`, answer: note - p, hint: `Count up from $${p} to $${note}.`, solution: `$${note} − $${p} = $${note - p}.` };
-    }
-    if (tier === 2) {
-      const note = noteFor(price); if (!note) return null; const ch = round2(note - price);
-      return { ...base, q: `A shopper buys ${qty(1, d)} for ${money(price)} and pays with a $${note} note. How much change?`, answer: ch, hint: `Count up: from ${money(price)} to the next whole dollar, then up to $${note}.`, solution: `${money(note)} − ${money(price)} = ${money(ch)}.` };
-    }
-    if (tier === 3) {
-      const k = randInt(2, 4), tot = round2(price * k), note = noteFor(tot); if (!note) return null; const ch = round2(note - tot);
-      return { ...base, q: `A shopper buys ${qty(k, d)} at ${money(price)} each and pays with a $${note} note. How much change?`, answer: ch, hint: `First find the total: ${k} × ${money(price)}.`, solution: `${k} × ${money(price)} = ${money(tot)}. ${money(note)} − ${money(tot)} = ${money(ch)}.` };
-    }
-    const others = unlocked().filter(x => x.id !== d.id);
-    if (tier === 4 && others.length) {
-      const d2 = pick(others), p2 = S.items[d2.id].price, k1 = randInt(1, 3), k2 = randInt(1, 2);
-      const tot = round2(price * k1 + p2 * k2), note = noteFor(tot); if (!note) return null; const ch = round2(note - tot);
-      return { ...base, q: `A shopper buys ${qty(k1, d)} at ${money(price)} each and ${qty(k2, d2)} at ${money(p2)} each, and pays with a $${note} note. How much change?`, answer: ch, hint: 'Work out each item total, add them, then subtract from the note.', solution: `${k1} × ${money(price)} + ${k2} × ${money(p2)} = ${money(tot)}. ${money(note)} − ${money(tot)} = ${money(ch)}.` };
-    }
-    const k = randInt(3, 6), tot = round2(price * k), pay = round2(tot * 0.9), note = noteFor(pay); if (!note) return null; const ch = round2(note - pay);
-    return { ...base, tier: 5, q: `A member buys ${qty(k, d)} at ${money(price)} each and gets 10% off the total. They pay with a $${note} note. How much change?`, answer: ch, hint: `Total first (${k} × ${money(price)}), then take off 10%, then work out the change.`, solution: `${k} × ${money(price)} = ${money(tot)}. 10% off leaves ${money(pay)}. ${money(note)} − ${money(pay)} = ${money(ch)}.` };
+  /* ----- A shopper pays: change and cash questions ----- */
+  change(tier, d, price, force) {
+    const notes = [5, 10, 20, 50, 100, 200], noteFor = v => notes.find(x => x > v + 0.001);
+    const base = { topic: 'money', tier, title: 'Give the right change', money: true }, nm = esc(d.name);
+    const K = {
+      basic: () => {
+        if (tier === 1) { const p = Math.max(1, Math.round(price)), note = noteFor(p); if (!note) return null;
+          return { ...base, q: `A shopper buys ${qty(1, d)} for $${p} and pays with a $${note} note. How much change do they get?`, answer: note - p, hint: `Count up from $${p} to $${note}.`, solution: `$${note} − $${p} = $${note - p}.` }; }
+        if (tier === 2) { const note = noteFor(price); if (!note) return null; const ch = round2(note - price);
+          return { ...base, q: `A shopper buys ${qty(1, d)} for ${money(price)} and pays with a $${note} note. How much change?`, answer: ch, hint: `Count up: from ${money(price)} to the next whole dollar, then up to $${note}.`, solution: `${money(note)} − ${money(price)} = ${money(ch)}.` }; }
+        if (tier === 3) { const k = randInt(2, 4), tot = round2(price * k), note = noteFor(tot); if (!note) return null; const ch = round2(note - tot);
+          return { ...base, q: `A shopper buys ${qty(k, d)} at ${money(price)} each and pays with a $${note} note. How much change?`, answer: ch, hint: `First find the total: ${k} × ${money(price)}.`, solution: `${k} × ${money(price)} = ${money(tot)}. ${money(note)} − ${money(tot)} = ${money(ch)}.` }; }
+        const others = unlocked().filter(x => x.id !== d.id);
+        if (tier === 4 && others.length) { const d2 = pick(others), p2 = S.items[d2.id].price, k1 = randInt(1, 3), k2 = randInt(1, 2);
+          const tot = round2(price * k1 + p2 * k2), note = noteFor(tot); if (!note) return null; const ch = round2(note - tot);
+          return { ...base, q: `A shopper buys ${qty(k1, d)} at ${money(price)} each and ${qty(k2, d2)} at ${money(p2)} each, and pays with a $${note} note. How much change?`, answer: ch, hint: 'Work out each item total, add them, then subtract from the note.', solution: `${k1} × ${money(price)} + ${k2} × ${money(p2)} = ${money(tot)}. ${money(note)} − ${money(tot)} = ${money(ch)}.` }; }
+        if (tier === 4) return null;
+        const k = randInt(3, 6), pc = pick([10, 20, 25]), tot = round2(price * k), pay = round2(tot * (1 - pc / 100)), note = noteFor(pay); if (!note) return null; const ch = round2(note - pay);
+        return { ...base, q: `A member buys ${qty(k, d)} at ${money(price)} each and gets ${pc}% off the total. They pay with a $${note} note. How much change?`, answer: ch, hint: `Total first (${k} × ${money(price)}), then take off ${pc}%, then work out the change.`, solution: `${k} × ${money(price)} = ${money(tot)}. ${pc}% off leaves ${money(pay)}. ${money(note)} − ${money(pay)} = ${money(ch)}.` };
+      },
+      short: tier <= 3 ? () => {
+        const have = pick([5, 10, 15, 20, 25, 30]); let p = tier === 1 ? Math.max(1, Math.round(price)) : price;
+        if (p <= have) p = tier === 1 ? have + randInt(2, 9) : round2(have + rand(1, 9));
+        const need = round2(p - have);
+        return { ...base, title: 'Short of cash', q: `A shopper has ${dollars(have)} in their wallet, but the ${nm} costs ${money(p)}. How much more do they need?`, answer: need, hint: `Subtract what they have from the price.`, solution: `${money(p)} − ${dollars(have)} = ${money(need)}.` }; } : null,
+      round5: tier >= 2 ? () => {
+        const k = tier >= 4 ? randInt(2, 5) : tier === 3 ? randInt(1, 3) : 1;
+        let tot = round2(price * k); if (Math.abs(tot * 20 - Math.round(tot * 20)) < 1e-9) { tot = round2(tot + 0.02); }
+        const r = round2(Math.round(tot * 20) / 20);
+        return { ...base, title: 'Cash rounding', q: `In Australia, cash totals are rounded to the nearest 5 cents. A shopper pays cash for ${k > 1 ? qty(k, d) + ' at ' + money(price) + ' each' : 'a ' + nm + ' at ' + money(price)}${tot !== round2(price * k) ? ' plus a 2c bag fee' : ''}, a total of ${money(tot)}. What is the cash total after rounding?`,
+          answer: r, hint: 'Look at the last digit of the cents: 1–2 round down to 0, 3–4 round up to 5, 6–7 round down to 5, 8–9 round up to 10.',
+          solution: `${money(tot)} is closest to ${money(r)} when rounded to the nearest 5 cents.` }; } : null,
+      twoNotes: tier >= 3 ? () => {
+        const k = randInt(2, 4), tot = round2(price * k);
+        const pairs = [[20, 10], [50, 20], [50, 10], [100, 50], [20, 5], [100, 20]].filter(([a, b]) => a + b > tot && a + b < tot + 60);
+        if (!pairs.length) return null; const [a, b] = pick(pairs), ch = round2(a + b - tot);
+        return { ...base, q: `A shopper buys ${qty(k, d)} at ${money(price)} each (total ${money(tot)}) and pays with a $${a} note and a $${b} note. How much change?`, answer: ch, hint: `Add the two notes first: $${a} + $${b}.`, solution: `$${a} + $${b} = $${a + b}. ${money(a + b)} − ${money(tot)} = ${money(ch)}.` }; } : null,
+      gst: (tier >= 4 && feature('gst')) ? () => { const g = round2(price / 11);
+        return { ...base, topic: 'gst', tol: 0.01, title: 'GST on the receipt', q: `The receipt for a ${nm} shows ${money(price)} including GST. How much of that is GST?`, answer: g, hint: 'GST is 1/11 of a GST-inclusive price.', solution: `${money(price)} ÷ 11 = ${money(g)}.` }; } : null
+    };
+    return tryKinds('q:change', ['basic', 'short', 'round5', 'twoNotes', 'gst'].filter(k => K[k]), K, force);
   },
 
-  loss(tier, kind) {
+  /* ----- Leaks and shoplifters ----- */
+  loss(tier, kind, force) {
     const cands = unlocked().map(d => ({ d, st: S.items[d.id].stock })).filter(c => c.st >= 4);
     if (!cands.length) return null;
-    const thief = kind === 'thief';
-    const verb = thief ? 'A shoplifter grabbed' : 'Water damaged';
-    const title = thief ? 'Stop, thief!' : 'Leaky roof!';
+    const thief = kind === 'thief', verb = thief ? 'A shoplifter grabbed' : 'Water damaged', title = thief ? 'Stop, thief!' : 'Leaky roof!';
     for (let tr = tier; tr >= 1; tr--) {
       const opts = [];
       cands.forEach(c => {
@@ -873,48 +1006,72 @@ const Q = {
         if (tr === 5) [[4, 3], [5, 4]].forEach(([d1, d2]) => { if (c.st % d1 === 0) opts.push({ c, k: 'two', d1, d2 }); });
       });
       if (!opts.length) continue;
-      const o = pick(opts), st = o.c.st, d = o.c.d, nm = esc(d.name);
+      const o = epick(opts), st = o.c.st, d = o.c.d, nm = esc(d.name), price = S.items[d.id].price;
+      let lost, left, what, sol, hintFind;
+      if (o.k === 'unit') { lost = st * o.n / o.den; left = st - lost; what = `<strong>${o.n}/${o.den}</strong> of your ${st} ${nm}`;
+        sol = `1/${o.den} of ${st} = ${st / o.den}${o.n > 1 ? `, so ${o.n}/${o.den} = ${lost}` : ''}.`;
+        hintFind = o.n === 1 ? `Find 1/${o.den} by dividing ${st} by ${o.den}.` : `Find 1/${o.den} first (${st} ÷ ${o.den}), then multiply by ${o.n}.`; }
+      else if (o.k === 'pct') { lost = st * o.p / 100; left = st - lost; what = `<strong>${o.p}%</strong> of your ${st} ${nm}`; sol = `${o.p}% of ${st} = ${lost}.`; hintFind = `${o.p}% is the same as ${fracStr(o.p, 100)}.`; }
+      else { const first = st / o.d1, rest = st - first, second = rest / o.d2; left = rest - second; lost = first + second;
+        what = `<strong>1/${o.d1}</strong> of your ${st} ${nm}, ${thief ? 'then came back for' : 'then more water ruined'} <strong>1/${o.d2} of what was left</strong>`;
+        sol = `1/${o.d1} of ${st} = ${first}, leaving ${rest}. 1/${o.d2} of ${rest} = ${second}, leaving ${left}.`;
+        hintFind = `Step by step: take away 1/${o.d1} first, then find 1/${o.d2} of the new amount.`; }
       const base = { topic: o.k === 'pct' ? 'pct' : 'frac', tier: tr, title };
-      if (o.k === 'unit') {
-        const lost = st * o.n / o.den, left = st - lost;
-        return { d, lost, q: { ...base, q: `${verb} <strong>${o.n}/${o.den}</strong> of your ${st} ${nm}. How many are left on the shelf?`, answer: left,
-          hint: o.n === 1 ? `Find 1/${o.den} by dividing ${st} by ${o.den}.` : `Find 1/${o.den} first (${st} ÷ ${o.den}), then multiply by ${o.n}.`,
-          solution: `1/${o.den} of ${st} = ${st / o.den}${o.n > 1 ? `, so ${o.n}/${o.den} = ${lost}` : ''}. ${st} − ${lost} = ${left}.` } };
-      }
-      if (o.k === 'pct') {
-        const lost = st * o.p / 100, left = st - lost;
-        return { d, lost, q: { ...base, q: `${verb} <strong>${o.p}%</strong> of your ${st} ${nm}. How many are left on the shelf?`, answer: left,
-          hint: `${o.p}% is the same as ${fracStr(o.p, 100)}.`, solution: `${o.p}% of ${st} = ${lost}. ${st} − ${lost} = ${left}.` } };
-      }
-      const first = st / o.d1, rest = st - first, second = rest / o.d2, left = rest - second;
-      return { d, lost: first + second, q: { ...base, q: `${verb} <strong>1/${o.d1}</strong> of your ${st} ${nm}, ${thief ? 'then came back for' : 'then more water ruined'} <strong>1/${o.d2} of what was left</strong>! How many are left?`, answer: left,
-        hint: `Step by step: take away 1/${o.d1} first, then find 1/${o.d2} of the new amount.`, solution: `1/${o.d1} of ${st} = ${first}, leaving ${rest}. 1/${o.d2} of ${rest} = ${second}, leaving ${left}.` } };
+      const K = {
+        left: () => ({ ...base, q: `${verb} ${what}. How many are left on the shelf?`, answer: left, hint: hintFind, solution: `${sol} ${st} − ${lost} = ${left}.` }),
+        lost: () => ({ ...base, q: `${verb} ${what}. How many ${nm} were lost?`, answer: lost, hint: hintFind, solution: `${sol} So ${lost} were lost.` }),
+        value: tr >= 3 ? () => ({ ...base, topic: 'money', money: true, q: `${verb} ${what}. Each one sells for ${money(price)}. What is the selling value of the lost items?`,
+          answer: round2(lost * price), hint: `First find how many were lost, then multiply by ${money(price)}.`, solution: `${sol} ${lost} × ${money(price)} = ${money(lost * price)}.` }) : null,
+        fracLeft: (o.k === 'unit' && tr <= 3) ? () => { const n2 = o.den - o.n;
+          return { ...base, fracOk: true, tol: 0.001, display: fracStr(n2, o.den), q: `${verb} ${what}. What fraction of the stock is left?`, answer: n2 / o.den,
+            hint: `If ${o.n}/${o.den} is gone, the rest is ${o.den}/${o.den} − ${o.n}/${o.den}.`, solution: `${o.den}/${o.den} − ${o.n}/${o.den} = ${n2}/${o.den} = ${fracStr(n2, o.den)}.` }; } : null,
+        pctLeft: (tr >= 4 && (left * 100) % st === 0) ? () => ({ ...base, topic: 'pct', display: (left * 100 / st) + '%', q: `${verb} ${what}. What percentage of the stock is left?`,
+          answer: left * 100 / st, hint: 'Percentage left = left ÷ original × 100.', solution: `${left} ÷ ${st} × 100 = ${left * 100 / st}%.` }) : null
+      };
+      const q = tryKinds('q:loss', ['left', 'lost', 'value', 'fracLeft', 'pctLeft'].filter(k => K[k]), K, force);
+      return { d, lost, q };
     }
     return null;
   },
 
-  room(tier, name) {
+  /* ----- Measuring a new room ----- */
+  room(tier, name, force) {
     const nm = esc(name.toLowerCase()), base = { topic: 'meas', tier, title: `Measuring the ${nm}` };
-    if (tier === 1) { const w = randInt(2, 9), l = randInt(2, 9);
-      return { ...base, q: `The ${nm} is a rectangle ${w} m long and ${l} m wide. What is its floor area in square metres?`, answer: w * l, display: `${w * l} m²`, hint: 'Area of a rectangle = length × width.', solution: `${w} × ${l} = ${w * l} m².` }; }
-    if (tier === 2) { const w = randInt(4, 12), l = randInt(3, 9);
-      return { ...base, q: `The ${nm} is ${w} m by ${l} m. You're putting a decorative strip around all four walls. How many metres of strip do you need?`, answer: 2 * (w + l), display: `${2 * (w + l)} m`, hint: 'Perimeter = add up all four sides.', solution: `${w} + ${l} + ${w} + ${l} = ${2 * (w + l)} m.` }; }
-    if (tier === 3) {
-      if (Math.random() < 0.5) { const w = randInt(3, 8) + 0.5, l = randInt(2, 6);
-        return { ...base, tol: 0.01, q: `The ${nm} is ${w} m long and ${l} m wide. What is its area in square metres?`, answer: w * l, display: `${numStr(w * l)} m²`, hint: `Try ${Math.floor(w)} × ${l}, then add 0.5 × ${l}.`, solution: `${w} × ${l} = ${numStr(w * l)} m².` }; }
-      const W = randInt(8, 12), L = randInt(6, 10), a = randInt(2, 4), b = randInt(2, 4);
-      return { ...base, q: `The ${nm} is an L-shape: a ${W} m × ${L} m rectangle with a ${a} m × ${b} m corner cut out. What is its area?`, answer: W * L - a * b, display: `${W * L - a * b} m²`, hint: 'Find the area of the big rectangle, then subtract the missing corner.', solution: `${W} × ${L} − ${a} × ${b} = ${W * L} − ${a * b} = ${W * L - a * b} m².` };
-    }
-    if (tier === 4) {
-      if (Math.random() < 0.5) { const w = randInt(3, 8), l = randInt(3, 8), h = 3;
-        return { ...base, q: `The ${nm} is ${w} m long, ${l} m wide and ${h} m high. What is its volume in cubic metres?`, answer: w * l * h, display: `${w * l * h} m³`, hint: 'Volume of a rectangular prism = length × width × height.', solution: `${w} × ${l} × ${h} = ${w * l * h} m³.` }; }
-      const b = randInt(2, 7) * 2, h = randInt(3, 9);
-      return { ...base, q: `Next to the ${nm} is a triangle-shaped garden bed with a base of ${b} m and a height of ${h} m. What is its area?`, answer: b * h / 2, display: `${b * h / 2} m²`, hint: 'Area of a triangle = ½ × base × height.', solution: `½ × ${b} × ${h} = ${b * h / 2} m².` };
-    }
-    const w = randInt(4, 9), l = randInt(3, 8), rate = pick([12.5, 18.5, 24.75, 32.4]), cost = round2(w * l * rate);
-    return { ...base, money: true, q: `You're tiling the ${nm}, which is ${w} m by ${l} m. Tiles cost ${money(rate)} per square metre. What will the tiles cost?`, answer: cost, hint: 'Find the area first, then multiply by the price per square metre.', solution: `Area = ${w} × ${l} = ${w * l} m². ${w * l} × ${money(rate)} = ${money(cost)}.` };
+    const K = {
+      area: () => { const w = randInt(2, 9), l = randInt(2, 9);
+        return { ...base, q: `The ${nm} is a rectangle ${w} m long and ${l} m wide. What is its floor area in square metres?`, answer: w * l, display: `${w * l} m²`, hint: 'Area of a rectangle = length × width.', solution: `${w} × ${l} = ${w * l} m².` }; },
+      tiles: () => { const w = randInt(2, 8), l = randInt(3, 9);
+        return { ...base, q: `The ${nm} floor is ${w} m by ${l} m. Each floor tile covers exactly 1 square metre. How many tiles cover the whole floor?`, answer: w * l, hint: 'Find the area in square metres.', solution: `${w} × ${l} = ${w * l} tiles.` }; },
+      perim: () => { const w = randInt(4, 12), l = randInt(3, 9);
+        return { ...base, q: `The ${nm} is ${w} m by ${l} m. You're putting a decorative strip around all four walls. How many metres of strip do you need?`, answer: 2 * (w + l), display: `${2 * (w + l)} m`, hint: 'Perimeter = add up all four sides.', solution: `${w} + ${l} + ${w} + ${l} = ${2 * (w + l)} m.` }; },
+      fence: () => { const w = randInt(4, 10), l = randInt(3, 8);
+        return { ...base, q: `A fence runs along the back wall (${w} m) and both side walls (${l} m each) of the ${nm}. The front is open. How many metres of fence?`, answer: w + 2 * l, display: `${w + 2 * l} m`, hint: 'Add the back wall and the two side walls.', solution: `${w} + ${l} + ${l} = ${w + 2 * l} m.` }; },
+      carpet: () => { const w = randInt(3, 9), l = randInt(3, 9), rate = pick([8, 10, 12, 15, 20]);
+        return { ...base, money: true, q: `Carpet costs $${rate} per square metre. The ${nm} is ${w} m by ${l} m. How much will the carpet cost?`, answer: w * l * rate, hint: 'Area first, then × the price per m².', solution: `${w} × ${l} = ${w * l} m². ${w * l} × $${rate} = $${w * l * rate}.` }; },
+      decArea: () => { const w = randInt(3, 8) + 0.5, l = randInt(2, 6);
+        return { ...base, tol: 0.01, q: `The ${nm} is ${w} m long and ${l} m wide. What is its area in square metres?`, answer: w * l, display: `${numStr(w * l)} m²`, hint: `Try ${Math.floor(w)} × ${l}, then add 0.5 × ${l}.`, solution: `${w} × ${l} = ${numStr(w * l)} m².` }; },
+      lshape: () => { const W = randInt(8, 12), L = randInt(6, 10), a = randInt(2, 4), b = randInt(2, 4);
+        return { ...base, q: `The ${nm} is an L-shape: a ${W} m × ${L} m rectangle with a ${a} m × ${b} m corner cut out. What is its area?`, answer: W * L - a * b, display: `${W * L - a * b} m²`, hint: 'Find the area of the big rectangle, then subtract the missing corner.', solution: `${W} × ${L} − ${a} × ${b} = ${W * L} − ${a * b} = ${W * L - a * b} m².` }; },
+      walls: () => { const w = randInt(4, 9), l = randInt(3, 8), h = 3;
+        return { ...base, q: `The walls of the ${nm} need painting. The room is ${w} m by ${l} m and the walls are ${h} m high. What is the total area of the four walls (ignore doors and windows)?`, answer: 2 * (w + l) * h, display: `${2 * (w + l) * h} m²`, hint: 'Perimeter × height.', solution: `Perimeter = ${2 * (w + l)} m. ${2 * (w + l)} × ${h} = ${2 * (w + l) * h} m².` }; },
+      volume: () => { const w = randInt(3, 8), l = randInt(3, 8), h = 3;
+        return { ...base, q: `The ${nm} is ${w} m long, ${l} m wide and ${h} m high. What is its volume in cubic metres?`, answer: w * l * h, display: `${w * l * h} m³`, hint: 'Volume of a rectangular prism = length × width × height.', solution: `${w} × ${l} × ${h} = ${w * l * h} m³.` }; },
+      triangle: () => { const b = randInt(2, 7) * 2, h = randInt(3, 9);
+        return { ...base, q: `Next to the ${nm} is a triangle-shaped garden bed with a base of ${b} m and a height of ${h} m. What is its area?`, answer: b * h / 2, display: `${b * h / 2} m²`, hint: 'Area of a triangle = ½ × base × height.', solution: `½ × ${b} × ${h} = ${b * h / 2} m².` }; },
+      litres: () => { const w = randInt(2, 4), l = randInt(2, 5), h = randInt(1, 2);
+        return { ...base, title: 'Water tank', q: `A rectangular water tank in the ${nm} is ${w} m long, ${l} m wide and ${h} m high. 1 cubic metre holds 1000 litres. How many litres can it hold?`, answer: w * l * h * 1000, hint: 'Volume in m³ first, then × 1000.', solution: `${w} × ${l} × ${h} = ${w * l * h} m³. × 1000 = ${w * l * h * 1000} litres.` }; },
+      tilecost: () => { const w = randInt(4, 9), l = randInt(3, 8), rate = pick([12.5, 18.5, 24.75, 32.4]), cost = round2(w * l * rate);
+        return { ...base, money: true, q: `You're tiling the ${nm}, which is ${w} m by ${l} m. Tiles cost ${money(rate)} per square metre. What will the tiles cost?`, answer: cost, hint: 'Find the area first, then multiply by the price per square metre.', solution: `Area = ${w} × ${l} = ${w * l} m². ${w * l} × ${money(rate)} = ${money(cost)}.` }; },
+      waste: () => { const [w, l] = pick([[4, 5], [5, 6], [4, 10], [5, 8], [6, 10], [8, 10], [5, 10]]), a = w * l;
+        return { ...base, q: `The ${nm} floor is ${w} m by ${l} m. Each tile covers 1 square metre and you must order 10% extra for breakages. How many tiles do you order?`, answer: a * 1.1, hint: 'Area first, then add 10%.', solution: `${w} × ${l} = ${a}. 10% of ${a} = ${a / 10}. ${a} + ${a / 10} = ${a * 1.1}.` }; },
+      paintcost: () => { const [w, l] = pick([[3, 5], [4, 4], [6, 6], [5, 7], [4, 8], [6, 10], [7, 9]]), A = 2 * (w + l) * 3, lit = A / 8, cost = lit * 9;
+        return { ...base, money: true, q: `The walls of the ${nm} (${w} m by ${l} m, 3 m high) need one coat of paint. 1 litre covers 8 m² and costs $9. How much will the paint cost?`, answer: cost, hint: 'Wall area first, then litres, then cost.', solution: `Wall area = ${2 * (w + l)} × 3 = ${A} m². ${A} ÷ 8 = ${lit} litres. ${lit} × $9 = $${cost}.` }; }
+    };
+    const ids = [['area', 'tiles'], ['perim', 'carpet', 'fence', 'area'], ['decArea', 'lshape', 'walls'], ['volume', 'triangle', 'litres', 'walls'], ['tilecost', 'waste', 'paintcost', 'lshape']][tier - 1];
+    return tryKinds('q:room', ids, K, force);
   }
 };
+
 
 /* Evening bonus questions. min/max = the tiers each question type can be asked at. */
 const KUMON_TOPICS = { EF: ['frac_add', 'frac_mul', 'dec_ops', 'pct_of'], G: ['int_ops', 'int_week', 'alg_sub', 'alg_solve'], H: ['alg_solve', 'alg_word', 'int_ops', 'frac_mul'] };
@@ -1067,32 +1224,118 @@ const POOL = [
   { id: 'meas', topic: 'meas', min: 1, max: 5, make: t => Q.room(t, pick(['stockroom', 'window display', 'staff room'])) }
 ];
 
+/* ---------- 13 more bonus-question types ---------- */
+POOL.push(
+  { id: 'ratio_scale', topic: 'ratio', min: 2, max: 3, make: t => {
+    const [a, b] = pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5]]), k = t === 2 ? randInt(3, 6) : randInt(6, 12), nm = esc(pick(unlocked()).name);
+    return { title: 'Display recipe', q: `Each display needs ${a} boxes for every ${b} ${nm} on show. How many boxes do you need for ${b * k} ${nm}?`, answer: a * k,
+      hint: `How many groups of ${b} are there in ${b * k}?`, solution: `${b * k} ÷ ${b} = ${k} groups. ${k} × ${a} = ${a * k} boxes.` }; } },
+  { id: 'price_rise', topic: 'pct', min: 2, max: 4, make: t => {
+    const base = pick([20, 40, 50, 80, 120, 150]), p = t === 2 ? pick([10, 20, 50]) : pick([15, 25, 30, 12.5]), up = round2(base * p / 100), v = round2(base + up);
+    return { title: 'Supplier price rise', money: true, q: `Your supplier raises the price of a $${base} item by ${p}%. What is the new price?`, answer: v,
+      hint: `Find ${p}% of $${base}, then add it on.`, solution: `${p}% of $${base} = ${money(up)}. $${base} + ${money(up)} = ${money(v)}.` }; } },
+  { id: 'price_rise_rev', topic: 'pct', min: 5, max: 5, make: () => {
+    const p = pick([10, 20, 25, 50]), orig = pick([40, 60, 80, 120, 200]), now = round2(orig * (1 + p / 100));
+    return { title: 'Work backwards', money: true, tol: 0.02, q: `After a ${p}% price rise, an item now costs ${money(now)}. What did it cost before the rise?`, answer: orig,
+      hint: `The new price is ${100 + p}% of the old price, so divide by ${1 + p / 100}.`, solution: `${money(now)} ÷ ${1 + p / 100} = ${money(orig)}.` }; } },
+  { id: 'coord_grid', topic: 'geo', min: 2, max: 4, make: t => {
+    const lim = t === 2 ? 6 : 9, lo = t >= 3 ? -lim : 0, sx = randInt(lo, lim), sy = randInt(lo, lim), span = t === 2 ? 4 : 7;
+    const dx = randInt(1, span) * (t >= 3 && Math.random() < 0.5 ? -1 : 1), dy = randInt(1, span) * (t >= 3 && Math.random() < 0.5 ? -1 : 1);
+    const ex = sx + dx, ey = sy + dy, askX = Math.random() < 0.5, mv = (n, pos, neg) => n > 0 ? `${n} ${pos}` : `${-n} ${neg}`;
+    return { title: 'Stock trolley', q: `On the shop floor map, the stock trolley starts at (${numStr(sx)}, ${numStr(sy)}). It moves ${mv(dx, 'right', 'left')} and ${mv(dy, 'up', 'down')}. What is its new <strong>${askX ? 'x' : 'y'}-coordinate</strong>?`,
+      answer: askX ? ex : ey, display: numStr(askX ? ex : ey), hint: askX ? 'Right adds to x. Left subtracts from x.' : 'Up adds to y. Down subtracts from y.',
+      solution: `The trolley ends at (${numStr(ex)}, ${numStr(ey)}), so the ${askX ? 'x' : 'y'}-coordinate is ${numStr(askX ? ex : ey)}.` }; } },
+  { id: 'pattern_seq', topic: 'alg', min: 2, max: 5, make: t => {
+    if (t <= 4) {
+      const a = randInt(2, 9), d = t === 2 ? randInt(2, 5) : randInt(3, 9), nth = t === 2 ? 7 : t === 3 ? 10 : 12, seq = [0, 1, 2, 3].map(i => a + i * d);
+      return { title: 'Sales pattern', q: `Daily sales grew like this: ${seq.join(', ')}, … If the pattern continues, how many items will you sell on day ${nth}?`, answer: a + (nth - 1) * d,
+        hint: 'Find how much it goes up each day, then keep adding.', solution: `It adds ${d} each day. Day ${nth} = ${a} + ${nth - 1} × ${d} = ${a + (nth - 1) * d}.` };
+    }
+    const m = randInt(2, 7), c = pick([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7]), n = randInt(12, 25);
+    return { title: 'Pattern rule', q: `The number of customers on day n follows the rule <strong>${m}n ${c < 0 ? '−' : '+'} ${Math.abs(c)}</strong>. How many customers on day ${n}?`, answer: m * n + c,
+      hint: `Swap n for ${n}: ${m} × ${n}, then ${c < 0 ? 'subtract' : 'add'} ${Math.abs(c)}.`, solution: `${m} × ${n} = ${m * n}. ${m * n} ${c < 0 ? '−' : '+'} ${Math.abs(c)} = ${m * n + c}.` }; } },
+  { id: 'roster_time', topic: 'time', min: 3, max: 4, make: t => {
+    const sh = randInt(7, 9), sm = pick([0, 15, 30, 45]), eh = randInt(15, 18), em = pick([0, 15, 30, 45]), br = pick([30, 45]);
+    const hrs = ((eh * 60 + em) - (sh * 60 + sm) - br) / 60, f = (h, m) => `${h > 12 ? h - 12 : h}:${String(m).padStart(2, '0')} ${h >= 12 ? 'pm' : 'am'}`;
+    if (t === 4) { const rate = pick([22, 25, 28]), pay = round2(hrs * rate);
+      return { title: 'Roster check', money: true, q: `A staff member works from ${f(sh, sm)} to ${f(eh, em)} with an unpaid ${br}-minute break, and earns $${rate} an hour. What is their pay for the shift?`, answer: pay,
+        hint: 'Hours worked first (take off the break), then × the hourly rate.', solution: `${f(sh, sm)} to ${f(eh, em)} minus ${br} minutes = ${numStr(hrs)} hours. ${numStr(hrs)} × $${rate} = ${money(pay)}.` }; }
+    return { title: 'Roster check', tol: 0.01, display: numStr(hrs) + ' hours', q: `A staff member works from ${f(sh, sm)} to ${f(eh, em)} with an unpaid ${br}-minute break. How many hours do they work? (Use a decimal, such as 7.5.)`, answer: hrs,
+      hint: 'Find the time from start to finish, then take off the break. 15 minutes = 0.25 hours.', solution: `${f(sh, sm)} to ${f(eh, em)} minus ${br} minutes = ${numStr(hrs)} hours.` }; } },
+  { id: 'afford_most', topic: 'money', min: 2, max: 3, make: t => {
+    const d = pick(unlocked()); let price, budget;
+    if (t === 2) { price = randInt(3, 9); budget = price * randInt(4, 9) + randInt(1, price - 1); }
+    else { price = round2(rand(2.5, 9.5)); budget = round2(price * randInt(4, 9) + rand(0.2, price * 0.8)); }
+    const n = Math.floor(budget / price + 1e-9);
+    return { title: 'Budget', q: `You have ${money(budget)} to spend and each ${esc(d.name)} costs ${money(price)} from the supplier. What is the greatest number you can buy?`, answer: n,
+      hint: 'Divide, then round down: you can only buy whole items.', solution: `${money(budget)} ÷ ${money(price)} = ${numStr(budget / price)}, so ${n} whole items.` }; } },
+  { id: 'estimate', topic: 'num', min: 1, max: 3, make: () => {
+    const a = pick([19, 21, 29, 31, 39, 49, 11]), p = pick([4.87, 5.12, 2.95, 9.9, 3.05, 6.98]), ra = Math.round(a / 10) * 10, rp = Math.round(p), est = ra * rp;
+    const vals = shuffle([est, est + ra, est - ra, est * 2]), choices = vals.map(v => '$' + v);
+    return { title: 'Quick estimate', q: `A pallet has ${a} boxes and each box costs ${money(p)}. Which is the best estimate of the total cost?`, choices, correctIndex: vals.indexOf(est), display: '$' + est,
+      hint: `Round ${a} to ${ra} and ${money(p)} to $${rp}.`, solution: `${ra} × $${rp} = $${est}. (The exact answer is ${money(a * p)}.)` }; } },
+  { id: 'simple_interest', topic: 'pct', min: 4, max: 5, make: t => {
+    if (t === 4) { const P = pick([100, 200, 500, 1000]), r = pick([4, 5, 6, 8]), y = pick([2, 3, 4]), I = P * r * y / 100;
+      return { title: 'Simple interest', money: true, q: `You borrow $${P} for ${y} years at ${r}% simple interest per year. How much interest do you pay in total?`, answer: I,
+        hint: 'Simple interest = amount × rate × years.', solution: `$${P} × ${r}% = $${P * r / 100} a year. × ${y} years = $${I}.` }; }
+    const P = pick([100, 200, 500]), I = round2(P * 1.21 - P);
+    return { title: 'Compound interest', money: true, q: `You borrow $${P} at 10% interest per year, compounded. After 2 years, how much interest has built up in total?`, answer: I,
+      hint: 'Year 1: add 10%. Year 2: add 10% of the new amount.', solution: `After year 1: ${money(P * 1.1)}. After year 2: ${money(P * 1.21)}. Interest = ${money(I)}.` }; } },
+  { id: 'mean_missing', topic: 'data', min: 4, max: 5, make: t => {
+    const n = t === 4 ? 4 : 5; let m, known, miss;
+    do { m = randInt(10, 30); known = Array.from({ length: n - 1 }, () => randInt(Math.max(1, m - 8), m + 8)); miss = n * m - known.reduce((a, b) => a + b, 0); } while (miss < 0 || miss > 60);
+    return { title: 'Find the missing day', q: `Over ${n} days your mean sales were ${m} items a day. The first ${n - 1} days were ${known.join(', ')}. How many did you sell on the last day?`, answer: miss,
+      hint: `Total sales = mean × number of days = ${m} × ${n}.`, solution: `${m} × ${n} = ${m * n} items altogether. ${m * n} − (${known.join(' + ')}) = ${miss}.` }; } },
+  { id: 'frac_compare', topic: 'frac', min: 2, max: 3, make: () => {
+    let a, b, c, d, va, vb;
+    do { b = pick([2, 3, 4, 5, 6, 8]); d = pick([3, 4, 5, 6, 8, 10]); a = randInt(1, b - 1); c = randInt(1, d - 1); va = a / b; vb = c / d; } while (Math.abs(va - vb) < 0.04 || b === d);
+    const choices = [`${a}/${b}`, `${c}/${d}`], idx = va > vb ? 0 : 1;
+    return { title: 'Which is bigger?', choices, correctIndex: idx, display: choices[idx], q: `Which fraction of a shelf is fuller: ${a}/${b} or ${c}/${d}?`,
+      hint: 'Turn both into decimals, or use a common denominator.', solution: `${a}/${b} = ${numStr(Math.round(va * 1000) / 1000)} and ${c}/${d} = ${numStr(Math.round(vb * 1000) / 1000)}. So ${choices[idx]} is bigger.` }; } },
+  { id: 'unit_convert', topic: 'meas', min: 1, max: 3, make: t => {
+    const sets = [['m', 'cm', 100], ['kg', 'g', 1000], ['L', 'mL', 1000], ['cm', 'mm', 10], ['hours', 'minutes', 60]], [from, to, f] = pick(t === 1 ? sets.slice(0, 4) : sets);
+    const v = t === 3 ? pick([1.5, 2.5, 0.75, 3.2, 4.5]) : randInt(2, 9);
+    if (t === 3 && Math.random() < 0.5) return { title: 'Convert units', tol: 0.001, q: `${numStr(Math.round(v * f * 1000) / 1000)} ${to} = how many ${from}?`, answer: v, hint: `Divide by ${f}.`, solution: `${numStr(Math.round(v * f * 1000) / 1000)} ÷ ${f} = ${numStr(v)} ${from}.` };
+    return { title: 'Convert units', tol: 0.001, q: `${numStr(v)} ${from} = how many ${to}?`, answer: v * f, hint: `Multiply by ${f}.`, solution: `${numStr(v)} × ${f} = ${numStr(Math.round(v * f * 1000) / 1000)} ${to}.` }; } },
+  { id: 'prob_two', topic: 'chance', min: 5, max: 5, make: () => {
+    const n = pick([4, 5, 8, 10]), k = randInt(1, n - 1);
+    return { title: 'Two spins', fracOk: true, tol: 0.0005, display: fracStr(k * k, n * n), q: `Your prize wheel has ${n} equal sections and ${k} of them win. You spin it twice. What is the chance of winning <strong>both</strong> times? (Give a fraction.)`,
+      answer: (k * k) / (n * n), hint: 'Multiply the two chances together.', solution: `${k}/${n} × ${k}/${n} = ${k * k}/${n * n}${gcd(k * k, n * n) > 1 ? ' = ' + fracStr(k * k, n * n) : ''}.` }; } }
+);
+
+/* ---------- Bonus question picker with anti-repeat ---------- */
 function makeBonusQuestion(tier) {
   const t = S.today, soldIds = Object.keys(t.sold);
   const c = { t, soldIds, totalSold: soldIds.reduce((a, id) => a + t.sold[id], 0), priced: unlocked().filter(d => S.items[d.id].price > 0 && t.wholesale[d.id]) };
   const mx = Math.max(0, ...soldIds.map(id => t.sold[id])), tops = soldIds.filter(id => t.sold[id] === mx);
   c.top = tops.length === 1 ? tops[0] : null;
   const pool = POOL.filter(e => !e.need || e.need(c));
+  const lastTopic = (S.recent && S.recent['bonus:topic'] && S.recent['bonus:topic'][0]) || null;
+  const done = (e, kumon) => { pushHist('q:bonus', e.id, 3); S.recent['bonus:topic'] = [e.topic]; return buildQ(e, clamp(tier, e.min, e.max), c, kumon); };
   const k = KUMON_TOPICS[SETTINGS.kumon];
   if (k && Math.random() < 0.4) {
-    const kp = pool.filter(e => k.includes(e.id));
-    if (kp.length) { const e = pick(kp); return buildQ(e, clamp(tier, e.min, e.max), c, true); }
+    const kp = pool.filter(e => k.includes(e.id) && !recentHas('q:bonus', e.id));
+    if (kp.length) return done(pick(kp), true);
   }
-  const fit = pool.filter(e => tier >= e.min && tier <= e.max);
-  const e = pick(fit.length ? fit : pool);
-  return buildQ(e, clamp(tier, e.min, e.max), c, false);
+  let fit = pool.filter(e => tier >= e.min && tier <= e.max);
+  if (!fit.length) fit = pool;
+  let fresh = fit.filter(e => !recentHas('q:bonus', e.id));
+  const other = fresh.filter(e => e.topic !== lastTopic);
+  if (other.length) fresh = other;
+  return done(pick(fresh.length ? fresh : fit), false);
 }
+
 function buildQ(e, tr, c, kumon) { const q = e.make(tr, c); return Object.assign({ topic: e.topic }, q, { tier: q.tier || tr, kumon }); }
 
 /* ============================================================
    Save slots
    ============================================================ */
-function blankState(name, themeKey) {
+function blankState(name, themeKey, mode, challenge) {
   const s = {
     v: 2, shopName: name || 'My Shop', theme: themeKey, day: 1, level: 1,
     cash: CONFIG.startCash, rep: CONFIG.startRep, items: {}, acc: {}, rooms: {}, history: [], stats: {},
     totalCorrect: 0, streak: 0, bestStreak: 0, mentalCorrect: 0, badges: [], loan: 0, vipSale: false,
-    mathPoints: 0, tierStats: {}, skips: 0, staff: {}, custom: {}, bossWins: 0, repTrend: 0, seen: {},
+    mathPoints: 0, tierStats: {}, skips: 0, staff: {}, custom: {}, bossWins: 0, repTrend: 0, seen: {}, mode: mode || 'maths', challenge: challenge || null, recent: {}, luck: null, nextBoost: {}, seenShoppers: {}, shared: false, rivalBeaten: false,
     phase: 'morning', today: null, forecast: null, insured: false, calcTokens: CONFIG.calcTokensPerDay,
     created: Date.now(), updated: Date.now()
   };
@@ -1133,6 +1376,11 @@ function playSlot(n) {
   if (!S.staff) S.staff = {};
   if (!S.custom) S.custom = {};
   if (!S.seen) { S.seen = {}; markSeenAll(); }
+  if (!S.mode) S.mode = 'maths';
+  if (!S.recent) S.recent = {};
+  if (!S.seenShoppers) S.seenShoppers = {};
+  if (!S.nextBoost) S.nextBoost = {};
+  bumpRecords();
   if (S.today && S.today.saleTier == null) { S.today.saleTier = rollTier(); S.today.bulkTier = rollTier(); S.today.bulkDeal = Q.bulkDeal(S.today.bulkTier); }
   if (S.phase === 'day' && S.today) { render(); endDay(); return; }
   if (!S.today) { startDay(); return; }
@@ -1149,8 +1397,8 @@ function goToSlots() {
 /* ============================================================
    Game flow
    ============================================================ */
-function newGame(slot, name, themeKey) {
-  S = blankState(name, themeKey); CUR = slot;
+function newGame(slot, name, themeKey, mode, challenge) {
+  S = blankState(name, themeKey, mode, challenge); CUR = slot;
   startDay();
 }
 
@@ -1160,12 +1408,12 @@ function startDay() {
   const t = { event: 'normal', wholesale: {}, spent: 0, revenue: 0, tips: 0, income: 0, bonus: 0, payout: 0, insurance: 0, sold: {}, lost: 0,
     customers: 0, prompts: 0, notes: [], checks: {}, sales: {}, changeDone: false, bonusAsked: false, lossDone: false, openStock: {}, types: {} };
 
-  let ev = 'normal';
-  if (feature('events')) {
-    if (S.forecast && Math.random() < S.forecast.chance / 10) { ev = S.forecast.event; t.forecastHit = true; }
-    else { ev = weightedPick(DAILY_EVENTS); if (ev === 'heatwave' && seasonIdx(S.day) !== 0) ev = 'normal'; }
-  }
+  const dp = chooseDailyEvent(); let ev = dp.ev; t.forecastHit = dp.hit;
+  pushHist('days', ev, 3);
   t.event = ev;
+  seedWorld('day');
+  t.luck = round2(0.8 + (er() + er()) * 0.2);   // a moderate day-to-day swing in foot traffic
+  const nb = S.nextBoost || {}; t.boostCrowd = nb.crowd || 1; t.boostTol = nb.tol || 1; t.boostSupplier = nb.supplier || 1; S.nextBoost = {};
   t.partyDay = hasRoom('party') && S.day % 7 === 0;
   t.season = seasonIdx(S.day); t.holiday = holidayOn(S.day);
   t.deco = t.holiday ? t.holiday.emoji : SEASONS[t.season].deco;
@@ -1182,12 +1430,20 @@ function startDay() {
   if (t.insured && E.bad && !E.loss) { t.payout = CONFIG.insurancePayout; S.cash = round2(S.cash + t.payout); }
   if (E.rep) S.rep = clamp(S.rep + E.rep, 0, 100);
   if (E.cash) { t.found = Math.round(15 * (1 + 0.5 * (S.level - 1))); S.cash = round2(S.cash + t.found); t.notes.push(`You found ${money(t.found)}!`); }
-  if (E.block) { const opts = unlocked(); if (opts.length > 1 || S.level > 1) { const b = pick(opts); t.blocked = b.id; t.notes.push(`${b.emoji} ${esc(b.name)} can't be ordered today.`); } }
+  if (E.block) { const opts = unlocked(); if (opts.length > 1 || S.level > 1) { const b = epick(opts); t.blocked = b.id; t.notes.push(`${b.emoji} ${esc(b.name)} can't be ordered today.`); } }
+  if (E.fee) { const c = round2(8 * (1 + 0.4 * (S.level - 1))); S.cash = round2(S.cash - c); t.other = round2((t.other || 0) + c); t.notes.push(`🐀 The pest controller's bill was ${money(c)}.`); }
+  if (E.freebies) { const its = unlocked(), picks = [epick(its)]; if (its.length > 2 && er() < 0.5) { const o = epick(its); if (o.id !== picks[0].id) picks.push(o); }
+    picks.forEach(d => { const it = S.items[d.id], k = Math.min(4 + Math.floor(S.level / 2), shelfMax() - it.stock); if (k > 0) { it.stock += k; t.notes.push(`🎁 Free samples: +${k} ${d.emoji} ${esc(d.name)}.`); } }); }
+  if (E.sick) { const ids = Object.keys(S.staff || {}).filter(k => S.staff[k]); if (ids.length) { t.sick = epick(ids); const sx = STAFF.find(x => x.id === t.sick); t.notes.push(`${sx.emoji} Your ${sx.name.toLowerCase()} is off sick today.`); } }
+  if (t.boostCrowd !== 1) t.notes.push(t.boostCrowd > 1 ? '🍀 Yesterday\'s good luck means a busier day today.' : '😬 Yesterday\'s bad luck means a quieter day today.');
+  if (t.boostTol !== 1) t.notes.push(t.boostTol > 1 ? '🍀 Shoppers are in a spending mood today.' : '😬 Shoppers are a little pickier today.');
+  if (t.boostSupplier !== 1) t.notes.push('🍀 Your supplier is offering about 15% off today.');
   if (t.partyDay) t.notes.push('🎉 It\'s party day! Expect 50% more shoppers.');
 
   unlocked().forEach(d => {
     let c = d.cost;
-    if (feature('cents')) c *= (0.95 + Math.random() * 0.1);
+    if (feature('cents')) c *= (0.95 + er() * 0.1);
+    if (t.boostSupplier !== 1) c *= t.boostSupplier;
     if (E.wholesale) c *= E.wholesale;
     if (hasRoom('workshop')) c *= 0.9;
     t.wholesale[d.id] = round2(c);
@@ -1220,6 +1476,8 @@ async function handleLoss(kind) {
   t.lossDone = true;
   if (kind === 'thief' && hasRoom('security')) { t.notes.push('Your security office caught the shoplifter. Nothing was taken.'); save(); render(); return; }
   if (t.insured) { t.notes.push('Insurance covered it. No stock was lost.'); save(); render(); return; }
+  if (isAdult()) { adultLoss(kind); save(); render(); return; }
+  seedWorld('loss');
   const L = Q.loss(rollTier(), kind);
   if (!L) { t.notes.push(kind === 'thief' ? 'The shoplifter left empty-handed.' : 'Luckily, nothing on the shelves was badly damaged.'); save(); render(); return; }
   await maybeAsk(L.q);
@@ -1238,9 +1496,9 @@ async function buyItem(id) {
   if (dest === 'store' && storageUsed() + q > CONFIG.storageMax) { toast(`The storage room has space for ${CONFIG.storageMax - storageUsed()} more items.`); return; }
   let total = round2(unit * q);
   if (feature('bulk') && q >= CONFIG.bulkThreshold) {
-    const B = Q.bulk(t.bulkTier, q, unit, t.bulkDeal);
+    const B = Q.bulk(t.bulkTier, q, unit, t.bulkDeal, isAdult() ? 'pay' : undefined);
     if (S.cash < B.pay) { toast(`Not enough cash. You need ${money(B.pay)}.`); return; }
-    await maybeAsk(B.q);
+    if (isAdult()) toast(`Bulk deal: you save ${money(total - B.pay)}.`); else await maybeAsk(B.q);
     total = B.pay;
   }
   if (S.cash < total) { toast(`Not enough cash. You need ${money(total)}.`); return; }
@@ -1268,14 +1526,14 @@ function moveStock(id, dir) {
 async function runSale(id, optStr) {
   const d = itemDef(id), price = S.items[id].price, t = S.today;
   const opt = String(optStr).includes('+') ? String(optStr).split('+').map(Number) : Number(optStr);
-  const R = Q.sale(t.saleTier, d, price, opt);
-  await maybeAsk(R.q);
+  const R = Q.sale(t.saleTier, d, price, opt, isAdult() ? 'price' : undefined);
+  if (!isAdult()) await maybeAsk(R.q);
   t.sales[id] = R.sale;
   save(); render();
 }
 
 function saleOptsHTML() {
-  return Q.saleOptions(S.today.saleTier).map(o => Array.isArray(o)
+  return (isAdult() ? [10, 20, 25, 50] : Q.saleOptions(S.today.saleTier)).map(o => Array.isArray(o)
     ? `<option value="${o[0]}+${o[1]}">${o[0]}% off, then ${o[1]}% more</option>`
     : `<option value="${o}">${o}% off</option>`).join('');
 }
@@ -1303,21 +1561,26 @@ function shopperCount() {
   if (hasRoom('garden')) n += 5;
   if (hasRoom('window')) n *= 1.1;
   if (S.today.partyDay) n *= 1.5;
-  if (hasStaff('cashier')) n += 3;
-  if (hasStaff('greeter')) n += 2;
+  if (staffOn('cashier')) n += 3;
+  if (staffOn('greeter')) n += 2;
   const t = S.today, si = t.season != null ? t.season : seasonIdx(S.day), h = t.holiday;
   n *= SEASONS[si].mult * ((THEME_SEASON[S.theme] || [1, 1, 1, 1])[si]);
   if (h) n *= h.mult * ((h.themeBoost || {})[S.theme] || 1);
   if (E.themeMult && E.themeMult[S.theme]) n *= E.themeMult[S.theme] / E.mult;
   if (t.bossBoost) n *= t.bossBoost;
   if (S.rep < 30) n *= 0.8;
+  n *= (t.luck || 1) * (t.boostCrowd || 1);
   return Math.max(3, Math.round(n * E.mult));
 }
 
 function runDay() {
   const n = shopperCount();
-  const ctx = { times: Array.from({ length: n }, (_, i) => (i + Math.random()) / n * CONFIG.dayLengthMs), idx: 0, elapsed: 0 };
-  const surpriseAt = (S.level >= 2 && Math.random() < 0.45) ? rand(0.3, 0.7) * CONFIG.dayLengthMs : null;
+  seedWorld('cust');
+  const ctx = { times: Array.from({ length: n }, (_, i) => (i + cr()) / n * CONFIG.dayLengthMs), idx: 0, elapsed: 0 };
+  DAYCTX = ctx;
+  seedWorld('sur');
+  const surpriseAt = (S.level >= 2 && er() < 0.45) ? (0.3 + er() * 0.4) * CONFIG.dayLengthMs : null;
+  seedWorld('cust2');
   let surprised = false;
   clearInterval(dayTimer);
   dayTimer = setInterval(() => {
@@ -1330,28 +1593,33 @@ function runDay() {
   }, 100);
 }
 
-function pickShopperType() {
+function pickShopperType(r0) {
   const types = ['adult'];
   ACCESSORIES.forEach(a => { if (a.brings && hasAcc(a.id)) types.push(a.brings); });
   const t = S.today;
   if (t && EVENTS[t.event].vip && !types.includes('vip')) types.push('vip');
   if (t && t.holiday && t.holiday.kids && !types.includes('kid')) types.push('kid');
-  let r = Math.random() * types.reduce((a, k) => a + SHOPPERS[k].weight, 0);
+  if (t && EVENTS[t.event].kids && !types.includes('kid')) types.push('kid');
+  if (t && EVENTS[t.event].tourists && !types.includes('tourist')) types.push('tourist');
+  let r = r0 * types.reduce((a, k) => a + SHOPPERS[k].weight, 0);
   for (const k of types) { r -= SHOPPERS[k].weight; if (r <= 0) return k; }
   return 'adult';
 }
 
 function customerArrives(progress) {
   const t = S.today;
-  const typeKey = pickShopperType(), type = SHOPPERS[typeKey];
+  const r1 = cr(), r2 = cr(), r3 = cr(), r4 = cr(), r5 = cr();
+  const typeKey = pickShopperType(r1), type = SHOPPERS[typeKey];
+  if (S.seenShoppers) S.seenShoppers[typeKey] = true;
   t.types[typeKey] = (t.types[typeKey] || 0) + 1;
   const ids = Object.keys(t.openStock);
   const gifts = t.holiday && t.holiday.gifts ? [...ids].sort((a, b) => itemDef(b).fair - itemDef(a).fair).slice(0, 2) : [];
   const weight = k => (t.sales[k] != null ? 2 : 1) * (type.cheap ? 10 / itemDef(k).fair : 1) * (gifts.includes(k) ? 2.5 : 1);
   if (!t.mood) t.mood = {};
-  let tolMult = (EVENTS[t.event].tol || 1) * ((t.holiday && t.holiday.tol) || 1) * (hasStaff('expert') ? 1.05 : 1);
+  let tolMult = (EVENTS[t.event].tol || 1) * ((t.holiday && t.holiday.tol) || 1) * (staffOn('expert') ? 1.05 : 1) * (t.boostTol || 1);
   if (t.rushLeft > 0) { tolMult *= 1.25; t.rushLeft--; }
-  let r = Math.random() * ids.reduce((a, k) => a + weight(k), 0), id = ids[ids.length - 1];
+  if (t.coldLeft > 0) { tolMult *= 0.85; t.coldLeft--; }
+  let r = r2 * ids.reduce((a, k) => a + weight(k), 0), id = ids[ids.length - 1];
   for (const k of ids) { r -= weight(k); if (r <= 0) { id = k; break; } }
   const it = S.items[id], d = itemDef(id), price = priceOf(id);
   t.customers++;
@@ -1363,11 +1631,12 @@ function customerArrives(progress) {
     let p = buyChance(ratio);
     if (t.sales[id] != null) p += 0.05;
     if (hasRoom('cafe')) p += 0.05;
-    if (hasStaff('cashier')) p += 0.03;
+    if (staffOn('cashier')) p += 0.03;
+    p -= (EVENTS[t.event].buyPenalty || 0);
     p = Math.min(0.97, p);
-    if (Math.random() < p) {
+    if (r3 < p) {
       bought = 1;
-      if (type.multi && it.stock >= 2 && Math.random() < type.multi) bought = 2;
+      if (type.multi && it.stock >= 2 && r4 < type.multi) bought = 2;
       it.stock -= bought;
       const amount = round2(price * bought);
       t.revenue = round2(t.revenue + amount); S.cash = round2(S.cash + amount);
@@ -1377,7 +1646,7 @@ function customerArrives(progress) {
       if (it.stock === 0) t.soldOutMoment = true;
       const md = ratio < 0.85 ? 'loved' : ratio < 1.1 ? 'happy' : 'okay'; t.mood[md] = (t.mood[md] || 0) + 1;
       face = ratio < 0.85 ? 'bargain' : ratio < 1.1 ? 'happy' : 'okay';
-      if (it.stock === 0 && hasStaff('clerk') && (it.store || 0) > 0) { const k = Math.min(it.store, shelfMax()); it.store -= k; it.stock += k; toast(`👷 Your stock clerk refilled ${d.name} from storage (${k}).`); }
+      if (it.stock === 0 && staffOn('clerk') && (it.store || 0) > 0) { const k = Math.min(it.store, shelfMax()); it.store -= k; it.stock += k; toast(`👷 Your stock clerk refilled ${d.name} from storage (${k}).`); }
       text = `${bought > 1 ? '2 × ' : ''}${d.emoji}`;
     } else {
       const md = ratio > 1.15 ? 'walked' : 'browsed'; t.mood[md] = (t.mood[md] || 0) + 1;
@@ -1388,7 +1657,10 @@ function customerArrives(progress) {
   walkShopper({ type: typeKey, look: makeLook(typeKey), mood: face, item: d.name, shelfIdx, say: `${moodSVG(face, 18)} ${esc(text)}`, bought: bought > 0, pay: bought ? '+' + money(price * bought) : '' });
   renderDayStats(); renderShelves(); renderTop();
 
-  if (bought && feature('change') && !t.changeDone && progress > 0.25 && Math.random() < 0.35 && t.prompts < CONFIG.maxPromptsPerDay) {
+  if (isAdult()) {
+    const cn = t.chanceN || 0;
+    if (bought && feature('change') && cn < 2 && progress > (cn === 0 ? 0.2 : 0.6) && r5 < 0.4) { t.chanceN = cn + 1; dayChance(); }
+  } else if (bought && feature('change') && !t.changeDone && progress > 0.25 && r5 < 0.35 && t.prompts < CONFIG.maxPromptsPerDay) {
     const C = Q.change(rollTier(), d, price);
     if (C) {
       t.changeDone = true; paused = true;
@@ -1469,7 +1741,7 @@ function coinPop(reg, text) {
 function clearShoppers() { document.querySelectorAll('.shopper, .pop').forEach(e => e.remove()); }
 
 function endDay() {
-  clearInterval(dayTimer); dayTimer = null;
+  clearInterval(dayTimer); dayTimer = null; DAYCTX = null;
   const t = S.today;
   ACCESSORIES.forEach(a => { if (hasAcc(a.id) && a.income) t.income = round2(t.income + a.income); });
   S.cash = round2(S.cash + t.income);
@@ -1485,7 +1757,7 @@ function endDay() {
   let repUp = (t.review.stars - 3) * 2;
   ACCESSORIES.forEach(a => { if (hasAcc(a.id) && a.repDaily) repUp += a.repDaily; });
   if (hasRoom('garden')) repUp += 1;
-  if (hasStaff('greeter')) repUp += 1;
+  if (staffOn('greeter')) repUp += 1;
   const before = S.rep;
   S.rep = clamp(S.rep + repUp - (S.rep - 50) * CONFIG.repDecay, 0, 100);
   t.repDay = round2(S.rep - before); S.repTrend = Math.round(S.rep - (t.repStart != null ? t.repStart : before));
@@ -1494,7 +1766,9 @@ function endDay() {
   S.phase = 'evening';
   checkBadges();
   const ups = checkLevel();
-  S.forecast = feature('events') ? { event: pick(['storm', 'outage', 'damage', 'thief']), chance: randInt(2, 6) } : null;
+  bumpRecords();
+  seedWorld('fc');
+  S.forecast = feature('events') ? { event: epick(['storm', 'outage', 'damage', 'thief']), chance: erandInt(2, 6) } : null;
   save(); render();
   if (ups.length) showLevelUp(ups);
 }
@@ -1508,7 +1782,7 @@ function updateLastHistory() {
 /* Total profit is never reduced by buying accessories or rooms, so levels can't go backwards. */
 function checkLevel() {
   const ups = [];
-  while (CONFIG.levels[S.level] && totalProfit() >= CONFIG.levels[S.level].profit && (S.mathPoints || 0) >= CONFIG.levels[S.level].points) {
+  while (CONFIG.levels[S.level] && totalProfit() >= CONFIG.levels[S.level].profit && (isAdult() || (S.mathPoints || 0) >= CONFIG.levels[S.level].points)) {
     S.level++; ups.push(S.level);
   }
   if (ups.length) checkBadges();
@@ -1517,6 +1791,7 @@ function checkLevel() {
 
 function checkBadges() {
   BADGES.forEach(b => {
+    if (b.mode && b.mode !== modeKey()) return;
     if (!S.badges.includes(b.id) && b.test()) { S.badges.push(b.id); toast(`Badge earned: ${b.emoji} ${b.name}`); }
   });
 }
@@ -1530,7 +1805,7 @@ function unlocksFor(level) {
   ROOMS.filter(r => r.level === level).forEach(r => list.push(`${r.emoji} New room: ${r.name}`));
   STAFF.filter(x => x.level === level).forEach(x => list.push(`${x.emoji} You can now hire a ${x.name.toLowerCase()} (Staff tab)`));
   const f = CONFIG.features;
-  if ([3, 5, 8, 11].includes(level)) list.push(`🧠 Maths questions get harder: now around ${TIER_TAG[baseTier()]}`);
+  if (!isAdult() && [3, 5, 8, 11].includes(level)) list.push(`🧠 Maths questions get harder: now around ${TIER_TAG[baseTier()]}`);
   if (f.cents === level) list.push('🪙 Prices now use cents, and supplier prices change a little each day');
   if (f.sales === level) list.push('🏷️ You can run sales');
   if (f.bulk === level) list.push(`📦 Bulk deals: ${CONFIG.bulkDiscountPct}% off when you buy ${CONFIG.bulkThreshold} or more`);
@@ -1565,7 +1840,7 @@ async function buyRoom(id) {
   S.cash = round2(S.cash - r.cost); S.rooms[id] = true; S.seen['room:' + id] = true;
   if (id === 'security') S.rep = clamp(S.rep + 5, 0, 100);
   save(); render();
-  await ask(Q.room(rollTier(), r.name));
+  if (!isAdult()) await ask(Q.room(rollTier(), r.name));
   if (S.phase === 'evening') updateLastHistory();
   toast(`${r.emoji} ${r.name} is open!`);
   checkBadges(); save(); render();
@@ -1771,18 +2046,31 @@ Object.assign(EVENTS, {
 });
 const DAILY_EVENTS = [['normal', 5], ['sunny', 1.5], ['festival', 1], ['supplierSale', 1], ['influencer', 0.7], ['roadworks', 1], ['priceWar', 1],
   ['taxRefund', 0.8], ['luckyFind', 0.6], ['badReview', 0.7], ['newspaper', 0.6], ['delay', 0.7], ['celebVisit', 0.4], ['heatwave', 0.6]];
-function weightedPick(list) { let r = Math.random() * list.reduce((a, x) => a + x[1], 0); for (const [k, w] of list) { r -= w; if (r <= 0) return k; } return list[0][0]; }
+function weightedPick(list, rng) { let r = (rng || Math.random)() * list.reduce((a, x) => a + x[1], 0); for (const [k, w] of list) { r -= w; if (r <= 0) return k; } return list[0][0]; }
+Object.assign(EVENTS, {
+  schoolTrip: { emoji: '🚌', name: 'School excursion', text: 'A school group is in the area: about 35% more shoppers, and lots of kids.', mult: 1.35, kids: true },
+  viralPost:  { emoji: '🎬', name: 'Viral video', text: 'A video of your shop went viral! About 50% more shoppers today and reputation +3.', mult: 1.5, rep: 3 },
+  marketDay:  { emoji: '🧺', name: 'Market day', text: 'The local market is on. About 25% more shoppers, and tourists drop in.', mult: 1.25, tourists: true },
+  coldSnap:   { emoji: '🧊', name: 'Cold snap', text: 'It is freezing outside. About 15% fewer shoppers.', mult: 0.85, themeMult: { icecream: 0.6 }, season: [2] },
+  freeStock:  { emoji: '🎁', name: 'Free samples', text: 'Your supplier sent free samples. Check your shelves!', mult: 1, freebies: true },
+  cardOutage: { emoji: '📡', name: 'Card machine down', text: 'Card payments are not working. About 20% fewer shoppers, and some walk out when they hear it is cash only.', mult: 0.8, buyPenalty: 0.08 },
+  giftCards:  { emoji: '🎟️', name: 'Gift card day', text: 'Shoppers have gift cards to spend, so they accept prices about 8% higher.', mult: 1.1, tol: 1.08 },
+  pest:       { emoji: '🐀', name: 'Pest control visit', text: 'A pest controller had to visit. It costs money, and reputation −2.', mult: 0.95, fee: true, rep: -2 },
+  staffSick:  { emoji: '🤒', name: 'Staff sick day', text: 'One of your team called in sick. You still pay their wages, but you lose their help today.', mult: 1, sick: true, needs: () => Object.keys((S && S.staff) || {}).some(k => S.staff[k]) }
+});
+EVENTS.heatwave.season = [0];
+DAILY_EVENTS.push(['schoolTrip', 0.8], ['viralPost', 0.35], ['marketDay', 0.8], ['coldSnap', 0.8], ['freeStock', 0.7], ['cardOutage', 0.6], ['giftCards', 0.7], ['pest', 0.5], ['staffSick', 0.6]);
 
 /* Mid-day surprises */
 const SURPRISES = ['bus', 'alarm', 'spill', 'radio', 'wallet', 'rush'];
 function applySurprise(ctx) {
-  const t = S.today, id = pick(SURPRISES);
+  const t = S.today, id = epick(SURPRISES);
   let msg = '';
   const addShoppers = k => { for (let i = 0; i < k; i++) ctx.times.push(ctx.elapsed + 300 + i * 350); ctx.times.sort((a, b) => a - b); };
   if (id === 'bus') { const k = 5 + S.level; addShoppers(k); msg = `🚌 A tour bus pulls up! ${k} extra shoppers are coming.`; }
   else if (id === 'alarm') { const left = ctx.times.length - ctx.idx, k = Math.min(left, Math.ceil(left * 0.25)); ctx.times.splice(ctx.idx, k); msg = `🚨 False fire alarm! Everyone had to step outside, and ${k} shopper${k === 1 ? '' : 's'} went home.`; }
   else if (id === 'spill') {
-    if (hasStaff('clerk')) msg = '🧃 Someone spilled a drink! Your stock clerk cleaned it up straight away.';
+    if (staffOn('clerk')) msg = '🧃 Someone spilled a drink! Your stock clerk cleaned it up straight away.';
     else { const c = round2(5 * (1 + 0.3 * (S.level - 1))); S.cash = round2(S.cash - c); t.other = round2((t.other || 0) + c); msg = `🧃 Someone spilled a drink! A cleaner cost ${money(c)}. A stock clerk would do it for free.`; }
   }
   else if (id === 'radio') { S.rep = clamp(S.rep + 3, 0, 100); addShoppers(4); msg = '📻 A radio host mentioned your shop on air. Reputation +3 and a few extra shoppers.'; }
@@ -1821,7 +2109,7 @@ const BOSSES = [
 ];
 const bossFor = d => (d >= 7 && d % 7 === 0) ? BOSSES[(d / 7 - 1) % BOSSES.length] : null;
 
-function bossSteps(id, tr) {
+function bossStepsA(id, tr) {
   const t = S.today;
   if (id === 'inspector') {
     let temp;
@@ -1921,18 +2209,84 @@ async function runBoss() {
 }
 
 /* ---------- Staff ---------- */
-function wageQuestion(tr, s, rate) {
-  const h = CONFIG.staffHours, daily = round2(rate * h), nm = s.name.toLowerCase();
-  if (tr <= 2) { const r = Math.max(1, Math.round(rate)); return { tier: tr, topic: 'money', money: true, title: 'Working out wages', q: `If a ${nm} earned $${r} an hour for ${h} hours, how much would that be for the day?`, answer: r * h, hint: `${r} × ${h}.`, solution: `$${r} × ${h} = $${r * h}.` }; }
-  if (tr === 3) return { tier: 3, topic: 'money', money: true, title: 'Working out wages', q: `Your ${nm} earns ${money(rate)} an hour and works ${h} hours. What is their daily pay?`, answer: daily, hint: `${h} × $${Math.floor(rate)}, plus ${h} × ${Math.round((rate % 1) * 100)}c.`, solution: `${money(rate)} × ${h} = ${money(daily)}.` };
-  if (tr === 4) { const w = round2(daily * 5); return { tier: 4, topic: 'money', money: true, title: 'Weekly pay', q: `Your ${nm} earns ${money(rate)} an hour, works ${h} hours a day and 5 days a week. What is their weekly pay?`, answer: w, hint: `Daily pay first (${money(rate)} × ${h}), then × 5.`, solution: `${money(rate)} × ${h} = ${money(daily)} a day. × 5 = ${money(w)}.` }; }
-  const sup = round2(daily * 0.12);
-  return { tier: 5, topic: 'pct', money: true, title: 'Wages and super', q: `Your ${nm} earns ${money(daily)} a day. Employers also pay 12% superannuation on top. How much super is that per day?`, answer: sup, hint: '12% = 10% + 2%.', solution: `10% of ${money(daily)} = ${money(daily * 0.1)} and 2% = ${money(daily * 0.02)}. Together: ${money(sup)}.` };
+/* ---------- Wages: a different style of question each time ---------- */
+function wageQuestion(tr, s, rate, force) {
+  const h = CONFIG.staffHours, daily = round2(rate * h), nm = s.name.toLowerCase(), r0 = Math.max(1, Math.round(rate));
+  const base = { topic: 'money', money: true, tier: tr, title: 'Working out wages' };
+  const K = {
+    day: () => tr <= 2
+      ? ({ ...base, q: `If a ${nm} earned $${r0} an hour for ${h} hours, how much would that be for the day?`, answer: r0 * h, hint: `${r0} × ${h}.`, solution: `$${r0} × ${h} = $${r0 * h}.` })
+      : ({ ...base, q: `Your ${nm} earns ${money(rate)} an hour and works ${h} hours. What is their daily pay?`, answer: daily, hint: `${h} × $${Math.floor(rate)}, plus ${h} × ${Math.round((rate % 1) * 100)}c.`, solution: `${money(rate)} × ${h} = ${money(daily)}.` }),
+    days5: () => ({ ...base, q: `A ${nm} earns $${r0} an hour and works ${h} hours a day. How much do you pay them for 5 days?`, answer: r0 * h * 5, hint: `Daily pay first, then × 5.`, solution: `$${r0} × ${h} = $${r0 * h} a day. × 5 = $${r0 * h * 5}.` }),
+    hours: () => { const k = randInt(3, 7); return { ...base, q: `A ${nm} earns $${r0} an hour. How many hours must they work to earn $${r0 * k}?`, answer: k, hint: `Divide the pay by the hourly rate.`, solution: `$${r0 * k} ÷ $${r0} = ${k} hours.` }; },
+    overtime: () => { const ot = round2(rate * 1.5 * 2);
+      return { ...base, q: `Your ${nm} earns ${money(rate)} an hour. They work ${h} normal hours, then 2 overtime hours paid at time and a half (1.5 ×). What is their total pay for the day?`, answer: round2(daily + ot),
+        hint: `Normal pay + overtime. Overtime rate = ${money(rate)} × 1.5 = ${money(rate * 1.5)}.`, solution: `Normal: ${money(daily)}. Overtime: 2 × ${money(rate * 1.5)} = ${money(ot)}. Total ${money(daily + ot)}.` }; },
+    week: () => { const w = round2(daily * 5); return { ...base, title: 'Weekly pay', q: `Your ${nm} earns ${money(rate)} an hour, works ${h} hours a day and 5 days a week. What is their weekly pay?`, answer: w, hint: `Daily pay first (${money(rate)} × ${h}), then × 5.`, solution: `${money(rate)} × ${h} = ${money(daily)} a day. × 5 = ${money(w)}.` }; },
+    fortnight: () => { const w = round2(daily * 10); return { ...base, title: 'Fortnightly pay', q: `Your ${nm} earns ${money(daily)} a day. A fortnight has 10 working days. What is their fortnightly pay?`, answer: w, hint: 'Daily pay × 10.', solution: `${money(daily)} × 10 = ${money(w)}.` }; },
+    month: () => { const w = round2(daily * 22); return { ...base, title: 'Monthly pay', q: `Your ${nm} earns ${money(daily)} a day. A month has about 22 working days. What is their monthly pay?`, answer: w, hint: 'Daily pay × 22.', solution: `${money(daily)} × 22 = ${money(w)}.` }; },
+    super: () => { const sup = round2(daily * 0.12); return { ...base, topic: 'pct', title: 'Wages and super', q: `Your ${nm} earns ${money(daily)} a day. Employers also pay 12% superannuation on top. How much super is that per day?`, answer: sup, hint: '12% = 10% + 2%.', solution: `10% of ${money(daily)} = ${money(daily * 0.1)} and 2% = ${money(daily * 0.02)}. Together: ${money(sup)}.` }; },
+    raise: () => { const nr = round2(rate * 1.08); return { ...base, topic: 'pct', tol: 0.01, title: 'Pay rise', q: `Your ${nm} earns ${money(rate)} an hour and gets an 8% pay rise. What is the new hourly rate, to the nearest cent?`, answer: nr, hint: 'Multiply by 1.08.', solution: `${money(rate)} × 1.08 = ${money(nr)}.` }; },
+    cost12: () => { const w = round2(daily * 5 * 1.12); return { ...base, topic: 'pct', title: 'Total employment cost', q: `Your ${nm} earns ${money(daily)} a day for 5 days. You also pay 12% super on top. What is the total cost to you for the week?`, answer: w, hint: 'Weekly wages first, then × 1.12.', solution: `${money(daily)} × 5 = ${money(daily * 5)}. × 1.12 = ${money(w)}.` }; }
+  };
+  const ids = [['day', 'days5', 'hours'], ['day', 'days5', 'hours'], ['day', 'overtime', 'hours'], ['week', 'fortnight', 'month'], ['super', 'raise', 'cost12']][tr - 1];
+  return tryKinds('q:wage', ids, K, force);
 }
+
+/* ---------- Boss questions: two different sets per boss ---------- */
+function bossSteps(id, tr) {
+  const key = 'q:boss:' + id, last = S.recent && S.recent[key] && S.recent[key][0];
+  const useB = last ? last === 'a' : Math.random() < 0.5;
+  S.recent[key] = [useB ? 'b' : 'a'];
+  return useB ? bossStepsB(id, tr) : bossStepsA(id, tr);
+}
+function bossStepsB(id, tr) {
+  const t = S.today, f12 = m => { const h = Math.floor(m / 60) % 24, mm = m % 60; return `${h % 12 || 12}:${String(mm).padStart(2, '0')} ${h >= 12 ? 'pm' : 'am'}`; };
+  if (id === 'inspector') {
+    const n = pick([20, 30, 40, 50, 60]);
+    let q1;
+    if (tr <= 3) { const fr = pick([[1, 5], [1, 4], [2, 5], [3, 10], [1, 2]].filter(([a, b]) => n * a % b === 0));
+      q1 = { topic: 'frac', title: 'Sampling', q: `The inspector will check ${fr[0]}/${fr[1]} of your ${n} products. How many products does she check?`, answer: n * fr[0] / fr[1], hint: `Divide ${n} by ${fr[1]}, then × ${fr[0]}.`, solution: `${n} ÷ ${fr[1]} × ${fr[0]} = ${n * fr[0] / fr[1]}.` }; }
+    else { const [p, m] = pick([[10, 50], [20, 40], [25, 60], [35, 40], [15, 60]].filter(([pp, mm]) => mm * pp % 100 === 0));
+      q1 = { topic: 'pct', title: 'Sampling', q: `The inspector will check ${p}% of your ${m} products. How many does she check?`, answer: m * p / 100, hint: `Find 10% first.`, solution: `${p}% of ${m} = ${m * p / 100}.` }; }
+    const m = pick([12, 15, 20]), k = pick([3, 4, 5]), start = 9 * 60, end = start + m * k, choices = shuffle([end, end + 15, end - 10, end + 30]).map(f12);
+    const q2 = { topic: 'time', title: 'Inspection time', q: `Each check takes ${m} minutes. She does ${k} checks one after another, starting at 9:00 am. What time does she finish?`, choices, correctIndex: choices.indexOf(f12(end)), display: f12(end),
+      hint: `${k} × ${m} minutes first.`, solution: `${k} × ${m} = ${m * k} minutes. 9:00 am + ${m * k} minutes = ${f12(end)}.` };
+    return [q1, q2];
+  }
+  if (id === 'celebrity' || id === 'truck') {
+    const steps = bossStepsA(id, tr); const c = t.bossCtx;
+    if (!steps.length || !c) return steps;
+    const total = id === 'celebrity' ? round2(c.n * S.items[c.d].price) : round2(c.n * t.wholesale[c.d]), saved = round2(total - c.pay);
+    const alt = pick([
+      { topic: 'money', money: true, title: 'Savings', q: `The full price is ${money(total)} and the deal price is ${money(c.pay)}. How much is saved?`, answer: saved, hint: 'Subtract.', solution: `${money(total)} − ${money(c.pay)} = ${money(saved)}.` },
+      { topic: 'money', money: true, tol: 0.01, title: 'Price per item', q: `${c.n} items cost ${money(c.pay)} after the discount. What is the price per item, to the nearest cent?`, answer: round2(c.pay / c.n), hint: `Divide ${money(c.pay)} by ${c.n}.`, solution: `${money(c.pay)} ÷ ${c.n} ≈ ${money(c.pay / c.n)}.` }
+    ]);
+    return [steps[0], alt];
+  }
+  if (id === 'auditor') {
+    const v = S.history.slice(-5).map(h => Math.round(h.profit));
+    const vals = v.length >= 3 ? v : [randInt(20, 90), randInt(-20, 60), randInt(30, 120)];
+    const s = vals.reduce((a, b) => a + b, 0), mean = Math.round(s / vals.length * 10) / 10, sorted = [...vals].sort((a, b) => a - b), n = vals.length;
+    const med = n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
+    const q1 = { topic: 'data', title: 'Average profit', tol: 0.06, display: dollars(mean), q: `Your recent daily profits were ${vals.map(dollars).join(', ')}. What was the mean daily profit, to 1 decimal place?`, answer: mean, hint: 'Add them all up (careful with any negatives), then divide by how many days.', solution: `(${vals.map(sgn).join(' + ')}) ÷ ${n} = ${numStr(s)} ÷ ${n} ≈ ${dollars(mean)}.` };
+    const q2 = { topic: 'data', title: 'Middle profit', display: dollars(med), q: `Using the same profits (${vals.map(dollars).join(', ')}), what is the median?`, answer: med, hint: 'Put them in order and find the middle value.' + (n % 2 ? '' : ' With an even number of values, average the middle two.'), solution: `In order: ${sorted.map(dollars).join(', ')}. The median is ${dollars(med)}.` };
+    return [q1, q2];
+  }
+  // rival
+  const d = pick(unlocked()); let n1, n2, p1, p2, u1, u2;
+  do { n1 = pick([4, 5, 6, 8, 10]); n2 = n1 + pick([2, 4, 6]); p1 = round2(n1 * rand(1.2, 2.6)); p2 = round2(n2 * rand(1.0, 2.4)); u1 = p1 / n1; u2 = p2 / n2; } while (Math.abs(u1 - u2) < 0.06);
+  const choices = [`${n1} for ${money(p1)}`, `${n2} for ${money(p2)}`], idx = u1 < u2 ? 0 : 1, diff = round2(Math.abs(u1 - u2));
+  return [
+    { topic: 'ratio', title: 'Price battle', choices, correctIndex: idx, display: choices[idx], q: `The rival sells ${esc(d.name)} in two pack sizes. Which pack is cheaper per item?`, hint: 'Divide each price by the number in the pack.', solution: `${money(p1)} ÷ ${n1} ≈ ${money(u1)} and ${money(p2)} ÷ ${n2} ≈ ${money(u2)}.` },
+    { topic: 'money', money: true, tol: 0.011, title: 'Price battle', q: `About how much cheaper per item is the better pack? (Nearest cent.)`, answer: diff, hint: 'Subtract the two prices per item.', solution: `${money(Math.max(u1, u2))} − ${money(Math.min(u1, u2))} ≈ ${money(diff)}.` }
+  ];
+}
+
 async function hireStaff(id) {
   const s = STAFF.find(x => x.id === id);
   if (!s || hasStaff(id) || S.level < s.level) return;
-  await ask(wageQuestion(rollTier(), s, staffRate(s)));
+  if (isAdult()) toast(`${s.name}: ${money(staffDaily(s))} a day in wages.`); else await ask(wageQuestion(rollTier(), s, staffRate(s)));
   S.staff[id] = true; S.seen['staff:' + id] = true;
   toast(`${s.emoji} ${s.name} hired!`);
   checkBadges(); save(); render();
@@ -1973,6 +2327,632 @@ function showCustomise() {
   }));
   box.querySelector('#cuDone').addEventListener('click', closeModal);
   box.querySelector('#cuDone').focus();
+}
+
+/* ============================================================
+   MODES, LUCK STREAMS AND ADULT-MODE CHANCES
+   ============================================================ */
+const isAdult = () => !!S && S.mode === 'adult';
+const modeKey = () => isAdult() ? 'adult' : 'maths';
+
+/* Seeded random streams: in a Challenge, everyone with the same seed gets the same luck. */
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hashStr(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+let evRng = null, custRng = null, DAYCTX = null;
+function seedWorld(kind) {
+  const ch = S && S.challenge && !S.challenge.done;
+  const g = ch ? mulberry32(hashStr(S.challenge.seed + ':' + S.day + ':' + kind)) : null;
+  if (kind.startsWith('cust')) custRng = g; else evRng = g;
+}
+const er = () => evRng ? evRng() : Math.random();
+const cr = () => custRng ? custRng() : Math.random();
+const epick = a => a[Math.floor(er() * a.length)];
+const erandInt = (a, b) => a + Math.floor(er() * (b - a + 1));
+
+/* Days that count as "bad luck" for the bad-luck protection */
+const BAD_DAYS = ['storm', 'outage', 'damage', 'thief', 'roadworks', 'priceWar', 'badReview', 'delay', 'heatwave', 'coldSnap', 'pest', 'cardOutage', 'staffSick'];
+const isBadDay = ev => BAD_DAYS.includes(ev);
+function badStreak() { const a = (S.recent && S.recent.days) || []; return a.length >= 2 && isBadDay(a[a.length - 1]) && isBadDay(a[a.length - 2]); }
+
+function chooseDailyEvent() {
+  if (!feature('events')) return { ev: 'normal', hit: false };
+  const protect = badStreak(), fc = S.forecast;
+  seedWorld('ev');
+  const roll = er();
+  let ev = null, hit = false;
+  if (fc && !protect && roll < fc.chance / 10 && !recentHas('ev', fc.event)) { ev = fc.event; hit = true; }
+  if (!ev) {
+    const si = seasonIdx(S.day);
+    let cands = DAILY_EVENTS.filter(([k]) => k === 'normal' || !recentHas('ev', k));
+    cands = cands.filter(([k]) => !EVENTS[k].season || EVENTS[k].season.includes(si));
+    cands = cands.filter(([k]) => !EVENTS[k].needs || EVENTS[k].needs());
+    if (protect) cands = cands.filter(([k]) => !isBadDay(k));
+    ev = weightedPick(cands, er);
+  }
+  if (ev !== 'normal') pushHist('ev', ev, 3);
+  return { ev, hit };
+}
+
+/* Staff who are off sick do not help that day */
+const staffOn = id => hasStaff(id) && !(S.today && S.today.sick === id);
+
+/* ---------- Adult mode: chances ---------- */
+function trafficWord() { const l = (S.today && S.today.luck) || 1; return l < 0.92 ? 'quieter than usual' : l > 1.08 ? 'busier than usual' : 'about normal'; }
+const luckUnit = () => Math.round(12 * (1 + 0.45 * (S.level - 1)));
+const lossRoom = () => Math.max(0, Math.floor(S.cash * CONFIG.chanceLossCap));
+function luckStats() { return S.luck || (S.luck = { won: 0, lost: 0, streak: 0, best: 0, big: 0, bigLoss: 0, safe: 0, gambles: 0, recent: [] }); }
+function gainCash(v) {
+  S.cash = round2(S.cash + v); const t = S.today, L = luckStats(); L.big = Math.max(L.big, v);
+  if (t) { t.bonus = round2(t.bonus + v); if (S.phase === 'evening') updateLastHistory(); }
+}
+function loseCash(v) {
+  v = Math.min(v, lossRoom()); if (v <= 0) return 0;
+  S.cash = round2(S.cash - v); const t = S.today, L = luckStats(); L.bigLoss = Math.max(L.bigLoss, v);
+  if (t) { t.other = round2((t.other || 0) + v); if (S.phase === 'evening') { t.costs = round2(t.costs + v); updateLastHistory(); } }
+  return v;
+}
+function nextBoost(kind, mult) { const b = S.nextBoost || (S.nextBoost = {}); b[kind] = clamp((b[kind] || 1) * mult, 0.7, 1.5); }
+function addDayShoppers(k) { if (!DAYCTX) return; for (let i = 0; i < k; i++) DAYCTX.times.push(DAYCTX.elapsed + 300 + i * 350); DAYCTX.times.sort((a, b) => a - b); }
+function dropDayShoppers(frac) { if (!DAYCTX) return 0; const left = DAYCTX.times.length - DAYCTX.idx, k = Math.min(left, Math.ceil(left * frac)); DAYCTX.times.splice(DAYCTX.idx, k); return k; }
+
+const CHANCE = {
+  tip:      { good: true,  w: 3.5, label: 'Generous tip',      run() { const v = luckUnit(); gainCash(v); return `A happy shopper left a generous tip: +${money(v)}.`; } },
+  jackpot:  { good: true,  w: 1.5, label: 'Jackpot order',     run() { const v = luckUnit() * 3; gainCash(v); return `Jackpot! A big order came in: +${money(v)}.`; } },
+  buzz:     { good: true,  w: 2,   label: 'Word of mouth',     run() { S.rep = clamp(S.rep + 4, 0, 100); return 'Word is spreading about your shop: reputation +4.'; } },
+  samples:  { good: true,  w: 2,   label: 'Free stock',        run() {
+    const opts = unlocked().filter(d => shelfMax() - S.items[d.id].stock > 0);
+    if (!opts.length) { const v = Math.round(luckUnit() * 0.7); gainCash(v); return `A supplier sent a cash voucher: +${money(v)}.`; }
+    const d = epick(opts), it = S.items[d.id], k = Math.min(3 + Math.floor(S.level / 2), shelfMax() - it.stock); it.stock += k;
+    return `A supplier sent ${k} free ${d.name} ${d.emoji}.`; } },
+  crowd:    { good: true,  w: 1.5, label: 'Busy spell',        run(w) {
+    if (w === 'day') { const k = 4 + Math.floor(S.level / 2); addDayShoppers(k); return `A tour group walked in: ${k} extra shoppers are on the way.`; }
+    nextBoost('crowd', 1.2); return 'Good news travels: tomorrow should be about 20% busier.'; } },
+  mood:     { good: true,  w: 1,   label: 'Spending mood',     run(w) {
+    if (w === 'day') { S.today.rushLeft = (S.today.rushLeft || 0) + 6; return 'Shoppers are in a spending mood: the next 6 will pay more.'; }
+    nextBoost('tol', 1.08); return 'Shoppers will accept prices about 8% higher tomorrow.'; } },
+  supplier: { good: true,  w: 1.2, label: 'Cheaper stock',     run() { nextBoost('supplier', 0.85); return 'Your supplier is offering about 15% off tomorrow.'; } },
+  fee:      { good: false, w: 3.5, label: 'Unexpected bill',   run() { const v = loseCash(luckUnit()); return v > 0 ? `Oops: an unexpected bill cost you ${money(v)}.` : 'An unexpected bill arrived, but you had nothing to pay it with. Phew!'; } },
+  grumble:  { good: false, w: 1.5, label: 'Bad review',        run() { S.rep = clamp(S.rep - 3, 0, 100); return 'A grumpy shopper complained online: reputation −3.'; } },
+  breakage: { good: false, w: 1.5, label: 'Broken stock',      run() {
+    const opts = unlocked().filter(d => S.items[d.id].stock >= 5);
+    if (!opts.length) { const v = loseCash(Math.round(luckUnit() * 0.6)); return v > 0 ? `A shelf wobbled and something broke: −${money(v)}.` : 'A shelf wobbled, but nothing was damaged.'; }
+    const d = epick(opts), it = S.items[d.id], k = Math.max(1, Math.floor(it.stock * 0.2)); it.stock -= k; return `Oh no: ${k} ${d.name} ${d.emoji} got damaged.`; } },
+  quiet:    { good: false, w: 1,   label: 'Quiet spell',       run(w) {
+    if (w === 'day') { const k = dropDayShoppers(0.25); return `A road closure turned shoppers away: ${k} fewer shoppers today.`; }
+    nextBoost('crowd', 0.85); return 'Tomorrow might be about 15% quieter.'; } },
+  haggle:   { good: false, w: 0.8, label: 'Hagglers',          run(w) {
+    if (w === 'day') { S.today.coldLeft = (S.today.coldLeft || 0) + 6; return 'Some hagglers came in: the next 6 shoppers will pay less.'; }
+    nextBoost('tol', 0.95); return 'Shoppers will be a little pickier tomorrow.'; } }
+};
+const CHANCE_KEYS = Object.keys(CHANCE);
+
+/* Pick an outcome. ~60% good. Anti-repeat, and after 2 bad results in a row the next one is good. */
+function rollChance(opts) {
+  opts = opts || {};
+  const L = luckStats(), t = S.today;
+  seedWorld('chance' + (t ? (t.chN = (t.chN || 0) + 1) : 0));
+  const protect = L.recent.length >= 2 && !L.recent[L.recent.length - 1] && !L.recent[L.recent.length - 2];
+  let keys = CHANCE_KEYS.filter(k => !recentHas('chance', k));
+  if (!keys.length) keys = CHANCE_KEYS.slice();
+  if (protect || opts.good) keys = keys.filter(k => CHANCE[k].good);
+  if (opts.exclude) keys = keys.filter(k => !opts.exclude.includes(k));
+  return weightedPick(keys.map(k => [k, CHANCE[k].w]), er);
+}
+function resolveChance(key, where) {
+  const def = CHANCE[key], L = luckStats();
+  pushHist('chance', key, 3);
+  const msg = def.run(where);
+  L.recent.push(def.good); while (L.recent.length > 6) L.recent.shift();
+  if (def.good) { L.won++; L.streak++; L.best = Math.max(L.best, L.streak); } else { L.lost++; L.streak = 0; }
+  checkBadges(); save();
+  return { good: def.good, msg };
+}
+function announceDay(msg, good) {
+  const t = S.today; t.surprise = (good ? '🍀 ' : '😬 ') + msg; toast(t.surprise);
+  const el = $('#dayEvent'); if (el) { el.hidden = false; el.textContent = t.surprise; }
+}
+function dayChance() {
+  const r = resolveChance(rollChance(), 'day');
+  announceDay(r.msg, r.good);
+  renderTop(); renderShelves(); renderDayStats();
+}
+
+/* Leaks and shoplifters in adult mode: no question, just a roll */
+function adultLoss(kind) {
+  const t = S.today, thief = kind === 'thief';
+  const opts = unlocked().filter(d => S.items[d.id].stock >= 4);
+  if (!opts.length) { t.notes.push(thief ? 'The shoplifter left empty-handed.' : 'Luckily, nothing on the shelves was badly damaged.'); return; }
+  seedWorld('loss');
+  const d = epick(opts), it = S.items[d.id], quick = er() < 0.35, frac = quick ? 0.1 : (0.2 + er() * 0.15);
+  const k = Math.max(1, Math.floor(it.stock * frac)); it.stock -= k;
+  t.notes.push(quick ? `🍀 You acted fast: only ${k} ${d.name} ${thief ? 'went missing' : 'got ruined'}.` : `${thief ? 'The shoplifter took' : 'The leak ruined'} ${k} ${d.name} ${d.emoji}.`);
+}
+
+/* ---------- Evening: lucky cards ---------- */
+function luckyCardsHTML() {
+  const t = S.today, c = t.cards;
+  if (c && c.done) return `<div class="box"><h3>🎴 Lucky cards</h3>${c.summary}</div>`;
+  if (t.checks && t.checks.bonus) return '<p>✔ No lucky cards today.</p>';
+  const safe = Math.round(luckUnit() * 0.7);
+  return `<div class="box"><h3>🎴 Lucky cards</h3>
+    <p>Take the safe prize, or pick one of three face-down cards. Cards can win cash, reputation, free stock or a busier tomorrow. A few can cost you a little (never more than ${Math.round(CONFIG.chanceLossCap * 100)}% of your cash).</p>
+    <div class="actions"><button class="btn secondary" data-act="safeprize">Take the safe prize: ${money(safe)}</button></div>
+    <p class="hint">…or gamble on a card:</p>
+    <div class="cards3">${[0, 1, 2].map(i => `<button class="flipcard" data-act="pickcard" data-i="${i}" aria-label="Face-down card ${i + 1}"><span aria-hidden="true" class="qmark">?</span></button>`).join('')}</div>
+    <div class="actions"><button class="btn ghost" data-act="skipbonus">Not today</button></div></div>`;
+}
+function afterLuck() {
+  const ups = checkLevel(); bumpRecords(); save(); render();
+  if (ups.length) showLevelUp(ups);
+}
+function safePrize() {
+  const t = S.today; if (t.cards && t.cards.done) return;
+  const v = Math.round(luckUnit() * 0.7); gainCash(v); luckStats().safe++;
+  t.bonusAsked = true; t.cards = { done: true, summary: `<p class="good">You played it safe and took ${money(v)}.</p>` };
+  afterLuck();
+}
+function pickCard(i) {
+  const t = S.today; if (t.cards && t.cards.done) return;
+  const keys = []; for (let n = 0; n < 3; n++) keys.push(rollChance({ exclude: keys }));
+  const L = luckStats(); L.gambles++;
+  const res = resolveChance(keys[i], 'eve');
+  const tiles = keys.map((k, n) => n === i
+    ? `<div class="rcard ${res.good ? 'win' : 'lose'}"><strong>${res.good ? '✨ You picked' : '😬 You picked'}</strong><br>${res.msg}</div>`
+    : `<div class="rcard missed"><strong>Missed</strong><br>${CHANCE[k].good ? '🍀' : '⚠️'} ${CHANCE[k].label}</div>`).join('');
+  t.bonusAsked = true; t.cards = { done: true, summary: `<div class="cards3 revealed">${tiles}</div>` };
+  afterLuck();
+}
+
+/* ---------- Boss days in adult mode: a decision, then a dice roll ---------- */
+const bossOdds = p => clamp(p, 0.1, 0.9);
+function bossAdultPlan(id) {
+  const t = S.today, u = luckUnit(), rb = (S.rep - 50) / 250;
+  if (id === 'inspector') {
+    const low = unlocked().filter(d => S.items[d.id].stock < 5), clean = !low.length, base = 0.35 + (clean ? 0.25 : 0) + Math.max(0, rb);
+    return { intro: clean ? 'Every shelf has at least 5 items. Good start!' : `These shelves have fewer than 5 items: ${low.map(d => d.emoji).join(' ')}. That lowers your odds.`,
+      title: 'How will you prepare?',
+      options: [{ label: 'Quick tidy', sub: 'Free', cost: 0, odds: bossOdds(base) }, { label: 'Deep clean', sub: money(u), cost: u, odds: bossOdds(base + 0.2) }],
+      win: () => { S.rep = clamp(S.rep + 8, 0, 100); S.inspectionPassed = true; const v = u * 2; gainCash(v); return `You passed the inspection! Reputation +8 and a ${money(v)} safety award.`; },
+      lose: () => { S.rep = clamp(S.rep - 6, 0, 100); return 'You did not pass this time. Reputation −6.'; } };
+  }
+  if (id === 'celebrity') {
+    const its = unlocked().filter(d => S.items[d.id].stock + (S.items[d.id].store || 0) >= 3).sort((a, b) => b.fair - a.fair);
+    if (!its.length) return null;
+    const d = its[0], it = S.items[d.id], have = it.stock + (it.store || 0), n = Math.min(have, erandInt(6, 15)), total = round2(n * it.price);
+    const mk = (label, disc, extra) => ({ label, sub: money(round2(total * (1 - disc))), disc, odds: bossOdds(0.35 + extra + Math.max(0, rb)) });
+    return { intro: `A celebrity wants ${n} × ${d.emoji} ${d.name} at your usual price of ${money(it.price)} each (${money(total)} in total).`, title: 'What price will you offer?',
+      options: [mk('Full price', 0, 0), mk('10% off', 0.1, 0.25), mk('25% off', 0.25, 0.5)],
+      win: opt => { const pay = round2(total * (1 - opt.disc)); let need = n; const fs = Math.min(need, it.store || 0); it.store = (it.store || 0) - fs; need -= fs; it.stock -= need;
+        t.revenue = round2(t.revenue + pay); S.cash = round2(S.cash + pay); t.sold[d.id] = (t.sold[d.id] || 0) + n; S.rep = clamp(S.rep + 4, 0, 100); S.vipSale = true;
+        return `Deal done! You sold ${n} × ${d.emoji} for ${money(pay)}. The celebrity posted about your shop: reputation +4.`; },
+      lose: () => 'They took their business elsewhere. No sale this time.' };
+  }
+  if (id === 'truck') {
+    const opts = [];
+    unlocked().forEach(d => { const it = S.items[d.id], space = (shelfMax() - it.stock) + (hasRoom('storage') ? CONFIG.storageMax - storageUsed() : 0);
+      [20, 40, 60].forEach(n => { const cost = round2(n * t.wholesale[d.id] * 0.75); if (space >= n && S.cash >= cost) opts.push({ d, n, cost }); }); });
+    if (!opts.length) return null;
+    const d = opts.sort((a, b) => b.d.fair - a.d.fair)[0].d, mine = opts.filter(o => o.d.id === d.id), base = 0.6 + (hasRoom('storage') ? 0.1 : 0) + Math.max(0, rb);
+    return { intro: `A supplier truck has ${d.emoji} ${d.name} at 25% off. A bigger load saves more but is riskier: some of it might arrive damaged.`, title: 'How much will you buy?',
+      options: mine.map((o, n) => ({ label: `${o.n} items`, sub: money(o.cost), cost: 0, pay: o.cost, n: o.n, odds: bossOdds(base - 0.05 * n) })),
+      win: opt => { const it = S.items[d.id]; S.cash = round2(S.cash - opt.pay); t.spent = round2(t.spent + opt.pay); const toShelf = Math.min(opt.n, shelfMax() - it.stock); it.stock += toShelf; it.store = (it.store || 0) + (opt.n - toShelf);
+        return `A perfect batch! ${opt.n} × ${d.emoji} for ${money(opt.pay)} (about 25% off).`; },
+      lose: opt => { const it = S.items[d.id], good = Math.ceil(opt.n * 0.75); S.cash = round2(S.cash - opt.pay); t.spent = round2(t.spent + opt.pay); const toShelf = Math.min(good, shelfMax() - it.stock); it.stock += toShelf; it.store = (it.store || 0) + (good - toShelf);
+        return `A quarter of the load arrived damaged. You kept ${good} × ${d.emoji} and paid ${money(opt.pay)}.`; } };
+  }
+  if (id === 'auditor') {
+    const last = S.history[S.history.length - 1], base = 0.5 + (last && last.profit > 0 ? 0.15 : 0) + Math.max(0, rb);
+    return { intro: 'The tax office wants to check your books. Neat records help.', title: 'How will you handle it?',
+      options: [{ label: 'Do it yourself', sub: 'Free', cost: 0, odds: bossOdds(base) }, { label: 'Hire an accountant', sub: money(u), cost: u, odds: bossOdds(base + 0.25) }],
+      win: () => { const v = Math.round(u * 0.5); gainCash(v); return `Your books are in order, and you got a ${money(v)} tax credit.`; },
+      lose: () => { const v = loseCash(u); return v > 0 ? `The auditor found mistakes: ${money(v)} fine.` : 'The auditor found mistakes, but you had nothing to fine.'; } };
+  }
+  const its = unlocked().filter(d => S.items[d.id].stock > 0).sort((a, b) => b.fair - a.fair); if (!its.length) return null;
+  const d = its[0], p = S.items[d.id].price, mk = (label, f, o) => ({ label, sub: money(round2(p * f)), f, odds: bossOdds(o + rb) });
+  return { intro: `The rival shop is challenging you on ${d.emoji} ${d.name}. Your price is ${money(p)}. Today's price will change to the one you pick.`, title: 'Pick your price',
+    options: [mk('Undercut 10%', 0.9, 0.65), mk('Hold your price', 1, 0.5), mk('Go premium +10%', 1.1, 0.35)],
+    win: opt => { t.sales[d.id] = round2(p * opt.f); t.bossBoost = 1.2; S.rep = clamp(S.rep + 4, 0, 100); return `You won the price battle! About 20% more shoppers today and reputation +4.`; },
+    lose: opt => { t.sales[d.id] = round2(p * opt.f); t.bossBoost = 0.85; return 'The rival won this round and pinched about 15% of your shoppers today.'; } };
+}
+
+function bossChoiceModal(B, plan) {
+  return new Promise(resolve => {
+    const box = openModal(`<h2>${B.emoji} ${B.name}</h2><p>${plan.intro}</p><h3>${plan.title}</h3>
+      <div class="menu-list">${plan.options.map((o, i) => `<button class="btn secondary" data-i="${i}" ${(o.cost || 0) > S.cash ? 'disabled' : ''}>${o.label} <small>(${o.sub})</small><br><span class="hint">Odds of success: ${Math.round(o.odds * 100)}%</span></button>`).join('')}</div>`, 'Boss day');
+    box.querySelectorAll('[data-i]').forEach(b => b.addEventListener('click', () => { closeModal(); resolve(plan.options[Number(b.dataset.i)]); }));
+    const first = box.querySelector('[data-i]:not([disabled])'); if (first) first.focus();
+  });
+}
+function diceModal(odds) {
+  return new Promise(resolve => {
+    seedWorld('bossdice');
+    const roll = Math.min(100, Math.floor(er() * 100) + 1), win = roll <= Math.round(odds * 100), need = Math.round(odds * 100);
+    const box = openModal(`<h2>🎲 Roll the dice</h2><p>You need <strong>${need}</strong> or less (odds ${need}%).</p><div class="dice" id="diceNum" aria-live="polite">…</div><div class="actions" id="diceAct"></div>`, 'Dice roll');
+    const num = box.querySelector('#diceNum'), act = box.querySelector('#diceAct');
+    const done = () => { num.textContent = roll; num.classList.add(win ? 'win' : 'lose'); act.innerHTML = `<p class="${win ? 'good' : 'bad'}">${win ? `You rolled ${roll}. Success!` : `You rolled ${roll}. Not this time.`}</p><button class="btn" id="diceOk">Continue</button>`; const ok = act.querySelector('#diceOk'); ok.focus(); ok.addEventListener('click', () => { closeModal(); resolve({ win, roll }); }); };
+    if (REDUCE) { done(); return; }
+    let n = 0; const iv = setInterval(() => { num.textContent = Math.floor(Math.random() * 100) + 1; if (++n > 14) { clearInterval(iv); done(); } }, 70);
+  });
+}
+async function runBossAdult() {
+  const t = S.today; if (!t.boss || t.bossDone) return;
+  let B = BOSSES.find(b => b.id === t.boss), plan = bossAdultPlan(B.id);
+  if (!plan) { B = BOSSES.find(b => b.id === 'rival'); plan = bossAdultPlan('rival'); }
+  if (!plan) { t.bossDone = true; t.bossResult = 'The boss could not make it today, so nothing happened.'; save(); render(); return; }
+  const opt = await bossChoiceModal(B, plan);
+  if (opt.cost) { S.cash = round2(S.cash - opt.cost); t.other = round2((t.other || 0) + opt.cost); }
+  const r = await diceModal(opt.odds), L = luckStats();
+  const msg = r.win ? plan.win(opt) : plan.lose(opt);
+  L.recent.push(r.win); while (L.recent.length > 6) L.recent.shift();
+  if (r.win) { L.won++; L.streak++; L.best = Math.max(L.best, L.streak); S.bossWins = (S.bossWins || 0) + 1; } else { L.lost++; L.streak = 0; }
+  t.bossDone = true; t.bossResult = `${r.win ? 'Boss beaten! ' : 'The boss won this time. '}${msg}`;
+  checkBadges(); bumpRecords(); save(); render();
+  const box = openModal(`<h2>${B.emoji} ${r.win ? 'Boss beaten!' : 'Not this time'}</h2><p>${msg}</p><div class="actions"><button class="btn" id="bossOk">Back to the shop</button></div>`, 'Boss result');
+  box.querySelector('#bossOk').addEventListener('click', closeModal); box.querySelector('#bossOk').focus();
+  const ups = checkLevel(); if (ups.length) showLevelUp(ups);
+}
+
+/* ============================================================
+   SHARING, RIVALS, CHALLENGES AND RECORDS
+   ============================================================ */
+const REC_KEY = 'shopTycoon_records_v1', RIV_KEY = 'shopTycoon_rivals_v1';
+const loadJSON = (k, def) => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : def; } catch (e) { return def; } };
+const saveJSON = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const fmt$ = n => (n < 0 ? '−$' : '$') + Math.abs(Math.round(n)).toLocaleString('en-AU');
+const keeperIndex = () => { const v = (S && S.custom && S.custom.keeper) || 'k0'; return /^k\d$/.test(v) ? Number(v.slice(1)) : 0; };
+const chFinal = () => !!(S && S.challenge && !S.challenge.done && S.day >= S.challenge.days);
+
+/* ---------- Personal records (kept on this device, one set per mode) ---------- */
+function bumpRecords() {
+  if (!S) return;
+  const R = loadJSON(REC_KEY, {}), m = modeKey(), r = R[m] || (R[m] = { bestDay: 0, maxLevel: 0, maxDays: 0, bossWins: 0, bestChallenge: null });
+  const last = S.history[S.history.length - 1];
+  let note = null;
+  if (last && last.profit > r.bestDay) { if (r.bestDay > 0) note = `New personal best day: ${fmt$(last.profit)}!`; r.bestDay = last.profit; }
+  r.maxLevel = Math.max(r.maxLevel, S.level); r.maxDays = Math.max(r.maxDays, S.day); r.bossWins = Math.max(r.bossWins, S.bossWins || 0);
+  if (S.challenge && S.challenge.done && S.challenge.score != null) r.bestChallenge = Math.max(r.bestChallenge == null ? -1e12 : r.bestChallenge, S.challenge.score);
+  saveJSON(REC_KEY, R);
+  if (note) toast('🏅 ' + note);
+}
+
+/* ---------- Share codes (light checksum only: scores are unverified) ---------- */
+const b64e = str => btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64d = b => { b = b.replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '='; return decodeURIComponent(escape(atob(b))); };
+const sumOf = obj => hashStr(JSON.stringify(obj)).toString(36).slice(0, 6);
+function shareData() {
+  const ch = S.challenge, best = S.history.reduce((a, h) => Math.max(a, h.profit), 0);
+  const d = { v: 1, m: isAdult() ? 'a' : 'm', t: S.theme, n: S.shopName.slice(0, 24), k: keeperIndex(), l: S.level, d: S.day, b: Math.round(best), w: S.bossWins || 0, g: S.badges.length, p: Math.round(totalProfit()), ts: Date.now() };
+  if (isAdult()) { const L = luckStats(); d.u = [L.won, L.lost, Math.round(L.big)]; }
+  if (ch) { d.c = ch.seed; d.s = ch.score != null ? Math.round(ch.score) : null; }
+  return d;
+}
+function cleanShare(o) {
+  if (!o || typeof o !== 'object' || !THEMES[o.t]) return null;
+  const n = v => Number.isFinite(Number(v)) ? Number(v) : 0;
+  const d = { v: 1, m: o.m === 'a' ? 'a' : 'm', t: o.t, n: String(o.n || 'Shop').replace(/[<>&"']/g, '').slice(0, 24) || 'Shop', k: clamp(Math.round(n(o.k)), 0, 7), l: clamp(Math.round(n(o.l)), 1, 12),
+    d: clamp(Math.round(n(o.d)), 1, 9999), b: Math.round(n(o.b)), w: Math.max(0, Math.round(n(o.w))), g: Math.max(0, Math.round(n(o.g))), p: Math.round(n(o.p)), ts: n(o.ts) };
+  if (Array.isArray(o.u)) d.u = [0, 1, 2].map(i => Math.max(0, Math.round(n(o.u[i]))));
+  if (o.c) { d.c = String(o.c).replace(/[^a-z0-9]/gi, '').slice(0, 12); d.s = o.s == null ? null : Math.round(n(o.s)); }
+  return d;
+}
+function encodeShare(d) { const o = { ...d }; delete o.z; o.z = sumOf(o); return 'STY1-' + b64e(JSON.stringify(o)); }
+function decodeShare(code) {
+  code = String(code || '').trim().replace(/\s+/g, '');
+  if (!code.startsWith('STY1-')) return null;
+  try { const o = JSON.parse(b64d(code.slice(5))), z = o.z; delete o.z; if (sumOf(o) !== z) return { bad: true }; return cleanShare(o); } catch (e) { return null; }
+}
+function makeChallengeCode() { const o = { v: 1, s: S.challenge.seed, t: S.theme, m: isAdult() ? 'a' : 'm' }; o.z = sumOf(o); return 'STC1-' + b64e(JSON.stringify(o)); }
+function decodeChallenge(code) {
+  code = String(code || '').trim().replace(/\s+/g, '');
+  if (!code.startsWith('STC1-')) return null;
+  try { const o = JSON.parse(b64d(code.slice(5))), z = o.z; delete o.z; if (sumOf(o) !== z) return { bad: true };
+    if (!THEMES[o.t] || !/^[a-z0-9]{4,12}$/i.test(String(o.s))) return null; return { s: String(o.s), t: o.t, m: o.m === 'a' ? 'a' : 'm' }; } catch (e) { return null; }
+}
+const randomSeed = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-3);
+const shareLink = () => location.protocol === 'https:' ? location.origin + location.pathname : '';
+function shareText(d, code) {
+  const th = THEMES[d.t], link = shareLink();
+  return `${th.emoji} ${d.n} (${d.m === 'a' ? 'Adult' : 'Maths'} mode): level ${d.l}, ${d.d} days open, best day ${fmt$(d.b)}${d.c && d.s != null ? `, 14-day challenge score ${fmt$(d.s)}` : ''}. Can you beat me in Shop Tycoon?${link ? '\n' + link : ''}\nMy code: ${code}`;
+}
+function copyText(text) {
+  try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text); return true; } } catch (e) {}
+  try { const ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); return true; } catch (e) { return false; }
+}
+function downloadBlob(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000); }
+
+/* ---------- The share card picture ---------- */
+const nestSVG = (svg, x, y, w, h) => svg.replace(/^<svg /, `<svg x="${x}" y="${y}" width="${w}" height="${h}" `);
+function fontCss() { try { return Array.from(document.styleSheets[0].cssRules).filter(r => r.type === 5).map(r => r.cssText).join('\n'); } catch (e) { return ''; } }
+function cardSVG(d) {
+  const W = 1080, H = 1350, th = THEMES[d.t], adult = d.m === 'a', cu = S.custom || {}, ink = INK_C, F = "'Fredoka', sans-serif";
+  const awn = cu.awning || th.color, wall = cu.wall || '#FCE6B6', style = d.l >= CONFIG.glassLevel ? 'glass' : hasAcc('shelves') ? 'metal' : 'wood';
+  const T = (x, y, s, size, fill, weight, anchor, fam) => `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" font-weight="${weight || 400}" text-anchor="${anchor || 'start'}" font-family="${fam || "'Atkinson Hyperlegible', sans-serif"}">${esc(s)}</text>`;
+  let g = `<rect width="${W}" height="${H}" fill="#E4F2F8"/>`;
+  const sw = W / 14;
+  for (let i = 0; i < 14; i++) g += `<rect x="${i * sw}" y="0" width="${sw + 0.5}" height="130" fill="${i % 2 ? '#fff' : awn}"/><circle cx="${i * sw + sw / 2}" cy="130" r="${sw / 2}" fill="${i % 2 ? '#fff' : awn}"/>`;
+  const nm = d.n, size = nm.length > 16 ? 50 : nm.length > 12 ? 60 : 72;
+  g += `<rect x="150" y="170" width="780" height="115" rx="28" fill="${ink}"/>` + T(540, 250, th.emoji + ' ' + nm, size, '#F4B82E', 700, 'middle', F);
+  g += T(540, 328, `${adult ? 'Adult mode' : 'Maths mode'} · ${th.label}`, 32, '#55667D', 700, 'middle');
+  // the shop scene
+  const sx = 60, sy = 350, sW = 960, sH = 400, fy = sy + 150;
+  g += `<defs><clipPath id="scn"><rect x="${sx}" y="${sy}" width="${sW}" height="${sH}" rx="30"/></clipPath></defs><g clip-path="url(#scn)"><rect x="${sx}" y="${sy}" width="${sW}" height="${sH}" fill="${wall}"/><rect x="${sx}" y="${fy}" width="${sW}" height="${sH - 150}" fill="#EBD6AE"/>`;
+  for (let i = 0; i < 12; i += 2) g += `<rect x="${sx + i * 80}" y="${fy}" width="80" height="${sH - 150}" fill="#DFC595" opacity="0.6"/>`;
+  g += `<rect x="${sx}" y="${fy}" width="${sW}" height="5" fill="${ink}"/>`;
+  const has = id => hasAcc(id), pick3 = ids => ids.filter(has);
+  pick3(['tv', 'speaker', 'balloons', 'neon']).slice(0, 4).forEach((id, i) => { g += nestSVG(accSVG(id), sx + 30 + i * 125, sy + 30, 105, 105); });
+  const nSh = clamp(CONFIG.itemLevels.filter(l => l <= d.l).length, 3, 6), fills = [8, 6, 7, 4, 8, 5];
+  for (let i = 0; i < nSh; i++) g += nestSVG(shelfSVG(style, i, fills[i]), sx + 30 + i * 128, fy + 12, 118, 123);
+  pick3(['fountain', 'statue', 'mascot', 'plant', 'vending']).slice(0, 2).forEach((id, i) => { g += nestSVG(accSVG(id), sx + 10 + i * 150, fy + 86, 150, 150); });
+  g += nestSVG(personSVG(TYPE_SAMPLE.adult), sx + 330, fy + 90, 110, 147) + nestSVG(personSVG(TYPE_SAMPLE.family), sx + 440, fy + 90, 110, 147);
+  g += nestSVG(personSVG(keeperLook()), sx + 770, fy + 5, 130, 173) + nestSVG(REG_ART[has('goldtill') ? 'gold' : 'classic'], sx + 640, fy + 90, 270, 147);
+  g += `</g><rect x="${sx}" y="${sy}" width="${sW}" height="${sH}" rx="30" fill="none" stroke="${ink}" stroke-width="7"/>`;
+  // stat tiles
+  const tiles = d.c && d.s != null ? [['Challenge score', fmt$(d.s)], ['Level', d.l], ['Best day', fmt$(d.b)], ['Days open', d.d], ['Boss wins', d.w], ['Badges', d.g]]
+    : [['Level', d.l], ['Days open', d.d], ['Best day', fmt$(d.b)], ['Total profit', fmt$(d.p)], ['Boss wins', d.w], ['Badges', d.g]];
+  tiles.forEach(([lab, val], i) => {
+    const x = 60 + (i % 3) * 330, y = 790 + Math.floor(i / 3) * 170;
+    g += `<rect x="${x}" y="${y}" width="300" height="150" rx="26" fill="#fff" stroke="#C6D5E2" stroke-width="4"/>` + T(x + 26, y + 50, lab, 28, '#55667D', 700) + T(x + 26, y + 118, String(val), 62, ink, 700, 'start', F);
+  });
+  let strip = '';
+  if (d.c) strip = d.s != null ? `🏁 14-day challenge finished · score ${fmt$(d.s)}` : `🏁 14-day challenge · day ${d.d} of ${CONFIG.challengeDays}`;
+  else if (adult && d.u) strip = `🎲 Luck: won ${d.u[0]}, lost ${d.u[1]} · biggest win ${fmt$(d.u[2])}`;
+  if (strip) g += `<rect x="60" y="1140" width="960" height="76" rx="38" fill="${ink}"/>` + T(540, 1191, strip, 34, '#F4B82E', 700, 'middle', F);
+  g += T(540, 1272, 'Can you beat me?', 46, ink, 700, 'middle', F) + T(540, 1318, 'Shop Tycoon · scores are not verified', 26, '#55667D', 400, 'middle');
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><defs><style type="text/css"><![CDATA[${fontCss()}]]></style></defs>${g}</svg>`;
+}
+async function cardPNG(d) {
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('card image')); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(cardSVG(d)); });
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1350;
+  c.getContext('2d').drawImage(img, 0, 0, 1080, 1350);
+  return await new Promise((res, rej) => c.toBlob(b => b ? res(b) : rej(new Error('blob')), 'image/png'));
+}
+async function showShare() {
+  if (!SETTINGS.sharing) { toast('Sharing is switched off. Ask a parent to turn it on.'); return; }
+  const d = shareData(), code = encodeShare(d), text = shareText(d, code);
+  const box = openModal(`<h2>📤 Share my shop</h2><div class="share-prev" id="shPrev"><p class="hint">Making your card…</p></div>
+    <div class="actions"><button class="btn" id="shGo" disabled>Share…</button><button class="btn secondary" id="shSave" disabled>Save picture</button><button class="btn secondary" id="shCopy">Copy code and message</button></div>
+    <label class="lbl" for="shCode">Your code (friends paste this into Rivals)</label><textarea id="shCode" class="codebox" readonly rows="3">${esc(code)}</textarea>
+    <p class="hint">Only your shop name, shopkeeper look and stats are shared. Scores are not verified.</p>
+    <div class="actions"><button class="btn ghost" id="shClose">Close</button></div>`, 'Share my shop');
+  box.classList.add('wide');
+  box.querySelector('#shClose').addEventListener('click', closeModal);
+  box.querySelector('#shCopy').addEventListener('click', () => { toast(copyText(text) ? 'Copied! Paste it into a message.' : 'Select the code and copy it.'); });
+  let blob = null;
+  try {
+    blob = await cardPNG(d);
+    const url = URL.createObjectURL(blob);
+    box.querySelector('#shPrev').innerHTML = `<img src="${url}" alt="Your shop share card" class="share-img">`;
+  } catch (e) { box.querySelector('#shPrev').innerHTML = '<p class="bad">Could not make the picture on this device. You can still copy the code and message.</p>'; }
+  const go = box.querySelector('#shGo'), sv = box.querySelector('#shSave');
+  go.disabled = false; sv.disabled = !blob;
+  go.addEventListener('click', async () => {
+    try {
+      const file = blob ? new File([blob], 'shop-tycoon.png', { type: 'image/png' }) : null;
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: 'Shop Tycoon', text });
+      else if (navigator.share) await navigator.share({ title: 'Shop Tycoon', text });
+      else { toast(copyText(text) ? 'Copied the message. Paste it into a chat, and save the picture to send too.' : 'Sharing is not available here.'); return; }
+      S.shared = true; checkBadges(); save();
+    } catch (e) { if (!e || e.name !== 'AbortError') toast(copyText(text) ? 'Copied the message instead.' : 'Sharing did not work here.'); }
+  });
+  sv.addEventListener('click', () => { if (blob) { downloadBlob(blob, `shop-tycoon-${S.shopName.replace(/[^a-z0-9]+/gi, '-')}.png`); S.shared = true; checkBadges(); save(); } });
+}
+
+/* ---------- Rivals ---------- */
+let boardSort = 'level', boardSel = 'free';
+function addRival(code) {
+  const d = decodeShare(code);
+  if (!d) { toast('That code does not look right. Ask your friend to copy it again.'); return false; }
+  if (d.bad) { toast('That code looks damaged. Ask your friend to copy it again.'); return false; }
+  const list = loadJSON(RIV_KEY, []), key = x => `${x.n}|${x.t}|${x.m}|${x.c || ''}`;
+  const i = list.findIndex(r => key(r.d) === key(d));
+  if (i >= 0) { list[i].d = d; list[i].id = list[i].id; }
+  else {
+    if (list.filter(r => r.d.m === d.m).length >= 10) { toast('You can have up to 10 rivals per mode. Remove one first.'); return false; }
+    list.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), d });
+  }
+  saveJSON(RIV_KEY, list);
+  toast(i >= 0 ? `Updated ${d.n}.` : `${d.n} added as a rival.`);
+  return true;
+}
+function boardData() {
+  const me = shareData(), riv = loadJSON(RIV_KEY, []).filter(r => r.d.m === me.m);
+  const seeds = []; riv.forEach(r => { if (r.d.c && !seeds.includes(r.d.c)) seeds.push(r.d.c); }); if (me.c && !seeds.includes(me.c)) seeds.push(me.c);
+  if (boardSel !== 'free' && !seeds.includes(boardSel)) boardSel = 'free';
+  let rows;
+  if (boardSel === 'free') {
+    rows = riv.filter(r => !r.d.c).map(r => ({ d: r.d, id: r.id })); if (!me.c) rows.push({ d: me, you: true });
+    const key = { level: x => x.l * 1e7 + x.p, best: x => x.b, days: x => x.d, profit: x => x.p }[boardSort];
+    rows.sort((a, b) => key(b.d) - key(a.d));
+  } else {
+    rows = riv.filter(r => r.d.c === boardSel).map(r => ({ d: r.d, id: r.id })); if (me.c === boardSel) rows.push({ d: me, you: true });
+    const sc = x => x.s != null ? x.s : x.p; rows.sort((a, b) => sc(b.d) - sc(a.d));
+  }
+  const yi = rows.findIndex(r => r.you);
+  if (yi >= 0 && yi < rows.length - 1 && !S.rivalBeaten) { S.rivalBeaten = true; checkBadges(); save(); }
+  return { rows, seeds, me };
+}
+function rivalsHTML() {
+  const { rows, seeds } = boardData(), free = boardSel === 'free';
+  const tabs = `<div class="tabs" role="group" aria-label="Which board"><button class="btn small secondary" data-c="board" data-v="free" aria-pressed="${free}">Free play</button>${seeds.map(s => `<button class="btn small secondary" data-c="board" data-v="${s}" aria-pressed="${boardSel === s}">Challenge ${s.slice(0, 4).toUpperCase()}</button>`).join('')}</div>`;
+  const sorts = free ? `<div class="tabs" role="group" aria-label="Sort by">${[['level', 'Level'], ['best', 'Best day'], ['days', 'Days'], ['profit', 'Total profit']].map(([k, l]) => `<button class="btn small secondary" data-c="sort" data-v="${k}" aria-pressed="${boardSort === k}">${l}</button>`).join('')}</div>` : '';
+  const body = rows.map((r, i) => {
+    const x = r.d, th = THEMES[x.t], who = `${th.emoji} ${esc(x.n)}${r.you ? ' <span class="newpill" style="background:var(--gain)">YOU</span>' : ''}${x.u ? `<br><span class="hint">Luck: ${x.u[0]} won, ${x.u[1]} lost</span>` : ''}`;
+    const rm = r.you ? '' : `<button class="linkbtn" data-c="rm" data-id="${r.id}" aria-label="Remove ${esc(x.n)}">✕</button>`;
+    return free ? `<tr class="${r.you ? 'you' : ''}"><td>${i + 1}</td><td>${who}</td><td>${x.l}</td><td>${x.d}</td><td>${fmt$(x.b)}</td><td>${x.w}</td><td>${x.g}</td><td>${rm}</td></tr>`
+      : `<tr class="${r.you ? 'you' : ''}"><td>${i + 1}</td><td>${who}</td><td>${x.s != null ? fmt$(x.s) : fmt$(x.p) + ' so far'}</td><td>${x.s != null ? 'Finished' : `Day ${x.d} of ${CONFIG.challengeDays}`}</td><td>${rm}</td></tr>`;
+  }).join('');
+  const head = free ? '<th>#</th><th>Shop</th><th>Level</th><th>Days</th><th>Best day</th><th>Bosses</th><th>Badges</th><th></th>' : '<th>#</th><th>Shop</th><th>Score</th><th>Progress</th><th></th>';
+  const note = rows.length < 2 ? '<p class="hint">Add a friend\'s code to see how you compare. Boards are separate for Maths mode and Adult mode.</p>' : '';
+  return `<div class="box"><h3>👥 Rivals (${isAdult() ? 'Adult' : 'Maths'} mode)</h3>${tabs}${sorts}
+    <div style="overflow-x:auto"><table class="stats"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>${note}
+    <label class="lbl" for="rivalCode">Paste a friend's code</label>
+    <div class="calc-row"><input id="rivalCode" type="text" autocomplete="off" placeholder="STY1-…"><button class="btn" data-c="addrival">Add rival</button></div></div>`;
+}
+
+/* ---------- Records, challenge box and the Share and compete screen ---------- */
+function recordsHTML() {
+  const R = loadJSON(REC_KEY, {}), m = modeKey(), r = R[m] || {};
+  const best = S ? S.history.reduce((a, h) => Math.max(a, h.profit), 0) : 0, gap = (r.bestDay || 0) - best;
+  const line = best > 0 && best >= (r.bestDay || 0) ? '<p class="good">This shop holds your best day on record. Can you beat it?</p>' : gap > 0 ? `<p>You are ${fmt$(gap)} away from beating your own best day.</p>` : '';
+  return `<div class="box"><h3>🏅 Your records (${m === 'adult' ? 'Adult' : 'Maths'} mode)</h3><table class="stats"><tbody>
+    <tr><td>Best day's profit</td><td>${fmt$(r.bestDay || 0)}</td></tr><tr><td>Highest level</td><td>${r.maxLevel || 1}</td></tr><tr><td>Most days open</td><td>${r.maxDays || 0}</td></tr>
+    <tr><td>Most boss wins in one shop</td><td>${r.bossWins || 0}</td></tr><tr><td>Best ${CONFIG.challengeDays}-day challenge</td><td>${r.bestChallenge == null ? '–' : fmt$(r.bestChallenge)}</td></tr></tbody></table>${line}
+    <p class="hint">Records stay on this device, with separate records for each mode.</p></div>`;
+}
+function challengeBoxHTML() {
+  const ch = S.challenge;
+  const info = ch ? `<p>${ch.done ? `Your challenge is finished: ${fmt$(ch.score)}.` : `You are in a challenge: day ${S.day} of ${ch.days}.`}</p><div class="actions"><button class="btn secondary" data-c="invite">Show the invite code</button></div>` : '';
+  return `<div class="box"><h3>🏁 Challenge a friend</h3><p>Play ${CONFIG.challengeDays} days with exactly the same events and shopper luck as your friend, so the better shopkeeper wins. Your friend joins with an invite code.</p>${info}
+    <div class="actions"><button class="btn" data-c="newchallenge">Start a new challenge</button></div></div>`;
+}
+function competeHTML() {
+  const body = SETTINGS.sharing
+    ? `<div class="box"><h3>📤 Share my shop</h3><p>Make a picture card and a code to send to family and friends.</p><button class="btn" data-c="share">Share my shop</button></div>${rivalsHTML()}${challengeBoxHTML()}`
+    : `<div class="box"><h3>Sharing is switched off</h3><p>A parent can turn on sharing in the ${isAdult() ? 'Stats' : 'Parent view'} (Menu). Once it is on, you can share a card of your shop, compare with rivals and play ${CONFIG.challengeDays}-day challenges. Only your shop name, shopkeeper look and stats are shared.</p></div>`;
+  return `<h2>🏆 Share and compete</h2>${recordsHTML()}${body}<div class="actions"><button class="btn" data-c="close">Close</button></div>`;
+}
+function showCompete() {
+  const box = openModal(competeHTML(), 'Share and compete');
+  box.classList.add('wide');
+  const refresh = keep => { const y = box.scrollTop; box.innerHTML = competeHTML(); box.scrollTop = y; };
+  box.addEventListener('click', e => {
+    const b = e.target.closest('[data-c]'); if (!b) return;
+    const c = b.dataset.c;
+    if (c === 'close') closeModal();
+    else if (c === 'share') { closeModal(); showShare(); }
+    else if (c === 'board') { boardSel = b.dataset.v; refresh(); }
+    else if (c === 'sort') { boardSort = b.dataset.v; refresh(); }
+    else if (c === 'rm') { saveJSON(RIV_KEY, loadJSON(RIV_KEY, []).filter(r => r.id !== b.dataset.id)); refresh(); }
+    else if (c === 'addrival') { const inp = box.querySelector('#rivalCode'); if (addRival(inp.value)) refresh(); }
+    else if (c === 'invite') { closeModal(); showInvite(); }
+    else if (c === 'newchallenge') { closeModal(); startChallengeFlow(); }
+  });
+}
+function showInvite() {
+  const code = makeChallengeCode(), link = shareLink();
+  const text = `Join my ${CONFIG.challengeDays}-day Shop Tycoon challenge! Same events, same luck, best shopkeeper wins.${link ? '\n' + link : ''}\nIn New shop, choose "Join a challenge" and paste: ${code}`;
+  const box = openModal(`<h2>🏁 Challenge invite</h2><p>Send this to a friend. They start a new shop, choose <strong>Join a challenge</strong> and paste the code.</p>
+    <textarea class="codebox" readonly rows="3" id="invCode">${esc(code)}</textarea>
+    <div class="actions"><button class="btn" id="invShare">Share invite</button><button class="btn secondary" id="invCopy">Copy invite</button><button class="btn ghost" id="invClose">Close</button></div>`, 'Challenge invite');
+  box.querySelector('#invClose').addEventListener('click', closeModal);
+  box.querySelector('#invCopy').addEventListener('click', () => toast(copyText(text) ? 'Copied! Paste it into a message.' : 'Select the code and copy it.'));
+  box.querySelector('#invShare').addEventListener('click', async () => {
+    try { if (navigator.share) await navigator.share({ title: 'Shop Tycoon challenge', text }); else toast(copyText(text) ? 'Copied! Paste it into a message.' : 'Sharing is not available here.'); } catch (e) {}
+  });
+}
+function startChallengeFlow() {
+  if (S && S.phase === 'day') { toast('Wait until the shop closes for the day.'); return; }
+  let slot = 0; for (let n = 1; n <= CONFIG.slots; n++) if (!loadSlot(n)) { slot = n; break; }
+  if (!slot) { toast('You need an empty shop slot. Delete a shop you do not need first.'); return; }
+  if (S) { save(); clearInterval(dayTimer); dayTimer = null; S = null; CUR = 0; clearShoppers(); }
+  newSlot = slot; screen = 'new'; newStyle = 'new'; newJoin = null; joinMsg = '';
+  render(); window.scrollTo({ top: 0 });
+}
+function finishChallenge() {
+  const ch = S.challenge; ch.done = true; ch.score = Math.round(totalProfit()); ch.finishedDay = S.day; boardSel = ch.seed;
+  seedWorld('free'); checkBadges(); bumpRecords(); save(); render();
+  const { rows } = SETTINGS.sharing ? boardData() : { rows: [] }, yi = rows.findIndex(r => r.you);
+  const box = openModal(`<h2>🏁 Challenge complete!</h2><p>Your ${ch.days}-day score is</p><div class="dice win">${fmt$(ch.score)}</div>
+    ${yi >= 0 && rows.length > 1 ? `<p>You are currently ranked <strong>#${yi + 1}</strong> of ${rows.length} on this challenge.</p>` : ''}
+    <p class="hint">${SETTINGS.sharing ? 'Share your result so friends can add you as a rival and compare scores.' : 'A parent can turn on sharing in the ' + (isAdult() ? 'Stats' : 'Parent view') + ' to share this result.'}</p>
+    <div class="actions">${SETTINGS.sharing ? '<button class="btn" id="chShare">Share my result</button>' : ''}<button class="btn secondary" id="chKeep">Keep playing (free play)</button></div>`, 'Challenge complete');
+  box.querySelector('#chKeep').addEventListener('click', closeModal);
+  const sh = box.querySelector('#chShare'); if (sh) sh.addEventListener('click', () => { closeModal(); showShare(); });
+}
+
+/* ---------- New shop: mode, play style, challenge join ---------- */
+let newMode = 'maths', newStyle = 'free', newJoin = null, joinMsg = '';
+function newShopHTMLv2() {
+  const joined = newStyle === 'join' && newJoin, modes = [['maths', '🎓 Maths mode', 'Maths challenges earn bonus cash and levels. Great for learning.'], ['adult', '🎲 Adult mode', 'No questions. Chances to win or lose cash, stock and reputation.']];
+  const styles = [['free', 'Free play', 'No time limit.'], ['new', 'Start a challenge', `${CONFIG.challengeDays} days. Your friends play the same luck.`], ['join', 'Join a challenge', 'Paste a friend\'s invite code.']];
+  return `<h2>New shop in slot ${newSlot}</h2>
+    <div class="start-field"><label for="shopName"><strong>Name your shop</strong></label><input id="shopName" type="text" maxlength="24" placeholder="e.g. Super Sneaks"></div>
+    <h3 style="margin-top:16px">Game mode</h3>
+    <div class="modes" role="group" aria-label="Game mode">${modes.map(([k, t, d]) => `<button class="mode-btn" data-act="mode" data-k="${k}" aria-pressed="${(joined ? (newJoin.m === 'a' ? 'adult' : 'maths') : newMode) === k}" ${joined ? 'disabled' : ''}><strong>${t}</strong><br><span class="hint">${d}</span></button>`).join('')}</div>
+    <h3 style="margin-top:16px">How do you want to play?</h3>
+    <div class="modes" role="group" aria-label="Play style">${styles.map(([k, t, d]) => `<button class="mode-btn" data-act="style" data-k="${k}" aria-pressed="${newStyle === k}"><strong>${t}</strong><br><span class="hint">${d}</span></button>`).join('')}</div>
+    ${newStyle === 'join' ? `<div class="box"><label class="lbl" for="joinCode">Paste the invite code</label><div class="calc-row"><input id="joinCode" type="text" autocomplete="off" placeholder="STC1-…"><button class="btn" data-act="checkjoin">Check</button></div><p id="joinMsg" class="${newJoin ? 'good' : 'bad'}">${joinMsg}</p></div>` : ''}
+    ${newStyle === 'new' ? `<p class="hint">After you open your shop you will get an invite code to send to friends. Scores are not verified.</p>` : ''}
+    <h3 style="margin-top:16px">What kind of shop?</h3>
+    <div class="themes" role="group" aria-label="Choose what your shop sells">${Object.entries(THEMES).map(([k, th]) => `<button class="theme-btn" data-act="theme" data-k="${k}" aria-pressed="${(joined ? newJoin.t : selectedTheme) === k}" ${joined ? 'disabled' : ''}><span class="em" aria-hidden="true">${th.emoji}</span><strong>${th.label}</strong><br><span class="hint">${th.items.map(i => i.emoji).join(' ')}</span></button>`).join('')}</div>
+    <div class="actions"><button class="btn secondary" data-act="backslots">Back</button><button class="btn" data-act="start">Open my shop</button></div>`;
+}
+function slotsHTMLv2() {
+  let cards = '';
+  for (let n = 1; n <= CONFIG.slots; n++) {
+    const s = loadSlot(n);
+    if (s && THEMES[s.theme]) {
+      const th = THEMES[s.theme], tag = `${s.mode === 'adult' ? '🎲 Adult mode' : '🎓 Maths mode'}${s.challenge ? (s.challenge.done ? ' · Challenge done' : ` · Challenge day ${s.day} of ${s.challenge.days}`) : ''}`;
+      cards += `<div class="slot filled"><span class="em" aria-hidden="true">${th.emoji}</span><h3>${esc(s.shopName)}</h3>
+        <p class="hint">${th.label}. Level ${s.level}, day ${s.day}. Cash ${money(s.cash)}.<br>${tag}</p>
+        <div class="actions"><button class="btn" data-act="play" data-n="${n}">Play</button><button class="btn ghost" data-act="delslot" data-n="${n}">Delete</button></div></div>`;
+    } else {
+      cards += `<div class="slot"><span class="em" aria-hidden="true">➕</span><h3>Empty slot ${n}</h3><p class="hint">Start a brand new shop here.</p>
+        <div class="actions"><button class="btn secondary" data-act="newshop" data-n="${n}">New shop</button></div></div>`;
+    }
+  }
+  return `<div class="start-hero"><h1>Shop Tycoon</h1><p>Run your own shops. Buy stock, set prices, decorate, add rooms and climb 12 levels. Play in Maths mode to earn bonus cash, or in Adult mode for pure business and a little luck.</p></div>
+    <h2>My shops</h2><p class="hint">You can run up to ${CONFIG.slots} different shops. Each one saves on its own. <span class="ver">Game version ${GAME_VERSION}</span></p>
+    <div class="slots">${cards}</div>`;
+}
+
+/* ---------- Badges (earned only) and the Shopper guide (visiting types only) ---------- */
+function showBadgesv2() {
+  const mine = BADGES.filter(b => !b.mode || b.mode === modeKey()), got = mine.filter(b => S.badges.includes(b.id)), more = mine.length - got.length;
+  const box = openModal(`<h2>Badges</h2>${got.length ? `<div class="badge-list">${got.map(b => `<div class="badge"><span class="em" aria-hidden="true">${b.emoji}</span>${b.name}</div>`).join('')}</div>` : '<p>No badges yet. Keep playing!</p>'}
+    ${more > 0 ? `<p class="hint">${more} more badge${more > 1 ? 's' : ''} to discover.</p>` : ''}
+    <div class="actions"><button class="btn" id="bClose">Close</button></div>`, 'Badges');
+  box.querySelector('#bClose').addEventListener('click', closeModal);
+  box.querySelector('#bClose').focus();
+}
+function showShopperGuidev2() {
+  const seen = k => k === 'adult' || (S.seenShoppers && S.seenShoppers[k]) || ACCESSORIES.some(a => a.brings === k && hasAcc(a.id));
+  const rows = Object.entries(SHOPPERS).filter(([k]) => seen(k)).map(([k, s]) => {
+    const acc = ACCESSORIES.find(a => a.brings === k), how = acc && hasAcc(acc.id) ? `${acc.emoji} ${acc.name}` : k === 'adult' ? 'Always visit' : 'Visited on a special day';
+    return `<tr><td>${miniPerson(k, 44)}</td><td><strong>${s.name}</strong></td><td>${s.desc}</td><td>${how}</td></tr>`;
+  }).join('');
+  const box = openModal(`<h2>Shopper guide</h2>
+    <p>Every item has a hidden fair price. Each type of shopper compares your price with it in a different way. Here are the types who have visited your shop so far.</p>
+    <div style="overflow-x:auto"><table class="stats"><thead><tr><th></th><th>Who</th><th>What they do</th><th>Why they visit</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="hint">More types of shoppers will start visiting as your shop grows and as special days come along.</p>
+    <div class="box">${repInfoHTML()}</div>
+    <h3 style="margin-top:14px">What their faces mean</h3>
+    <p>${Object.keys(MOOD_LABEL).map(m => `${moodSVG(m, 24)} ${MOOD_LABEL[m]}`).join('&nbsp;&nbsp; ')}</p>
+    <p class="hint">In the shop, a coloured ring under each shopper shows their type. Tap anyone to see who they are and what they think.</p>
+    <div class="actions"><button class="btn" id="gClose">Got it</button></div>`, 'Shopper guide');
+  box.querySelector('#gClose').addEventListener('click', closeModal);
+  box.querySelector('#gClose').focus();
+}
+function unlockHintHTML(locked, noun) {
+  if (!locked.length) return `<p class="hint" style="grid-column:1/-1">You have unlocked every ${noun === 'staff' ? 'kind of staff member' : noun.replace(/s$/, '')}!</p>`;
+  const lv = Math.min(...locked.map(x => x.level));
+  return `<p class="hint" style="grid-column:1/-1">🔒 More ${noun} unlock at level ${lv}.</p>`;
+}
+
+/* ---------- Stats screen (adult mode replaces the Parent view) ---------- */
+function showStats() {
+  const L = luckStats(), best = S.history.reduce((a, h) => Math.max(a, h.profit), 0);
+  const box = openModal(`<h2>📊 Stats: ${esc(S.shopName)}</h2>
+    <table class="stats"><tbody>
+      <tr><td>Days played</td><td>${S.day}</td></tr><tr><td>Level</td><td>${S.level}</td></tr><tr><td>Total profit</td><td>${money(totalProfit())}</td></tr><tr><td>Best day</td><td>${money(best)}</td></tr>
+      <tr><td>Boss wins</td><td>${S.bossWins || 0}</td></tr><tr><td>Chances won / lost</td><td>${L.won} / ${L.lost}</td></tr><tr><td>Best winning streak</td><td>${L.best}</td></tr>
+      <tr><td>Times you gambled / played safe</td><td>${L.gambles} / ${L.safe}</td></tr><tr><td>Biggest win</td><td>${money(L.big)}</td></tr><tr><td>Biggest loss</td><td>${money(L.bigLoss)}</td></tr></tbody></table>
+    <p style="margin-top:10px"><label><input type="checkbox" id="setShare" ${SETTINGS.sharing ? 'checked' : ''}> Allow sharing, rivals and challenges <span class="hint">(only the shop name, shopkeeper look and stats are shared)</span></label></p>
+    <div class="actions"><button class="btn" id="pClose">Close</button><button class="btn ghost" id="pReset">Delete this shop</button></div>`, 'Stats');
+  wireParentCommon(box);
+}
+function wireParentCommon(box) {
+  const sh = box.querySelector('#setShare'); if (sh) sh.addEventListener('change', e => { SETTINGS.sharing = e.target.checked; saveSettings(); });
+  box.querySelector('#pClose').addEventListener('click', () => { closeModal(); render(); });
+  box.querySelector('#pClose').focus();
+  box.querySelector('#pReset').addEventListener('click', async () => {
+    closeModal();
+    const ok = await confirmBox('Delete this shop?', `This deletes ${S.shopName} for good, including its cash, level, badges and results.`, 'Delete shop');
+    if (!ok) return;
+    clearInterval(dayTimer); dayTimer = null; deleteSlot(CUR);
+    S = null; CUR = 0; screen = 'slots'; clearShoppers(); render();
+  });
 }
 
 /* ============================================================
@@ -2033,7 +3013,7 @@ function showRepInfo() {
 
 function showMenu() {
   const day = S.phase === 'day';
-  const items = [['slots', '🏬 My shops', day], ['customise', '🎨 Customise shop', day], ['guide', '🧑‍🤝‍🧑 Shopper guide', false], ['badges', `🏅 Badges (${S.badges.length})`, false], ['parent', '👪 Parent view', false]];
+  const items = [['slots', '🏬 My shops', day], ['customise', '🎨 Customise shop', day], ['guide', '🧑‍🤝‍🧑 Shopper guide', false], ['badges', `🏅 Badges (${S.badges.length})`, false], ['compete', '🏆 Share and compete', false], ['parent', isAdult() ? '📊 Stats' : '👪 Parent view', false]];
   const box = openModal(`<h2>Menu</h2><div class="menu-list">${items.map(([k, label, dis]) => `<button class="btn secondary" data-m="${k}" ${dis ? 'disabled' : ''}>${label}${dis ? ' <small>(after the shop closes)</small>' : ''}</button>`).join('')}</div>
     <div class="actions"><button class="btn" id="mClose">Close</button></div>`, 'Menu');
   box.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => { closeModal(); ACTIONS[b.dataset.m](b); }));
@@ -2076,7 +3056,7 @@ function newUpgrades() {
 }
 function eveningTodo() {
   const t = S.today, c = t.checks || (t.checks = {}), todo = [];
-  todo.push({ id: 'bonus', label: 'Bonus question', done: !!t.bonusAsked || !!c.bonus, anchor: 'ev-bonus' });
+  todo.push({ id: 'bonus', label: isAdult() ? 'Lucky cards' : 'Bonus question', done: !!t.bonusAsked || !!c.bonus, anchor: 'ev-bonus' });
   if (S.forecast) todo.push({ id: 'forecast', label: "Tomorrow's forecast and insurance", done: !!c.forecast, anchor: 'ev-forecast' });
   const nu = newUpgrades();
   if (nu.length) todo.push({ id: 'upgrades', label: `New upgrades to look at (${nu.map(x => x.emoji).join(' ')})`, done: !!c.upgrades, anchor: 'ev-upgrades' });
@@ -2098,18 +3078,20 @@ function renderTop() {
   if (next) {
     const tp = totalProfit();
     pct = clamp((tp - prev.profit) / (next.profit - prev.profit) * 100, 0, 100);
-    prog = `Level ${S.level + 1}: earn ${money(next.profit)} total profit${next.points ? ` and ${next.points} maths points` : ''}. So far: ${money(tp)}${next.points ? ` and ${S.mathPoints || 0} points` : ''}.`;
+    const mp = next.points && !isAdult();
+    prog = `Level ${S.level + 1}: earn ${money(next.profit)} total profit${mp ? ` and ${next.points} maths points` : ''}. So far: ${money(tp)}${mp ? ` and ${S.mathPoints || 0} points` : ''}.`;
   }
   bar.innerHTML = `
     <span class="chip cash">Cash ${money(S.cash)}</span>
     <span class="chip">Day ${S.day}</span>
     <span class="chip">Level ${S.level}</span>
     <button class="chip chipbtn" data-act="repinfo" title="${repTooltip()}" aria-label="Reputation ${Math.round(S.rep)} out of 100. Tap to learn what it does.">Reputation ${Math.round(S.rep)} ${stars}${S.repTrend > 0 ? ' <span class="good">▲</span>' : S.repTrend < 0 ? ' <span class="bad">▼</span>' : ''} <span class="info-i" aria-hidden="true">i</span></button>
-    <span class="chip" title="Maths points">🎓 ${S.mathPoints || 0} pts</span>
+    ${isAdult() ? '' : `<span class="chip" title="Maths points">🎓 ${S.mathPoints || 0} pts</span>`}
     <span class="spacer"></span>
     <button class="btn small secondary menu-btn" data-act="menu" aria-label="Menu">☰ Menu</button>`;
   el.innerHTML = `
-    <span class="chip" title="Calculator uses left today">🧮 ${S.calcTokens} left</span>
+    ${isAdult() ? '' : `<span class="chip" title="Calculator uses left today">🧮 ${S.calcTokens} left</span>`}
+    ${S.challenge && !S.challenge.done ? `<span class="chip">🏁 Challenge: day ${S.day} of ${S.challenge.days}</span>` : ''}
     ${S.loan > 0 ? `<span class="chip debt">Loan owed ${money(S.loan)}</span>` : ''}
     <div class="progress">${prog}<div class="lvlbar" aria-hidden="true"><div style="width:${pct}%"></div></div></div>`;
 }
@@ -2162,7 +3144,7 @@ function renderShelves() {
   const items = unlocked(), n = Math.max(items.length, 3), w = Math.min(10.5, 52 / n * 0.86), max = shelfMax(), style = shelfStyle(), t = S.today;
   box.innerHTML = items.map((d, i) => {
     const st = S.items[d.id].stock, filled = st ? clamp(Math.ceil(st / max * 8), 1, 8) : 0;
-    const sale = t && t.sales && t.sales[d.id] != null, low = st > 0 && st / max < 0.2, price = (t && t.sales && t.sales[d.id] != null) ? t.sales[d.id] : S.items[d.id].price;
+    const sale = t && t.sales && t.sales[d.id] != null && t.sales[d.id] < S.items[d.id].price, low = st > 0 && st / max < 0.2, price = (t && t.sales && t.sales[d.id] != null) ? t.sales[d.id] : S.items[d.id].price;
     return `<div class="shelf-unit ${st ? '' : 'empty'}" style="left:${shelfX(i) - w / 2}%;width:${w}%" title="${esc(d.name)}: ${st} on the shelf">
       ${shelfSVG(style, i, filled)}
       ${st === 0 ? '<span class="shelf-flag out">SOLD OUT</span>' : low ? '<span class="shelf-flag low">Low!</span>' : ''}${sale && st ? '<span class="shelf-flag sale">SALE</span>' : ''}
@@ -2180,37 +3162,9 @@ function renderPanel() {
 }
 
 let newSlot = 1;
-function slotsHTML() {
-  let cards = '';
-  for (let n = 1; n <= CONFIG.slots; n++) {
-    const s = loadSlot(n);
-    if (s && THEMES[s.theme]) {
-      const th = THEMES[s.theme];
-      cards += `<div class="slot filled"><span class="em" aria-hidden="true">${th.emoji}</span><h3>${esc(s.shopName)}</h3>
-        <p class="hint">${th.label}. Level ${s.level}, day ${s.day}. Cash ${money(s.cash)}.</p>
-        <div class="actions"><button class="btn" data-act="play" data-n="${n}">Play</button><button class="btn ghost" data-act="delslot" data-n="${n}">Delete</button></div></div>`;
-    } else {
-      cards += `<div class="slot"><span class="em" aria-hidden="true">➕</span><h3>Empty slot ${n}</h3><p class="hint">Start a brand new shop here.</p>
-        <div class="actions"><button class="btn secondary" data-act="newshop" data-n="${n}">New shop</button></div></div>`;
-    }
-  }
-  return `<div class="start-hero"><h1>Shop Tycoon</h1><p>Run your own shops. Buy stock, set prices, decorate, add rooms and climb 12 levels. Solve maths challenges for bonus cash.</p></div>
-    <h2>My shops</h2><p class="hint">You can run up to ${CONFIG.slots} different shops. Each one saves on its own. <span class="ver">Game version ${GAME_VERSION}</span></p>
-    <div class="slots">${cards}</div>`;
-}
+function slotsHTML() { return slotsHTMLv2(); }
 
-function newShopHTML() {
-  return `<h2>New shop in slot ${newSlot}</h2>
-    <div class="start-field">
-      <label for="shopName"><strong>Name your shop</strong></label>
-      <input id="shopName" type="text" maxlength="24" placeholder="e.g. Super Sneaks">
-    </div>
-    <h3 style="margin-top:16px">What kind of shop?</h3>
-    <div class="themes" role="group" aria-label="Choose what your shop sells">
-      ${Object.entries(THEMES).map(([k, th]) => `<button class="theme-btn" data-act="theme" data-k="${k}" aria-pressed="${k === selectedTheme}"><span class="em" aria-hidden="true">${th.emoji}</span><strong>${th.label}</strong><br><span class="hint">${th.items.map(i => i.emoji).join(' ')}</span></button>`).join('')}
-    </div>
-    <div class="actions"><button class="btn secondary" data-act="backslots">Back</button><button class="btn" data-act="start">Open my shop</button></div>`;
-}
+function newShopHTML() { return newShopHTMLv2(); }
 
 function morningHTML() {
   const t = S.today, E = EVENTS[t.event];
@@ -2257,7 +3211,7 @@ function morningHTML() {
   return `
     ${stepsHTML('morning')}
     <h2>Morning: stock up</h2>
-    <p class="hint">${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].emoji} ${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].name}, day ${dayOfYear(S.day)} of ${YEAR_DAYS} in the shop year.</p>
+    <p class="hint">${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].emoji} ${SEASONS[t.season != null ? t.season : seasonIdx(S.day)].name}, day ${dayOfYear(S.day)} of ${YEAR_DAYS} in the shop year. Foot traffic looks ${trafficWord()} today.</p>
     ${t.holiday ? `<div class="event holiday"><span class="big" aria-hidden="true">${t.holiday.emoji}</span><div><h3>${t.holiday.name}</h3><p>${t.holiday.text}</p></div></div>` : ''}
     <div class="event"><span class="big" aria-hidden="true">${E.emoji}</span><div><h3>${E.name}</h3><p>${E.text}</p>${extra}</div></div>
     ${bossCardHTML()}
@@ -2271,7 +3225,7 @@ function bossCardHTML() {
   const t = S.today; if (!t.boss) return '';
   const B = BOSSES.find(b => b.id === t.boss);
   return `<div class="event boss"><span class="big" aria-hidden="true">${B.emoji}</span><div><h3>Boss day: ${B.name}</h3><p>${B.intro}</p>
-    ${t.bossDone ? `<p class="good">${t.bossResult || ''}</p>` : `<p class="hint">${B.prep} Harder questions, bigger prizes. You must face the boss before opening.</p><button class="btn" data-act="boss">Face the boss</button>`}</div></div>`;
+    ${t.bossDone ? `<p class="good">${t.bossResult || ''}</p>` : `<p class="hint">${B.prep} ${isAdult() ? 'Make your call, then roll the dice: better preparation means better odds.' : 'Harder questions, bigger prizes.'} You must face the boss before opening.</p><button class="btn" data-act="boss">Face the boss</button>`}</div></div>`;
 }
 
 function totalLabel(q) {
@@ -2344,12 +3298,12 @@ function eveningHTML() {
     <div class="r-line"><span>Sales (${totalSold} items)</span><span>${money(t.revenue)}</span></div>
     ${t.tips ? `<div class="r-line"><span>Tips</span><span>${money(t.tips)}</span></div>` : ''}
     ${t.income ? `<div class="r-line"><span>Vending machine</span><span>${money(t.income)}</span></div>` : ''}
-    <div class="r-line"><span>Maths bonuses</span><span>${money(t.bonus)}</span></div>
+    <div class="r-line"><span>${isAdult() ? 'Luck winnings' : 'Maths bonuses'}</span><span>${money(t.bonus)}</span></div>
     ${t.payout ? `<div class="r-line"><span>Insurance payout</span><span>${money(t.payout)}</span></div>` : ''}
     ${t.found ? `<div class="r-line"><span>Lucky find</span><span>${money(t.found)}</span></div>` : ''}
     <div class="r-line"><span>Stock bought</span><span>${money(-t.spent)}</span></div>
     ${t.wages ? `<div class="r-line"><span>Wages (${Object.keys(S.staff || {}).length} staff)</span><span>${money(-t.wages)}</span></div>` : ''}
-    ${t.other ? `<div class="r-line"><span>Cleaning and fines</span><span>${money(-t.other)}</span></div>` : ''}
+    ${t.other ? `<div class="r-line"><span>${isAdult() ? 'Fines and bad luck' : 'Cleaning and fines'}</span><span>${money(-t.other)}</span></div>` : ''}
     ${t.insurance ? `<div class="r-line"><span>Insurance</span><span>${money(-t.insurance)}</span></div>` : ''}
     <div class="r-total ${pr < 0 ? 'loss' : 'gain'}"><span>${pr < 0 ? 'Loss' : 'Profit'}</span><span>${money(pr)}</span></div>
     <div class="r-note">Profit = money in − money out today. Unsold stock stays for tomorrow. Shop upgrades don't count against profit.</div>
@@ -2382,12 +3336,13 @@ function eveningHTML() {
 
   const list = shopTab === 'acc' ? ACCESSORIES : ROOMS;
   const owns = shopTab === 'acc' ? hasAcc : hasRoom;
-  const cards = shopTab === 'staff' ? staffCardsHTML() : list.map(x => {
+  const lockedList = list.filter(x => S.level < x.level);
+  const cards = shopTab === 'staff' ? staffCardsHTML() : list.filter(x => S.level >= x.level).map(x => {
     const owned = owns(x.id), locked = S.level < x.level, isNew = !owned && !locked && !S.seen[(shopTab === 'acc' ? 'acc:' : 'room:') + x.id];
     return `<div class="card ${owned ? 'owned' : ''} ${locked ? 'locked' : ''}">${shopTab === 'acc' ? `<span class="art-ico">${accSVG(x.id)}</span>` : ''}<strong>${shopTab === 'acc' ? '' : `<span class="em" aria-hidden="true">${x.emoji}</span> `}${x.name}${isNew ? '<span class="newpill">NEW</span>' : ''}</strong><p class="hint">${x.desc}</p>
       ${owned ? '<span class="good">In your shop</span>' : locked ? `<span class="hint">Unlocks at level ${x.level}</span>`
         : `<button class="btn small" data-act="${shopTab === 'acc' ? 'buyacc' : 'buyroom'}" data-id="${x.id}" ${S.cash >= x.cost ? '' : 'disabled'}>Buy for ${money(x.cost)}</button>`}</div>`;
-  }).join('');
+  }).join('') + (shopTab === 'staff' ? '' : unlockHintHTML(lockedList, shopTab === 'acc' ? 'accessories' : 'rooms'));
 
   return `
     ${stepsHTML('evening')}
@@ -2399,7 +3354,7 @@ function eveningHTML() {
         <figure><figcaption>Profit over the last ${Math.min(7, S.history.length)} day${S.history.length > 1 ? 's' : ''}</figcaption>${lineChartSVG()}<p class="hint">Points below the $0 line are losses (negative numbers).</p></figure>
       </div>
     </div>
-    ${bonus}${comingUpHTML()}${forecast}${loanPay}
+    ${isAdult() ? `<div id="ev-bonus">${luckyCardsHTML()}</div>` : bonus}${comingUpHTML()}${forecast}${loanPay}
     <h2 style="margin-top:20px" id="ev-upgrades">Shop upgrades</h2>
     <div class="tabs" role="group" aria-label="Upgrade type">
       <button class="btn small secondary" data-act="tab" data-v="acc" aria-pressed="${shopTab === 'acc'}">Accessories${newUpgrades().some(x => x.kind === 'acc') ? '<span class="tabdot" aria-label="new"></span>' : ''}</button>
@@ -2413,7 +3368,7 @@ function eveningHTML() {
 function checklistHTML() {
   const todo = eveningTodo(), left = todo.filter(x => !x.done);
   return `<div class="box checklist" id="ev-checklist"><h3>Before you finish the day</h3><ul>${todo.map(x => `<li class="${x.done ? 'done' : ''}"><button class="linkbtn" data-act="goto" data-to="${x.anchor}">${x.done ? '✔' : '☐'} ${x.label}</button>${x.id === 'upgrades' && !x.done ? '<button class="btn small" data-act="seeup">I\'ve looked</button>' : ''}</li>`).join('')}</ul></div>
-    <div class="actions primary">${left.length ? `<span class="hint">Finish the checklist first (${left.length} left)</span>` : ''}<button class="btn" data-act="next" ${left.length ? 'disabled' : ''}>Start day ${S.day + 1}</button></div>`;
+    <div class="actions primary">${left.length ? `<span class="hint">Finish the checklist first (${left.length} left)</span>` : ''}<button class="btn" data-act="next" ${left.length ? 'disabled' : ''}>${chFinal() ? 'Finish the challenge' : 'Start day ' + (S.day + 1)}</button></div>`;
 }
 
 function comingUpHTML() {
@@ -2426,13 +3381,13 @@ function comingUpHTML() {
 
 function staffCardsHTML() {
   const total = wagesToday();
-  return `<p class="hint" style="grid-column:1/-1">Staff work ${CONFIG.staffHours} hours a day. Wages are paid every evening${total ? `: currently ${money(total)} a day` : ''}. Pay rates rise a little as your shop levels up.</p>` + STAFF.map(s => {
+  return `<p class="hint" style="grid-column:1/-1">Staff work ${CONFIG.staffHours} hours a day. Wages are paid every evening${total ? `: currently ${money(total)} a day` : ''}. Pay rates rise a little as your shop levels up.</p>` + STAFF.filter(s => S.level >= s.level).map(s => {
     const hired = hasStaff(s.id), locked = S.level < s.level;
     const isNew = !hired && !locked && !S.seen['staff:' + s.id];
     return `<div class="card ${hired ? 'owned' : ''} ${locked ? 'locked' : ''}"><span class="art-ico">${personSVG(STAFF_LOOK[s.id], 48)}</span><strong>${s.name}${isNew ? '<span class="newpill">NEW</span>' : ''}</strong><p class="hint">${s.desc}</p>
       <p class="hint">${money(staffRate(s))} an hour × ${CONFIG.staffHours} hours = ${money(staffDaily(s))} a day</p>
       ${hired ? `<span class="good">Working for you</span> <button class="btn small ghost" data-act="fire" data-id="${s.id}">Let go</button>` : locked ? `<span class="hint">Unlocks at level ${s.level}</span>` : `<button class="btn small" data-act="hire" data-id="${s.id}">Hire</button>`}</div>`;
-  }).join('');
+  }).join('') + unlockHintHTML(STAFF.filter(s => S.level < s.level), 'staff');
 }
 
 function bonusButtons() {
@@ -2484,6 +3439,7 @@ function lineChartSVG() {
 }
 
 function showParent() {
+  if (isAdult()) return showStats();
   const rows = Object.keys(TOPICS).map(k => {
     const s = S.stats[k] || { right: 0, wrong: 0, skip: 0, calc: 0 };
     const tried = s.right + s.wrong;
@@ -2512,6 +3468,7 @@ function showParent() {
         <option value="H" ${SETTINGS.kumon === 'H' ? 'selected' : ''}>Algebra and equations (around level H and above)</option>
       </select><br><span class="hint">When on, about 2 in 5 bonus questions come from these topics. Kumon level contents are approximate; check with the Kumon instructor which area your child is working on.</span></p>
     <p><label><input type="checkbox" id="setWrong" ${SETTINGS.wrongPenalty ? 'checked' : ''}> Wrong answers also lose 1 maths point (by default only skips do)</label></p>
+    <p><label><input type="checkbox" id="setShare" ${SETTINGS.sharing ? 'checked' : ''}> Allow sharing, rivals and challenges <span class="hint">(only the shop name, shopkeeper look and stats are shared; maths accuracy is never shared)</span></label></p>
     <p class="hint" id="lvlText">${levelText()}</p>
     <h3>Results by difficulty</h3>
     <div style="overflow-x:auto"><table class="stats"><thead><tr><th>Difficulty</th><th>Right</th><th>Wrong</th><th>Skipped</th><th>Accuracy</th></tr></thead><tbody>${trows}</tbody></table></div>
@@ -2524,6 +3481,7 @@ function showParent() {
   box.querySelector('#setChallenge').addEventListener('change', e => { SETTINGS.challenge = Number(e.target.value); saveSettings(); box.querySelector('#lvlText').textContent = levelText().replace(/<[^>]+>/g, ''); });
   box.querySelector('#setKumon').addEventListener('change', e => { SETTINGS.kumon = e.target.value; saveSettings(); });
   box.querySelector('#setWrong').addEventListener('change', e => { SETTINGS.wrongPenalty = e.target.checked; saveSettings(); });
+  box.querySelector('#setShare').addEventListener('change', e => { SETTINGS.sharing = e.target.checked; saveSettings(); });
   box.querySelector('#pClose').addEventListener('click', () => { closeModal(); render(); });
   box.querySelector('#pClose').focus();
   box.querySelector('#pReset').addEventListener('click', async () => {
@@ -2535,32 +3493,9 @@ function showParent() {
   });
 }
 
-function showShopperGuide() {
-  const rows = Object.entries(SHOPPERS).map(([k, s]) => {
-    const acc = ACCESSORIES.find(a => a.brings === k);
-    const how = acc ? `${acc.emoji} ${acc.name} (from level ${acc.level})` : 'Always visit';
-    const now = k === 'adult' || (acc && hasAcc(acc.id));
-    return `<tr><td>${miniPerson(k, 44)}</td><td><strong>${s.name}</strong><br><span class="${now ? 'good' : 'hint'}">${now ? 'Visiting your shop' : 'Not visiting yet'}</span></td><td>${s.desc}</td><td>${how}</td></tr>`;
-  }).join('');
-  const box = openModal(`<h2>Shopper guide</h2>
-    <p>Every item has a hidden fair price. Each type of shopper compares your price with it in a different way.</p>
-    <div style="overflow-x:auto"><table class="stats"><thead><tr><th></th><th>Who</th><th>What they do</th><th>How to attract them</th></tr></thead><tbody>${rows}</tbody></table></div>
-    <h3 style="margin-top:14px">What their faces mean</h3>
-    <p>${Object.keys(MOOD_LABEL).map(m => `${moodSVG(m, 24)} ${MOOD_LABEL[m]}`).join('&nbsp;&nbsp; ')}</p>
-    <div class="box">${repInfoHTML()}</div>
-    <p class="hint">In the shop, a coloured ring under each shopper shows their type. Tap anyone to see who they are and what they think.</p>
-    <p class="hint">Tip: if most faces are 😍, you could charge more. If you see lots of 😬, your price is too high for that crowd.</p>
-    <div class="actions"><button class="btn" id="gClose">Got it</button></div>`, 'Shopper guide');
-  box.querySelector('#gClose').addEventListener('click', closeModal);
-  box.querySelector('#gClose').focus();
-}
+function showShopperGuide() { return showShopperGuidev2(); }
 
-function showBadges() {
-  const box = openModal(`<h2>Badges</h2><div class="badge-list">${BADGES.map(b => `<div class="badge ${S.badges.includes(b.id) ? '' : 'locked'}"><span class="em" aria-hidden="true">${b.emoji}</span>${b.name}${S.badges.includes(b.id) ? '' : '<br><span class="hint">Not yet</span>'}</div>`).join('')}</div>
-    <div class="actions"><button class="btn" id="bClose">Close</button></div>`, 'Badges');
-  box.querySelector('#bClose').addEventListener('click', closeModal);
-  box.querySelector('#bClose').focus();
-}
+function showBadges() { return showBadgesv2(); }
 
 /* ============================================================
    Events
@@ -2576,7 +3511,29 @@ const ACTIONS = {
     if (ok) { deleteSlot(n); render(); toast('Shop deleted.'); }
   },
   theme: b => { selectedTheme = b.dataset.k; document.querySelectorAll('.theme-btn').forEach(x => x.setAttribute('aria-pressed', x.dataset.k === selectedTheme)); },
-  start: () => newGame(newSlot, ($('#shopName').value || '').trim().slice(0, 24) || 'My Shop', selectedTheme),
+  mode: b => { newMode = b.dataset.k; renderPanel(); },
+  style: b => { newStyle = b.dataset.k; if (newStyle !== 'join') { newJoin = null; joinMsg = ''; } renderPanel(); },
+  checkjoin: () => {
+    const d = decodeChallenge(($('#joinCode').value || '')); newJoin = null;
+    if (!d) joinMsg = 'That code does not look right. Ask your friend to copy it again.';
+    else if (d.bad) joinMsg = 'That code looks damaged. Ask your friend to copy it again.';
+    else { newJoin = d; joinMsg = `Challenge found: ${THEMES[d.t].emoji} ${THEMES[d.t].label}, ${d.m === 'a' ? 'Adult' : 'Maths'} mode.`; }
+    const keep = ($('#shopName').value || ''), code = $('#joinCode').value; renderPanel(); $('#shopName').value = keep; $('#joinCode').value = code;
+  },
+  start: () => {
+    const name = ($('#shopName').value || '').trim().slice(0, 24) || 'My Shop';
+    let theme = selectedTheme, mode = newMode, challenge = null;
+    if (newStyle === 'new') challenge = { seed: randomSeed(), days: CONFIG.challengeDays };
+    if (newStyle === 'join') { if (!newJoin) { toast('Paste the invite code and press Check first.'); return; } theme = newJoin.t; mode = newJoin.m === 'a' ? 'adult' : 'maths'; challenge = { seed: newJoin.s, days: CONFIG.challengeDays }; }
+    const wasJoin = newStyle === 'join';
+    newGame(newSlot, name, theme, mode, challenge);
+    newStyle = 'free'; newJoin = null; joinMsg = '';
+    if (challenge && !wasJoin) { if (SETTINGS.sharing) showInvite(); else toast('Challenge started! A parent can turn on sharing to send invites.'); }
+    else if (challenge) toast('You joined the challenge. Same luck as your friend: good luck!');
+  },
+  safeprize: () => safePrize(),
+  pickcard: b => pickCard(Number(b.dataset.i)),
+  compete: () => showCompete(),
   slots: () => goToSlots(),
   qty: b => { const id = b.dataset.id; buyQty[id] = Math.max(0, (buyQty[id] || 0) + Number(b.dataset.d)); renderPanel(); },
   buy: b => buyItem(b.dataset.id),
@@ -2613,9 +3570,10 @@ const ACTIONS = {
   next: () => {
     const left = eveningTodo().filter(x => !x.done);
     if (left.length) { toast(`Finish the checklist first: ${left.map(x => x.label).join(', ')}.`); const el = $('#ev-checklist'); if (el) el.scrollIntoView({ block: 'center' }); return; }
+    if (chFinal()) { finishChallenge(); return; }
     nextDay();
   },
-  boss: () => runBoss(),
+  boss: () => isAdult() ? runBossAdult() : runBoss(),
   hire: b => hireStaff(b.dataset.id),
   fire: b => fireStaff(b.dataset.id),
   customise: () => showCustomise(),
